@@ -21,46 +21,46 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-    # A service that passes when given the string "foo"
-    # and fails if given anything else.
-    class FooService < Slayer::Service
-        def call(foo:)
-          if foo == "foo"
-            pass! result: foo, message: "Passing FooService"
-          else
-            fail! result: foo, message: "Failing FooService"
-          end
-        end
+# A service that passes when given the string "foo"
+# and fails if given anything else.
+class FooService < Slayer::Service
+    def call(foo:)
+      if foo == "foo"
+        pass! result: foo, message: "Passing FooService"
+      else
+        fail! result: foo, message: "Failing FooService"
+      end
+    end
+end
+
+# A placeholder service that always passes with returned result
+# as the argument passed into it.
+class BarService < Slayer::Service
+    def call(bar:)
+        pass! result: bar, message: "Passing BarService"
+    end
+end
+
+# A simple composer which composes the FooService and BarService
+class FooBarComposer < Slayer::Composer
+    compose FooService, BarService
+
+    def call
+        pass! result: @results,  message: "Yay!"
     end
 
-    # A placeholder service that always passes with returned result
-    # as the argument passed into it.
-    class BarService < Slayer::Service
-        def call(bar:)
-            pass! result: bar, message: "Passing BarService"
-        end
+    def foo_service_args
+        return { foo: @composer_params[:foo] }
     end
 
-    # A simple composer which composes the FooService and BarService
-    class FooBarComposer < Slayer::Composer
-        compose FooService, BarService
-
-        def call
-            pass! result: @results,  message: "Yay!"
-        end
-
-        def foo_service_args
-            return { foo: @composer_params[:foo] }
-        end
-
-        def bar_service_args
-            return { bar: foo_service_results.message }
-        end
+    def bar_service_args
+        return { bar: foo_service_results.message }
     end
+end
 
 
-    result = FooBarComposer.call(foo: "Jim", bar: "Joe")
-    result.success? # => true
+result = FooBarComposer.call(foo: "Jim", bar: "Joe")
+result.success? # => true
 ```
 
 ## Development
