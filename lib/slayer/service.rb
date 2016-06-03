@@ -1,52 +1,14 @@
 module Slayer
     class Service
-        attr_accessor :called
-        
+        attr_accessor :called, :result
+
         # Internal: Service Class Methods
         class << self
-            # Public: Execute the service
-            #
-            # ==== Attributes
-            #
-            # - +*args+: Splat of your services arguments.
-            #
-            # ==== Examples
-            #
-            #   Service.call(foo: bar)
-            #   # => <Slayer::Result>
-            #
-            # Returns a Result object.
-            # Raises Slayer::ServiceFailure if the Service is failed
-            # Raises Slayer::ServiceNotImplemented if the Service
-            #   doesn't return a Result object
-            def call!(*args)
-                result = new.tap do |s|
-                    s.run!(args)
-                end
-
-                # Throw an exception if we don't return a result
-                raise ServiceNotImplemented unless result.is_a? Result
-                return result
-            end
-
-            # Public: Execute the service
-            #
-            # ==== Attributes
-            #
-            # - +*args+: Splat of your services arguments.
-            #
-            # ==== Examples
-            #
-            #   Service.call(foo: bar)
-            #   # => <Slayer::Result>
-            #
-            # Returns a Result object.
-            # Raises Slayer::ServiceNotImplemented if the Service
-            #   doesn't return a Result object
-            def call(*args)
-                result = new.tap do |s|
-                    s.run(args)
-                end
+            def call(*args, &block)
+                # Run the Service and capture the result
+                result = new.tap { |s|
+                    s.run(*args, &block)
+                }.result
 
                 # Throw an exception if we don't return a result
                 raise ServiceNotImplemented unless result.is_a? Result
@@ -55,31 +17,33 @@ module Slayer
         end
 
         # Run the Service, rescue from Failures
-        def run(*args)
+        def run(*args, &block)
             begin
-                run!(args)
+                run!(*args, &block)
             rescue ServiceFailure
             end
         end
 
         # Run the Service
-        def run!(*args)
-            call(args)
-            @called = true
+        def run!(*args, &block)
+            call(*args, &block).tap { |r|
+                @called = r.success?
+            }
         end
 
         # Fail the Service
         def fail! result:, message:
-            return Result.new(result, message).fail!
+            @result = Result.new(result, message).tap(&:fail!)
         end
 
         # Pass the Service
         def pass! result:, message:
-            return Result.new(result, message)
+            @result = Result.new(result, message)
         end
 
         # Call the service
         def call
+            raise NotImplementedError, "Services must define method `#call`."
         end
 
         # Do nothing

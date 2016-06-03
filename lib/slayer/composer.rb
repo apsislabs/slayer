@@ -1,30 +1,34 @@
 module Slayer
-    class Organizer < Service
+    class Composer < Service
+        attr_accessor :called
+        attr_accessor :results
+        attr_accessor :called_services
+        attr_accessor :composer_params
+
         class << self
-            def organize(*services)
+            def compose(*services)
                 @services = services.flatten
             end
 
             def services
                 @services ||= []
             end
-
-            # Locate Results from Magic Methods
-            def method_missing(method_sym, *arguments, &block)
-                if method_sym.to_s =~ /^(.*)_results$/
-                    return @results[$1]
-                else
-                    super
-                end
-            end
         end
 
-        attr_accessor :results
-        attr_accessor :called_services
-        attr_accessor :organizer_params
+        # Locate Results from Magic Methods
+        def method_missing(method_sym, *arguments, &block)
+            if method_sym.to_s =~ /^(.*)_results$/
+                results = @results[$1.to_sym]
+                return results unless results.nil?
+            end
 
-        def run!(*args)
-            @organizer_params = args
+            super
+        end
+
+        def run!(**args, &block)
+            @composer_params = args
+            @called_services = []
+            @results = {}
 
             # Attempt to run each Service, if any fail,
             # call rollback on all those already run in
@@ -35,7 +39,7 @@ module Slayer
                     service_args = service_to_args(service)
 
                     # Run the service then add it to called_services
-                    @results[service_sym] = service.call!(service_args)
+                    @results[service_sym] = service.new.run!(service_args)
                     @called_services << service
                 end
             rescue ServiceFailure
@@ -49,6 +53,9 @@ module Slayer
 
                 raise
             end
+
+            call
+            @called = true
         end
 
         private

@@ -1,6 +1,6 @@
 module Slayer
     class Result
-        attr_accessor :result, :message
+        attr_reader :result, :message
 
         def initialize(result, message)
             @result = result

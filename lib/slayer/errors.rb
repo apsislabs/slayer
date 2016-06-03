@@ -9,7 +9,7 @@ module Slayer
     end
 
     class ServiceNotImplemented < StandardError
-        def initialize(message)
+        def initialize(message = nil)
             message ||= %q(
                 Service implementation must call `fail!` or `pass!`,
                 or return a <Slayer::Result> object
