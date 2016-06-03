@@ -1,5 +1,6 @@
 require "slayer/version"
-
-module Slayer
-  # Your code goes here...
-end
+require "slay/string_ext"
+require "slay/errors"
+require "slay/result"
+require "slay/service"
+require "slay/organizer"
