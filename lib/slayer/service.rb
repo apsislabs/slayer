@@ -1,16 +1,9 @@
 module Slayer
     class Service
-
-        # Internal: Add Service functionality
-        def self.included(base)
-            base.class_eval do
-                extend ClassMethods
-                attr_accessor :called
-            end
-        end
-
+        attr_accessor :called
+        
         # Internal: Service Class Methods
-        module ClassMethods
+        class << self
             # Public: Execute the service
             #
             # ==== Attributes
@@ -50,7 +43,7 @@ module Slayer
             # Returns a Result object.
             # Raises Slayer::ServiceNotImplemented if the Service
             #   doesn't return a Result object
-            def call!(*args)
+            def call(*args)
                 result = new.tap do |s|
                     s.run(args)
                 end
@@ -87,7 +80,6 @@ module Slayer
 
         # Call the service
         def call
-            raise NotImplementedError
         end
 
         # Do nothing
