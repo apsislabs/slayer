@@ -22,7 +22,37 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+class FooService < Slay::Service
+    def call(foo:)
+        puts "Hello #{foo}"
+        return pass!
+    end
+end
+
+class BarService < Slay::Service
+    def call(bar:)
+        puts "Goodbye #{bar}"
+        return pass!
+    end
+end
+
+class FooBarOrganizer < Slay::Organizer
+    organize FooService, BarService
+
+    # Args Passed to FooService
+    def foo_service_args
+        return { foo: @organizer_params[:foo] }
+    end
+
+    # Args Passed to BarService
+    def bar_service_args
+        return { bar: @organizer_params[:bar] }
+    end
+end
+
+FooBarOrganizer.call(foo: "Jim", bar: "Joe")
+```
 
 ## Development
 
@@ -38,4 +68,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
