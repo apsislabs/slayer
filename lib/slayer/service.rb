@@ -1,6 +1,6 @@
 module Slayer
     class Service
-        attr_accessor :called, :result
+        attr_accessor :result
 
         # Internal: Service Class Methods
         class << self
@@ -26,14 +26,13 @@ module Slayer
 
         # Run the Service
         def run!(*args, &block)
-            call(*args, &block).tap { |r|
-                @called = r.success?
-            }
+            call(*args, &block)
         end
 
         # Fail the Service
         def fail! result:, message:
-            @result = Result.new(result, message).tap(&:fail!)
+            @result = Result.new(result, message)
+            @result.fail!
         end
 
         # Pass the Service
