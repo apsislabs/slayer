@@ -1,3 +1,5 @@
+![Slayer](https://raw.githubusercontent.com/apsislabs/slayer/master/slayer_logo.png)
+
 # Slayer: A Service Layer
 
 ## Installation
