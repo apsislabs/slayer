@@ -33,6 +33,14 @@
 <h1>
 <a id="slayer-a-service-layer" class="anchor" href="#slayer-a-service-layer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Slayer: A Service Layer</h1>
 
+<p>Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for writing small, composable services, which should behave as <a href="https://en.wikipedia.org/wiki/Pure_function">pure functions</a>.</p>
+
+<p>Slayer Services should implement <code>call</code>, which will <code>pass</code> or <code>fail</code> the service based on input. Services return a <code>Slayer::Result</code> which has a predictable interface for determining <code>success?</code> or <code>failure?</code>, a <code>message</code>, and a <code>result</code>.</p>
+
+<p>Services are composed by Composers, which describe the order and arguments for running a number of Services in sequence. If any of these Services fail, those run before it are rolled back by calling <code>rollback</code> on the service, passing the service its <code>result</code> object, and the original parameters.</p>
+
+<p>Composers also return a <code>Slayer::Result</code> object, which has as its <code>result</code> parameter a hash of the result objects from its composed services.</p>
+
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
@@ -53,46 +61,46 @@
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<div class="highlight highlight-source-ruby"><pre>    <span class="pl-c"># A service that passes when given the string "foo"</span>
-    <span class="pl-c"># and fails if given anything else.</span>
-    <span class="pl-k">class</span> <span class="pl-en">FooService<span class="pl-e"> &lt; Slayer::Service</span></span>
-        <span class="pl-k">def</span> <span class="pl-en">call</span>(<span class="pl-smi">foo</span>:)
-          <span class="pl-k">if</span> foo <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>
-            pass! <span class="pl-c1">result:</span> foo, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Passing FooService<span class="pl-pds">"</span></span>
-          <span class="pl-k">else</span>
-            fail! <span class="pl-c1">result:</span> foo, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Failing FooService<span class="pl-pds">"</span></span>
-          <span class="pl-k">end</span>
-        <span class="pl-k">end</span>
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c"># A service that passes when given the string "foo"</span>
+<span class="pl-c"># and fails if given anything else.</span>
+<span class="pl-k">class</span> <span class="pl-en">FooService<span class="pl-e"> &lt; Slayer::Service</span></span>
+    <span class="pl-k">def</span> <span class="pl-en">call</span>(<span class="pl-smi">foo</span>:)
+      <span class="pl-k">if</span> foo <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>
+        pass! <span class="pl-c1">result:</span> foo, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Passing FooService<span class="pl-pds">"</span></span>
+      <span class="pl-k">else</span>
+        fail! <span class="pl-c1">result:</span> foo, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Failing FooService<span class="pl-pds">"</span></span>
+      <span class="pl-k">end</span>
+    <span class="pl-k">end</span>
+<span class="pl-k">end</span>
+
+<span class="pl-c"># A placeholder service that always passes with returned result</span>
+<span class="pl-c"># as the argument passed into it.</span>
+<span class="pl-k">class</span> <span class="pl-en">BarService<span class="pl-e"> &lt; Slayer::Service</span></span>
+    <span class="pl-k">def</span> <span class="pl-en">call</span>(<span class="pl-smi">bar</span>:)
+        pass! <span class="pl-c1">result:</span> bar, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Passing BarService<span class="pl-pds">"</span></span>
+    <span class="pl-k">end</span>
+<span class="pl-k">end</span>
+
+<span class="pl-c"># A simple composer which composes the FooService and BarService</span>
+<span class="pl-k">class</span> <span class="pl-en">FooBarComposer<span class="pl-e"> &lt; Slayer::Composer</span></span>
+    compose <span class="pl-c1">FooService</span>, <span class="pl-c1">BarService</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">call</span>
+        pass! <span class="pl-c1">result:</span> <span class="pl-smi">@results</span>,  <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Yay!<span class="pl-pds">"</span></span>
     <span class="pl-k">end</span>
 
-    <span class="pl-c"># A placeholder service that always passes with returned result</span>
-    <span class="pl-c"># as the argument passed into it.</span>
-    <span class="pl-k">class</span> <span class="pl-en">BarService<span class="pl-e"> &lt; Slayer::Service</span></span>
-        <span class="pl-k">def</span> <span class="pl-en">call</span>(<span class="pl-smi">bar</span>:)
-            pass! <span class="pl-c1">result:</span> bar, <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Passing BarService<span class="pl-pds">"</span></span>
-        <span class="pl-k">end</span>
+    <span class="pl-k">def</span> <span class="pl-en">foo_service_args</span>
+        <span class="pl-k">return</span> { <span class="pl-c1">foo:</span> <span class="pl-smi">@composer_params</span>[<span class="pl-c1">:foo</span>] }
     <span class="pl-k">end</span>
 
-    <span class="pl-c"># A simple composer which composes the FooService and BarService</span>
-    <span class="pl-k">class</span> <span class="pl-en">FooBarComposer<span class="pl-e"> &lt; Slayer::Composer</span></span>
-        compose <span class="pl-c1">FooService</span>, <span class="pl-c1">BarService</span>
-
-        <span class="pl-k">def</span> <span class="pl-en">call</span>
-            pass! <span class="pl-c1">result:</span> <span class="pl-smi">@results</span>,  <span class="pl-c1">message:</span> <span class="pl-s"><span class="pl-pds">"</span>Yay!<span class="pl-pds">"</span></span>
-        <span class="pl-k">end</span>
-
-        <span class="pl-k">def</span> <span class="pl-en">foo_service_args</span>
-            <span class="pl-k">return</span> { <span class="pl-c1">foo:</span> <span class="pl-smi">@composer_params</span>[<span class="pl-c1">:foo</span>] }
-        <span class="pl-k">end</span>
-
-        <span class="pl-k">def</span> <span class="pl-en">bar_service_args</span>
-            <span class="pl-k">return</span> { <span class="pl-c1">bar:</span> foo_service_results.message }
-        <span class="pl-k">end</span>
+    <span class="pl-k">def</span> <span class="pl-en">bar_service_args</span>
+        <span class="pl-k">return</span> { <span class="pl-c1">bar:</span> foo_service_results.message }
     <span class="pl-k">end</span>
+<span class="pl-k">end</span>
 
 
-    result <span class="pl-k">=</span> <span class="pl-c1">FooBarComposer</span>.call(<span class="pl-c1">foo:</span> <span class="pl-s"><span class="pl-pds">"</span>Jim<span class="pl-pds">"</span></span>, <span class="pl-c1">bar:</span> <span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)
-    result.success? <span class="pl-c"># =&gt; true</span></pre></div>
+result <span class="pl-k">=</span> <span class="pl-c1">FooBarComposer</span>.call(<span class="pl-c1">foo:</span> <span class="pl-s"><span class="pl-pds">"</span>Jim<span class="pl-pds">"</span></span>, <span class="pl-c1">bar:</span> <span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)
+result.success? <span class="pl-c"># =&gt; true</span></pre></div>
 
 <h2>
 <a id="development" class="anchor" href="#development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development</h2>
