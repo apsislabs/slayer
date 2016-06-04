@@ -2,6 +2,14 @@
 
 # Slayer: A Service Layer
 
+Slayer is intended to operate as a functional service layer for your ruby application. To achieve this, Slayer provides base classes for writing small, composable services, which should behave as [pure functions](https://en.wikipedia.org/wiki/Pure_function).
+
+Slayer Services should implement `call`, which will `pass` or `fail` the service based on input. Services return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a `message`, and a `result`.
+
+Services are composed by Composers, which describe the order and arguments for running a number of Services in sequence. If any of these Services fail, those run before it are rolled back by calling `rollback` on the service, passing the service its `result` object, and the original parameters.
+
+Composers also return a `Slayer::Result` object, which has as its `result` parameter a hash of the result objects from its composed services.
+
 ## Installation
 
 Add this line to your application's Gemfile:
