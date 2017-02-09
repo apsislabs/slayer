@@ -1,4 +1,4 @@
-# A service that passes when given the string "foo"
+# A command that passes when given the string "foo"
 # and fails if given anything else.
 class FooCommand < Slayer::Command
   def call foo:
@@ -10,7 +10,7 @@ class FooCommand < Slayer::Command
   end
 end
 
-# A placeholder service that always passes with returned result
+# A placeholder command that always passes with returned result
 # as the argument passed into it.
 class BarCommand < Slayer::Command
   def call bar:
@@ -18,13 +18,13 @@ class BarCommand < Slayer::Command
   end
 end
 
-# A service which does not properly implement the service interface
+# A command which does not properly implement the command interface
 class NotImplementedCommand < Slayer::Command
   def call
     return true
   end
 end
 
-# An invalid service which does not define the `call` method
+# An invalid command which does not define the `call` method
 class InvalidCommand < Slayer::Command
 end

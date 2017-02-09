@@ -1,7 +1,7 @@
 require 'test_helper'
 
 # Tests below rely on FooCommand to be implemented. FooCommand
-# is a simple service which passes when given the keyword argument
+# is a simple command which passes when given the keyword argument
 # `foo: "Foo"` and fails when given any other argument.
 
 class Slayer::CommandTest < Minitest::Test
@@ -51,7 +51,7 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
-  def test_raises_error_for_invalid_service
+  def test_raises_error_for_invalid_command
     assert_raises Slayer::CommandNotImplemented do
       NotImplementedCommand.call
     end
