@@ -1,14 +1,26 @@
 ![Slayer](https://raw.githubusercontent.com/apsislabs/slayer/master/slayer_logo.png)
 
-# Slayer: A Service Layer
+# Slayer: A Killer Service Layer
 
-Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for writing small, composable services, which should behave as [pure functions](https://en.wikipedia.org/wiki/Pure_function).
+Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for business logic.
 
-Slayer Services should implement `call`, which will `pass` or `fail` the service based on input. Services return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a `message`, and a `result`.
+## Application Structure
 
-Services are composed by Composers, which describe the order and arguments for running a number of Services in sequence. If any of these Services fail, those run before it are rolled back by calling `rollback` on the service, passing the service its `result` object, and the original parameters.
+Slayer provides 3 base classes for organizing your business logic: `Forms`, `Commands`, and `Services`. Each of these has a distinct role in your application's structure.
 
-Composers also return a `Slayer::Result` object, which has as its `result` parameter a hash of the result objects from its composed services.
+### Forms
+
+`Slayer::Forms` are objects for wrapping a set of data, usually to be passed as a parameter to a `Command` or `Service`.
+
+### Commands
+
+`Slayer::Commands` are the bread and butter of your application's business logic. `Commands` are where you compose services, and perform one-off business logic tasks. In our applications, we usually create a single `Command` per `Controller` endpoint.
+
+`Commands` should call `Services`, but `Services` should never call `Commands`.
+
+### Services
+
+`Services` are the building blocks of `Commands`, and encapsulate re-usable chunks of application logic.
 
 ## Installation
 
@@ -20,56 +32,45 @@ gem 'slayer'
 
 And then execute:
 
-    $ bundle
+```sh
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install slayer
+```sh
+$ gem install slayer
+```
 
 ## Usage
 
+### Commands
+
+Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a `message`, and a `result` payload object.
+
 ```ruby
-# A service that passes when given the string "foo"
+# A Command that passes when given the string "foo"
 # and fails if given anything else.
-class FooService < Slayer::Service
-    def call(foo:)
-      if foo == "foo"
-        pass! result: foo, message: "Passing FooService"
-      else
-        fail! result: foo, message: "Failing FooService"
-      end
+class FooCommand < Slayer::Command
+  def call(foo:)
+    if foo == "foo"
+      pass! result: foo, message: "Passing FooCommand"
+    else
+      fail! result: foo, message: "Failing FooCommand"
     end
+  end
 end
 
-# A placeholder service that always passes with returned result
-# as the argument passed into it.
-class BarService < Slayer::Service
-    def call(bar:)
-        pass! result: bar, message: "Passing BarService"
-    end
-end
-
-# A simple composer which composes the FooService and BarService
-class FooBarComposer < Slayer::Composer
-    compose FooService, BarService
-
-    def call
-        pass! result: @results,  message: "Yay!"
-    end
-
-    def foo_service_args
-        return { foo: @composer_params[:foo] }
-    end
-
-    def bar_service_args
-        return { bar: foo_service_results.message }
-    end
-end
-
-
-result = FooBarComposer.call(foo: "Jim", bar: "Joe")
+result = FooCommand.call(foo: "foo")
 result.success? # => true
+
+result = FooCommand.call(foo: "bar")
+result.success? # => false
 ```
+
+### Forms
+
+### Services
 
 ## Development
 
