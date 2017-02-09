@@ -1,4 +1,4 @@
 module Slayer
-  class Service
+  class Form
   end
 end
