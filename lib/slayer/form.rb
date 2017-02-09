@@ -1,5 +1,8 @@
 module Slayer
   class Form
+    extend ModelAttribute
+    include ActiveModel::Validations if defined?(Rails)
+
     # Internal: Form Class Methods
     class << self
       def from_params(params)
