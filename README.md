@@ -2,6 +2,8 @@
 
 # Slayer: A Service Layer
 
+[![Gem Version](https://badge.fury.io/rb/slayer.svg)](https://badge.fury.io/rb/slayer)
+
 Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for writing small, composable services, which should behave as [pure functions](https://en.wikipedia.org/wiki/Pure_function).
 
 Slayer Services should implement `call`, which will `pass` or `fail` the service based on input. Services return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a `message`, and a `result`.
