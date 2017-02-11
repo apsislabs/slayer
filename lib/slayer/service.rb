@@ -14,21 +14,23 @@ module Slayer
     end
 
     def self.transitive_dependencies(dependency_hash = {}, visited = [])
-      # return @transitive_dependencies if @transitive_dependencies
+      return @transitive_dependencies if @transitive_dependencies
 
-      puts "VISITING #{self}"
-      puts "\tDEPENDENCIES: #{@dependencies}"
+      @dependencies ||= []
 
+      # If we've already visited ourself, bail out. This is necessary to halt
+      # execution for a circular chain of dependencies. #halting-problem-solved
       if visited.include?(self)
         return dependency_hash[self]
       end
 
       visited << self
-
       dependency_hash[self] ||= []
 
+      # Add each of our dependencies (and it's transitive dependency chain) to our
+      # own dependencies.
+
       @dependencies.each { |dep|
-        # visit dependency
         dependency_hash[self] << dep
 
         if !visited.include?(dep)
@@ -36,29 +38,18 @@ module Slayer
           dependency_hash[self].concat(child_transitive_dependencies)
         end
 
-        puts "\tChild T DEP: #{child_transitive_dependencies}"
-
         dependency_hash[self].uniq
       }
 
-      puts "\tSelf Dep Hash: #{dependency_hash[self]}"
-
+      # NO CIRCULAR DEPENDENCIES!
       if dependency_hash[self].include? self
-        puts "Raising Service Dependency Error"
-        byebug
         raise ServiceDependencyError.new("#{self} had a circular dependency")
       end
 
-      puts "FINISHED VISITING #{self}"
-
+      # Store these now, so next time we can short-circuit.
       @transitive_dependencies = dependency_hash[self]
 
       return @transitive_dependencies
-    end
-
-    private
-
-    def actual_transitive_dependencies()
     end
   end
 end
