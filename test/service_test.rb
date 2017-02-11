@@ -54,8 +54,7 @@ class Slayer::ServiceTest < Minitest::Test
     a_service.dependencies(b_service)
 
     assert_raises Slayer::ServiceDependencyError do
-      raise Slayer::ServiceDependencyError.new("AN ERROR")
-      # a_service.transitive_dependencies
+      a_service.transitive_dependencies
     end
   end
 
