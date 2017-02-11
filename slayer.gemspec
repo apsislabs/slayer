@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Wyatt Kirby"]
   spec.email         = ["wyatt@apsis.io"]
 
-  spec.summary       = %q{A service layer}
+  spec.summary       = %q{A killer service layer}
   spec.homepage      = "http://www.apsis.io"
   spec.license       = "MIT"
 
@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.12"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "mocha", "~> 1.2"
 end

@@ -5,38 +5,49 @@ module Slayer
     # Internal: Command Class Methods
     class << self
       def call(*args, &block)
-        # Run the Command and capture the result
-        result = new.tap { |s|
-          s.run(*args, &block)
-        }.result
-
-        # Throw an exception if we don't return a result
-        raise CommandNotImplemented unless result.is_a? Result
-        return result
+        execute_call(block, *args) { |c, *a| c.run(*a) }
       end
+
+      def call!(*args, &block)
+        execute_call(block, *args) { |c, *a| c.run!(*a) }
+      end
+
+      private
+
+        def execute_call(block, *args, &lamda)
+          # Run the Command and capture the result
+          command = self.new
+          result  = command.tap { lamda.call(command, *args) }.result
+
+          # Run user block
+          block.call(result, command) unless block.nil?
+
+          # Throw an exception if we don't return a result
+          raise CommandNotImplemented unless result.is_a? Result
+          return result
+        end
     end
 
-    # Run the Command, rescue from Failures
-    def run(*args, &block)
+    def run(*args)
       begin
-        run!(*args, &block)
+        call(*args)
       rescue CommandFailure
       end
     end
 
     # Run the Command
-    def run!(*args, &block)
-      call(*args, &block)
+    def run!(*args)
+      call(*args)
     end
 
     # Fail the Command
-    def fail!(result:, message:)
+    def fail!(result:, message: nil)
       @result = Result.new(result, message)
       @result.fail!
     end
 
     # Pass the Command
-    def pass!(result:, message:)
+    def pass!(result:, message: nil)
       @result = Result.new(result, message)
     end
 
