@@ -84,7 +84,7 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
-  def test_raises_error_for_invalid_service
+  def test_raises_error_for_invalid_command
     assert_raises Slayer::CommandNotImplemented do
       NotImplementedCommand.call
     end
