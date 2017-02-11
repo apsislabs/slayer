@@ -51,7 +51,7 @@ module Slayer
       @result = Result.new(result, message)
     end
 
-    # Call the service
+    # Call the command
     def call
       raise NotImplementedError, "Commands must define method `#call`."
     end

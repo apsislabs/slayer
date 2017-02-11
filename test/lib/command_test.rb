@@ -1,10 +1,9 @@
 require 'test_helper'
 
-# Tests below rely on ArgCommand to be implemented. ArgCommand
-# is a simple service which passes when given the keyword argument
-# `arg: "Foo"` and fails when given any other argument.
-
 class Slayer::CommandTest < Minitest::Test
+
+  # Class Tests
+  # ---------------------------------------------
 
   def test_instantiates_and_calls_expected_methods
     NoArgCommand.expects(:call).once

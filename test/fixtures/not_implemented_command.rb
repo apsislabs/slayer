@@ -1,4 +1,4 @@
-# A service which does not properly implement the service interface
+# A command which does not properly implement the command interface
 class NotImplementedCommand < Slayer::Command
   def call
     return true

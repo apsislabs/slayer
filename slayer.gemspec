@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Wyatt Kirby"]
   spec.email         = ["wyatt@apsis.io"]
 
-  spec.summary       = %q{A service layer}
+  spec.summary       = %q{A killer service layer}
   spec.homepage      = "http://www.apsis.io"
   spec.license       = "MIT"
 
