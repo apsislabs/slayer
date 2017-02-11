@@ -1,4 +1,4 @@
-require "ext/string_ext"
+require "ext/string_ext" unless defined?(Rails)
 
 require "slayer/version"
 require "slayer/errors"
