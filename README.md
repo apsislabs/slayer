@@ -2,7 +2,7 @@
 
 # Slayer: A Service Layer
 
-[![Gem Version](https://badge.fury.io/rb/slayer.svg)](https://badge.fury.io/rb/slayer)
+[![Gem Version](https://badge.fury.io/rb/slayer.svg)](https://badge.fury.io/rb/slayer) [![Build Status](https://travis-ci.org/apsislabs/slayer.svg?branch=master)](https://travis-ci.org/apsislabs/slayer)
 
 Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for writing small, composable services, which should behave as [pure functions](https://en.wikipedia.org/wiki/Pure_function).
 
