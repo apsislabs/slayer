@@ -2,6 +2,8 @@
 
 # Slayer: A Killer Service Layer
 
+[![Build Status](https://travis-ci.org/apsislabs/slayer.svg?branch=master)](https://travis-ci.org/apsislabs/slayer)
+
 Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for business logic.
 
 ## Application Structure
