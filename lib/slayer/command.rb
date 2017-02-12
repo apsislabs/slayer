@@ -19,11 +19,14 @@ module Slayer
           command = self.new
           result  = command.tap { lamda.call(command, *args) }.result
 
-          # Run user block
-          block.call(result, command) unless block.nil?
-
           # Throw an exception if we don't return a result
           raise CommandNotImplemented unless result.is_a? Result
+
+          # Run user block
+          result.clear_state
+          block.call(result, command) unless block.nil?
+          raise CommandResultNotHandledError.new("The pass or fail condition of a result was not handled") unless result.fulfilled_state
+
           return result
         end
     end
