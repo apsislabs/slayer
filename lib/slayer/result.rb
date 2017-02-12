@@ -1,5 +1,6 @@
 module Slayer
   class Result
+    # TODO: Result needs another attribute like "status" for full block matching.
     attr_reader :result, :message
 
     def initialize(result, message)
@@ -16,16 +17,16 @@ module Slayer
       @handled_pass && @handled_fail
     end
 
-    def pass(for_result = nil, &block)
-      @handled_pass ||= for_result == nil || for_result == :default
+    def pass(for_status = nil, &block)
+      @handled_pass ||= for_status == nil || for_status == :default
 
-      yield if (block_given? && success? && (for_result == nil || for_result == :default || for_result == @result))
+      yield if (block_given? && success? && (for_status == nil || for_status == :default || for_status == @result))
     end
 
-    def fail(for_result = nil, &block)
-      @handled_fail ||= for_result == nil || for_result == :default
+    def fail(for_status = nil, &block)
+      @handled_fail ||= for_status == nil || for_status == :default
 
-      yield if (block_given? && failure? && (for_result == nil || for_result == :default || for_result == @result))
+      yield if (block_given? && failure? && (for_status == nil || for_status == :default || for_status == @result))
     end
 
     def success?
