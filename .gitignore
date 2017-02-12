@@ -9,3 +9,5 @@
 /spec/reports/
 /tmp/
 /log*/*
+
+.byebug_history
