@@ -48,10 +48,9 @@ class Slayer::ServiceTest < Minitest::Test
     s(:FirstService) {
       s(:SecondService) {
         SecondService.dependencies FirstService
-        FirstService.dependencies  SecondService
 
         assert_raises Slayer::ServiceDependencyError do
-          FirstService.transitive_dependencies
+          FirstService.dependencies  SecondService
         end
       }
     }

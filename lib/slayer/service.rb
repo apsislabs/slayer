@@ -12,6 +12,9 @@ module Slayer
       raise ServiceDependencyError.new("There were duplicate dependencies in #{self}") unless deps.uniq.length == deps.length
 
       @deps = deps
+
+      # Calculate the transitive dependencies and throw an error if there are circular dependencies
+      transitive_dependencies
     end
 
     private
