@@ -61,6 +61,36 @@ class Slayer::ServiceTest < Minitest::Test
     assert_array_contents_equal CService.transitive_dependencies, [BService, AService]
   end
 
+  # Dependency Enforcements
+  def test_service_instance_can_be_called_from_anywhere
+    assert_equal AService.new.return_3, 3, "AService instance should directly produce the result of 3"
+  end
+
+  def test_service_instance_can_be_called_if_listed_in_dependencies
+    assert_equal BService.new.return_6, 6,   "BService instance should've produced the result of 6 using AService instance"
+    assert_equal CService.return_8, 8, "BService instance should've produced the result of 15 using AService"
+    assert_equal BService.new.return_15, 15, "BService instance should've produced the result of 15 using AService"
+
+  end
+
+  def test_instance_raises_exception_if_service_calls_another_service_not_listed_in_dependencies
+    s(:NoDependencyListedService,
+      Proc.new { def do_no_dependency_thing; AService.return_5 * 3; end }) {
+
+      assert_raises Slayer::ServiceDependencyError, "Instance should not be able to call AService if it's not listed as a dependency" do
+        NoDependencyListedService.new.do_no_dependency_thing
+      end
+    }
+
+    s(:NoDependencyListedService,
+      Proc.new { def do_no_dependency_thing; AService.new.return_3 * 3; end }) {
+
+      assert_raises Slayer::ServiceDependencyError, "Instance should not be able to call AService instance if it's not listed as a dependency" do
+        NoDependencyListedService.new.do_no_dependency_thing
+      end
+    }
+  end
+
   def test_service_can_be_called_from_anywhere
     assert_equal AService.return_5, 5, "AService should directly produce the result of 5"
   end
