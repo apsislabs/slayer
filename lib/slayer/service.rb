@@ -1,5 +1,79 @@
 module Slayer
   class Service
+    def self.before_each_method name
+      @@allowed_services ||= nil
+
+      # Is Allowed?
+
+      if !@@allowed_services
+        # If allowed services is not set, this is the _first_ call to a service object.
+        # That's always allowed
+
+        # YES
+        puts "ALLOWED"
+      else
+        # Peek at the array of allowed services and make sure we're in it
+        allowed = @@allowed_services.last
+        if allowed && allowed.include?(self)
+          # If we are in the set of allowed services, this has been explicitly approved.
+          #YES
+          puts "ALLOWED"
+        else
+          #NO
+          raise ServiceDependencyError.new("Attempted to call #{self} from another #{Slayer::Service} which did not declare it as a dependency")
+        end
+      end
+
+      @@allowed_services ||= []
+      @@allowed_services << transitive_dependencies
+    end
+
+    def self.after_each_method name
+      @@allowed_services.pop
+      p [:after_method, name, self]
+
+      if @@allowed_services.empty?
+        @@allowed_services = nil
+      end
+
+      p @@allowed_services
+    end
+
+    def self.singleton_method_added name
+      return if self == Slayer::Service
+      return if @__last_methods_added && @__last_methods_added.include?(name)
+
+      p [:singleton_method_added, name, self]
+
+      with = :"#{name}_with_before_each_method"
+      without = :"#{name}_without_before_each_method"
+
+      @__last_methods_added = [name, with, without]
+      define_singleton_method with do |*args, &block|
+        before_each_method name
+        begin
+          send without, *args, &block
+        rescue
+          raise
+        ensure
+          after_each_method name
+        end
+      end
+
+      # p self
+      # p methods - Object.methods
+
+      singleton_class.send(:alias_method, without, name)
+
+      # p methods - Object.methods
+
+      singleton_class.send(:alias_method, name, with) # alias_method name, with
+
+      # p methods - Object.methods
+
+      @__last_methods_added = nil
+    end
+
     def self.dependencies(*deps)
       raise ServiceDependencyError.new("There were multiple dependencies calls of #{self}") if @dependencies
 
