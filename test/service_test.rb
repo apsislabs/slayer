@@ -8,19 +8,19 @@ class Slayer::ServiceTest < Minitest::Test
     Class.new(Slayer::Service) { }
   end
 
-  def test_dependencies_with_no_class_raises
+  def test_raises_error_for_invalid_dependencies
     assert_raises Slayer::ServiceDependencyError do
       Class.new(Slayer::Service) { dependencies(:b_service) }
     end
   end
 
-  def test_dependencies_with_non_service_class_raises
+  def test_raises_error_for_non_service_class_dependencies
     assert_raises Slayer::ServiceDependencyError do
       Class.new(Slayer::Service) { dependencies(Slayer::Command) }
     end
   end
 
-  def test_multiple_dependencies_raises
+  def test_raises_error_for_multiple_dependencies
     assert_raises Slayer::ServiceDependencyError do
       service = Class.new(Slayer::Service)
       Class.new(Slayer::Service) { dependencies(service); dependencies(service); }
@@ -36,7 +36,7 @@ class Slayer::ServiceTest < Minitest::Test
     end
   end
 
-  def test_duplicate_dependencies_raises
+  def test_raises_error_for_duplicate_dependencies
     assert_raises Slayer::ServiceDependencyError do
       service = Class.new(Slayer::Service)
       Class.new(Slayer::Service) { dependencies(service, service) }
@@ -44,7 +44,7 @@ class Slayer::ServiceTest < Minitest::Test
   end
 
   # Transitive and Circular Dependencies
-  def test_circular_dependencies_raises
+  def test_raises_error_for_circular_dependencies
     s(:FirstService) {
       s(:SecondService) {
         SecondService.dependencies FirstService
@@ -61,18 +61,18 @@ class Slayer::ServiceTest < Minitest::Test
   end
 
   # Dependency Enforcements
-  def test_service_instance_can_be_called_from_anywhere
+  def test_instance_calls_allowed_from_non_service_class
     assert_equal AService.new.return_3, 3, "AService instance should directly produce the result of 3"
   end
 
-  def test_service_instance_can_be_called_if_listed_in_dependencies
+  def test_instance_calls_allowed_when_in_dependencies
     assert_equal BService.new.return_6, 6,   "BService instance should've produced the result of 6 using AService instance"
     assert_equal CService.return_8, 8, "BService instance should've produced the result of 15 using AService"
     assert_equal BService.new.return_15, 15, "BService instance should've produced the result of 15 using AService"
 
   end
 
-  def test_instance_raises_exception_if_service_calls_another_service_not_listed_in_dependencies
+  def test_raises_error_for_disallowed_call_from_instance
     s(:NoDependencyListedService,
       Proc.new { def do_no_dependency_thing; AService.return_5 * 3; end }) {
 
@@ -90,15 +90,15 @@ class Slayer::ServiceTest < Minitest::Test
     }
   end
 
-  def test_service_can_be_called_from_anywhere
+  def test_calls_allowed_from_non_service_class
     assert_equal AService.return_5, 5, "AService should directly produce the result of 5"
   end
 
-  def test_service_can_be_called_if_listed_in_dependencies
+  def test_calls_allowed_when_in_dependencies
     assert_equal BService.return_10, 10, "BService should've produced the result of 10 using AService"
   end
 
-  def test_raises_exception_if_service_calls_another_service_not_listed_in_dependencies
+  def test_raises_error_for_disallowed_call
     s(:NoDependencyListedService,
       Proc.new { def self.do_no_dependency_thing; AService.return_5 * 3; end }) {
 
