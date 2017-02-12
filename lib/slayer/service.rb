@@ -1,6 +1,43 @@
 module Slayer
+  # Slayer Services are objects that should implement re-usable pieces of
+  # application logic or common tasks. To prevent circular dependencies Services
+  # are required to declare which other Service classes they depend on. If a
+  # circular dependency is detected an error is raised.
+  #
+  # In order to enforce the lack of circular dependencies, Service objects can
+  # only call other Services that are declared in their dependencies.
   class Service
-
+    # List the other Service class that this service class depends on. Only
+    # dependencies that are included in this call my be invoked from class
+    # or instances methods of this service class.
+    #
+    # If no dependencies are provided, no other Service classes may be used by
+    # this Service class.
+    #
+    # @param deps [Array<Class>] An array of the other Slayer::Service classes that are used as dependencies
+    #
+    # @example Service calls with dependency declared
+    #   class StripeService < Slayer::Service
+    #     dependencies NetworkService
+    #
+    #     def self.pay()
+    #       ...
+    #       NetworkService.post(url: "stripe.com", body: my_payload) # OK
+    #       ...
+    #     end
+    #   end
+    #
+    # @example Service calls without a dependency declared
+    #   class JiraApiService < Slayer::Service
+    #
+    #     def self.create_issue()
+    #       ...
+    #       NetworkService.post(url: "stripe.com", body: my_payload) # Raises Slayer::ServiceDependencyError
+    #       ...
+    #     end
+    #   end
+    #
+    # @return [Array<Class>] The transitive closure of dependencies for this object.
     def self.dependencies(*deps)
       raise ServiceDependencyError.new("There were multiple dependencies calls of #{self}") if @deps
 
