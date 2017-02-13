@@ -20,7 +20,7 @@ module Slayer
           result  = command.tap { lamda.call(command, *args) }.result
 
           # Throw an exception if we don't return a result
-          raise CommandNotImplemented unless result.is_a? Result
+          raise CommandNotImplementedError unless result.is_a? Result
 
           # Run user block
           unless block.nil?
@@ -43,7 +43,7 @@ module Slayer
     def run(*args)
       begin
         call(*args)
-      rescue CommandFailure
+      rescue CommandFailureError
       end
     end
 

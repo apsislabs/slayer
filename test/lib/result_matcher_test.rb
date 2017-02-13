@@ -215,19 +215,25 @@ class Slayer::ResultMatcherTest < Minitest::Test
 
   private
 
-  def matcher_with_pass_result(status: :default)
-    result = Slayer::Result.new(5, status, "my message")
+    def matcher_with_pass_result(status: :default)
+      result = Slayer::Result.new(5, status, "my message")
 
-    Slayer::ResultMatcher.new(result, NoArgCommand.new)
-  end
-
-  def matcher_with_fail_result(status: :default)
-    result = Slayer::Result.new(5, status, "my message")
-    begin
-      result.fail!
-    rescue Slayer::CommandFailure
+      Slayer::ResultMatcher.new(result, NoArgCommand.new)
     end
 
-    Slayer::ResultMatcher.new(result, NoArgCommand.new)
-  end
+    # We intentionally capture the Slayer::CommandFailureError here
+    # as we are intentionally accessing a matcher with a failed
+    # result for testing in isolation.
+    # 
+    # rubocop:disable Lint/HandleExceptions
+    def matcher_with_fail_result(status: :default)
+      result = Slayer::Result.new(5, status, "my message")
+      begin
+        result.fail!
+      rescue Slayer::CommandFailureError
+      end
+
+      Slayer::ResultMatcher.new(result, NoArgCommand.new)
+    end
+    # rubocop:enable Lint/HandleExceptions
 end
