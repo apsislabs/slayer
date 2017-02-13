@@ -23,7 +23,7 @@ class Slayer::ServiceTest < Minitest::Test
   def test_raises_error_for_multiple_dependencies
     assert_raises Slayer::ServiceDependencyError do
       service = Class.new(Slayer::Service)
-      Class.new(Slayer::Service) { dependencies(service); dependencies(service); }
+      Class.new(Slayer::Service) { dependencies(service); dependencies(service) }
     end
 
     assert_raises Slayer::ServiceDependencyError do
@@ -32,7 +32,7 @@ class Slayer::ServiceTest < Minitest::Test
 
     assert_raises Slayer::ServiceDependencyError do
       service = Class.new(Slayer::Service)
-      Class.new(Slayer::Service) { dependencies; dependencies(service); }
+      Class.new(Slayer::Service) { dependencies; dependencies(service) }
     end
   end
 
@@ -76,7 +76,7 @@ class Slayer::ServiceTest < Minitest::Test
 
   def test_raises_error_for_disallowed_call_from_instance
     s(:NoDependencyListedService,
-      Proc.new { def do_no_dependency_thing; AService.return_5 * 3; end }) {
+      proc { def do_no_dependency_thing; AService.return_5 * 3; end }) {
 
       assert_raises Slayer::ServiceDependencyError,
                     'Instance should not be able to call AService if it\'s not listed as a dependency' do
@@ -85,7 +85,7 @@ class Slayer::ServiceTest < Minitest::Test
     }
 
     s(:NoDependencyListedService,
-      Proc.new { def do_no_dependency_thing; AService.new.return_3 * 3; end }) {
+      proc { def do_no_dependency_thing; AService.new.return_3 * 3; end }) {
 
       assert_raises Slayer::ServiceDependencyError,
                     'Instance should not be able to call AService instance if it\'s not listed as a dependency' do
@@ -104,7 +104,7 @@ class Slayer::ServiceTest < Minitest::Test
 
   def test_raises_error_for_disallowed_call
     s(:NoDependencyListedService,
-      Proc.new { def self.do_no_dependency_thing; AService.return_5 * 3; end }) {
+      proc { def self.do_no_dependency_thing; AService.return_5 * 3; end }) {
 
       assert_raises Slayer::ServiceDependencyError,
                     'Should not be able to call AService if it\'s not listed as a dependency' do

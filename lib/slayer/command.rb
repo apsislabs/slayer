@@ -29,8 +29,8 @@ module Slayer
             block.call(matcher)
 
             # raise error if not all defaults were handled
-            if !matcher.handled_defaults?
-              raise CommandResultNotHandledError.new('The pass or fail condition of a result was not handled')
+            unless matcher.handled_defaults?
+              raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
             end
 
             matcher.execute_matching_block
@@ -41,10 +41,9 @@ module Slayer
     end
 
     def run(*args)
-      begin
-        call(*args)
-      rescue CommandFailure
-      end
+      call(*args)
+    rescue CommandFailure
+      # Swallow the Command Failure
     end
 
     # Run the Command
