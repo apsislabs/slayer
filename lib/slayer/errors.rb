@@ -1,5 +1,5 @@
 module Slayer
-  class CommandFailureErrorError < StandardError
+  class CommandFailureError < StandardError
     attr_reader :result
 
     def initialize(result)

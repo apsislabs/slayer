@@ -18,7 +18,7 @@ module Slayer
 
     def fail!
       @failure = true
-      raise CommandFailureErrorError, self
+      raise CommandFailureError, self
     end
   end
 end
