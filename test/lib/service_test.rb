@@ -120,7 +120,7 @@ class Slayer::ServiceTest < Minitest::Test
 
       yield
 
-      cleanup_service(name: name)
+      cleanup_service({ name: name })
     end
 
     def create_service(name: nil, &block)
