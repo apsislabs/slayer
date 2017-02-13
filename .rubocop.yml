@@ -1,2 +1,5 @@
 Style/IndentationConsistency:
   EnforcedStyle: rails
+
+Style/BracesAroundHashParameters:
+  EnforcedStyle: braces
