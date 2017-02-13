@@ -26,6 +26,9 @@ Style/EmptyLinesAroundClassBody:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/BracesAroundHashParameters:
+  EnforcedStyle: braces
+
 Style/IndentationConsistency:
   EnforcedStyle: rails
 
