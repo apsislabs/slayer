@@ -23,7 +23,7 @@ module Slayer
           block.call(result, command) unless block.nil?
 
           # Throw an exception if we don't return a result
-          raise CommandNotImplemented unless result.is_a? Result
+          raise CommandNotImplementedError unless result.is_a? Result
           return result
         end
     end
@@ -31,7 +31,7 @@ module Slayer
     def run(*args)
       begin
         call(*args)
-      rescue CommandFailure
+      rescue CommandFailureError
       end
     end
 

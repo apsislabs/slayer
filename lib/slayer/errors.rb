@@ -1,5 +1,5 @@
 module Slayer
-  class CommandFailure < StandardError
+  class CommandFailureError < StandardError
     attr_reader :result
 
     def initialize(result)
@@ -8,7 +8,7 @@ module Slayer
     end
   end
 
-  class CommandNotImplemented < StandardError
+  class CommandNotImplementedError < StandardError
     def initialize(message = nil)
       message ||= %q(
         Command implementation must call `fail!` or `pass!`,
