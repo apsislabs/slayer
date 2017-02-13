@@ -18,3 +18,7 @@ Style/IndentationConsistency:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+
+Style/ClassVars:
+  Exclude:
+    - 'lib/slayer/service.rb'
