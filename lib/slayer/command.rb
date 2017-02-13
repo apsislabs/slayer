@@ -43,7 +43,7 @@ module Slayer
     def run(*args)
       begin
         call(*args)
-      rescue CommandFailureError
+      rescue CommandFailureErrorError
       end
     end
 

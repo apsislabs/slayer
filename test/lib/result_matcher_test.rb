@@ -225,7 +225,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
     result = Slayer::Result.new(5, status, "my message")
     begin
       result.fail!
-    rescue Slayer::CommandFailure
+    rescue Slayer::CommandFailureError
     end
 
     Slayer::ResultMatcher.new(result, NoArgCommand.new)
