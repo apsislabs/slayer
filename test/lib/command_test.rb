@@ -24,20 +24,42 @@ class Slayer::CommandTest < Minitest::Test
   # directory for correctness.
 
   def test_executes_block_passed_to_command
-    @truthy = false
-    NoArgCommand.call do |r, c|
-      @truthy = true
-    end
+    assert_executes do
+      NoArgCommand.call do |r|
+        assert r.is_a? Slayer::ResultMatcher
+        r.all
 
-    assert_equal true, @truthy
+        executes
+      end
+    end
+  end
+
+  def test_executes_pass_block_on_pass
+    assert_executes do
+      result = ArgCommand.call(arg: "arg") do |r|
+        r.pass { executes }
+        r.fail { flunk }
+      end
+    end
+  end
+
+  def test_executes_fail_block_on_fail
+    assert_executes do
+      result = ArgCommand.call(arg: nil) do |r|
+        r.pass { flunk }
+        r.fail { executes }
+      end
+    end
   end
 
   def test_result_and_command_available_in_block
-    NoArgCommand.call do |r, c|
-      assert c.is_a? NoArgCommand
+    NoArgCommand.call do |m|
+      m.all do |r, c|
+        assert c.is_a? NoArgCommand
 
-      assert r.is_a? Slayer::Result
-      assert_equal true, r.success?
+        assert r.is_a? Slayer::Result
+        assert_equal true, r.success?
+      end
     end
   end
 
@@ -54,21 +76,27 @@ class Slayer::CommandTest < Minitest::Test
   def test_result_has_expected_properties_on_pass
     result = ArgCommand.call(arg: "arg")
 
-    assert_equal result.result, "arg"
+    assert_equal result.value, "arg"
     assert result.success?
   end
 
   def test_result_has_expected_properties_on_fail
     result = ArgCommand.call(arg: nil)
 
-    assert_nil result.result
+    assert_nil result.value, nil
     refute result.success?
+  end
+
+  def test_can_be_run_with_no_block
+    result = NoArgCommand.call()
+
+    assert result.success?
   end
 
   def test_can_be_run_with_exceptions_flag
     result = ArgCommand.call!(arg: "arg")
 
-    assert_equal result.result, "arg"
+    assert_equal result.value, "arg"
     assert result.success?
   end
 
