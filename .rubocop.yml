@@ -3,3 +3,6 @@ Style/IndentationConsistency:
 
 Style/BracesAroundHashParameters:
   EnforcedStyle: braces
+
+Style/ClassAndModuleChildren:
+  Enabled: false
