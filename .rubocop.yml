@@ -1,2 +1,20 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Include:
+    - 'lib/**/*.rb'
+    - 'test/**/*.rb'
+  Exclude:
+    - 'bin/**/*'
+
+# Offense count: 31
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
+# URISchemes: http, https
+Metrics/LineLength:
+  Max: 120
+
 Style/IndentationConsistency:
   EnforcedStyle: rails
+
+Style/ClassAndModuleChildren:
+  Enabled: false

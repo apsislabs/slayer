@@ -62,21 +62,24 @@ class Slayer::ServiceTest < Minitest::Test
 
   # Dependency Enforcements
   def test_instance_calls_allowed_from_non_service_class
-    assert_equal AService.new.return_3, 3, "AService instance should directly produce the result of 3"
+    assert_equal AService.new.return_3, 3, 'AService instance should directly produce the result of 3'
   end
 
   def test_instance_calls_allowed_when_in_dependencies
-    assert_equal BService.new.return_6, 6,   "BService instance should've produced the result of 6 using AService instance"
-    assert_equal CService.return_8, 8, "BService instance should've produced the result of 15 using AService"
-    assert_equal BService.new.return_15, 15, "BService instance should've produced the result of 15 using AService"
-
+    assert_equal BService.new.return_6, 6,   'BService instance should\'ve produced the '\
+                                             'result of 6 using AService instance'
+    assert_equal CService.return_8, 8,       'BService instance should\'ve produced the result of '\
+                                             '15 using AService'
+    assert_equal BService.new.return_15, 15, 'BService instance should\'ve produced the result of '\
+                                             '15 using AService'
   end
 
   def test_raises_error_for_disallowed_call_from_instance
     s(:NoDependencyListedService,
       Proc.new { def do_no_dependency_thing; AService.return_5 * 3; end }) {
 
-      assert_raises Slayer::ServiceDependencyError, "Instance should not be able to call AService if it's not listed as a dependency" do
+      assert_raises Slayer::ServiceDependencyError,
+                    'Instance should not be able to call AService if it\'s not listed as a dependency' do
         NoDependencyListedService.new.do_no_dependency_thing
       end
     }
@@ -84,25 +87,27 @@ class Slayer::ServiceTest < Minitest::Test
     s(:NoDependencyListedService,
       Proc.new { def do_no_dependency_thing; AService.new.return_3 * 3; end }) {
 
-      assert_raises Slayer::ServiceDependencyError, "Instance should not be able to call AService instance if it's not listed as a dependency" do
+      assert_raises Slayer::ServiceDependencyError,
+                    'Instance should not be able to call AService instance if it\'s not listed as a dependency' do
         NoDependencyListedService.new.do_no_dependency_thing
       end
     }
   end
 
   def test_calls_allowed_from_non_service_class
-    assert_equal AService.return_5, 5, "AService should directly produce the result of 5"
+    assert_equal AService.return_5, 5, 'AService should directly produce the result of 5'
   end
 
   def test_calls_allowed_when_in_dependencies
-    assert_equal BService.return_10, 10, "BService should've produced the result of 10 using AService"
+    assert_equal BService.return_10, 10, 'BService should\'ve produced the result of 10 using AService'
   end
 
   def test_raises_error_for_disallowed_call
     s(:NoDependencyListedService,
       Proc.new { def self.do_no_dependency_thing; AService.return_5 * 3; end }) {
 
-      assert_raises Slayer::ServiceDependencyError, "Should not be able to call AService if it's not listed as a dependency" do
+      assert_raises Slayer::ServiceDependencyError,
+                    'Should not be able to call AService if it\'s not listed as a dependency' do
         NoDependencyListedService.do_no_dependency_thing
       end
     }

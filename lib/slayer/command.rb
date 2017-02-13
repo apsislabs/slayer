@@ -30,7 +30,7 @@ module Slayer
 
             # raise error if not all defaults were handled
             if !matcher.handled_defaults?
-              raise CommandResultNotHandledError.new("The pass or fail condition of a result was not handled")
+              raise CommandResultNotHandledError.new('The pass or fail condition of a result was not handled')
             end
 
             matcher.execute_matching_block
@@ -65,7 +65,7 @@ module Slayer
 
     # Call the command
     def call
-      raise NotImplementedError, "Commands must define method `#call`."
+      raise NotImplementedError, 'Commands must define method `#call`.'
     end
   end
 end
