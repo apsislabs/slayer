@@ -11,7 +11,7 @@ class Slayer::FormTest < Minitest::Test
   end
 
   def test_instantiates_with_string_hash
-    form = PersonForm.new({ 'name': 'Luke Skywalker', 'age': 20 })
+    form = PersonForm.new({ 'name' => 'Luke Skywalker', 'age' => 20 })
     assert_equal 'Luke Skywalker', form.name
     assert_equal 20, form.age
 
@@ -20,7 +20,7 @@ class Slayer::FormTest < Minitest::Test
   end
 
   def test_instantiates_with_mixed_hash
-    form = PersonForm.new({ name: 'Luke Skywalker', 'age': 20 })
+    form = PersonForm.new({ name: 'Luke Skywalker', 'age' => 20 })
     assert_equal 'Luke Skywalker', form.name
     assert_equal 20, form.age
 

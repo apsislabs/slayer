@@ -17,6 +17,7 @@ module Slayer
       @matching_all         = false
       @default_block        = false
       @default_all          = false
+      @ensure_block         = false
     end
 
     def pass(*statuses, &block)
@@ -53,6 +54,10 @@ module Slayer
       @default_all  = block if block_is_default
     end
 
+    def ensure(&block)
+      @ensure_block = block
+    end
+
     def handled_defaults?
       return @handled_default_pass && @handled_default_fail
     end
@@ -67,6 +72,14 @@ module Slayer
       elsif @default_all
         @default_all.call(@result, @command) if @default_all
       end
+    end
+
+    def execute_ensure_block
+      # rubocop:disable Style/IfUnlessModifier
+      if @ensure_block != false # nil should pass this test
+        @ensure_block.call(@result, @command)
+      end
+      # rubocop:enable Style/IfUnlessModifier
     end
   end
 end
