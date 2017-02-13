@@ -75,9 +75,11 @@ module Slayer
     end
 
     def execute_ensure_block
+      # rubocop:disable Style/IfUnlessModifier
       if @ensure_block != false # nil should pass this test
-        @ensure_block&.call(@result, @command)
+        @ensure_block.call(@result, @command)
       end
+      # rubocop:enable Style/IfUnlessModifier
     end
   end
 end

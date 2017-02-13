@@ -119,7 +119,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
     # don't raise
     r = matcher_with_pass_result(status: :ok)
     r.pass(:ok, :default)
-    r.fail(:ok)           { flunk }
+    r.fail(:ok) { flunk }
 
     r.execute_matching_block
     r.execute_ensure_block

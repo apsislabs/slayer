@@ -73,11 +73,10 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_executes_ensure_block_on_error
-
     assert_executes do
       assert_raises ArgumentError do
         ArgCommand.call(arg: 'arg') do |r|
-          r.pass   { raise ArgumentError, "I died" }
+          r.pass   { raise ArgumentError, 'I died' }
           r.fail   { flunk }
           r.ensure { executes }
         end
