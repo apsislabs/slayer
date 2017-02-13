@@ -21,11 +21,17 @@ Style/GuardClause:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
 Style/IndentationConsistency:
   EnforcedStyle: rails
 
 Metrics/LineLength:
   Max: 120
+
+Style/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
 
 Style/ClassVars:
   Exclude:
