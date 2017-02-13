@@ -18,8 +18,7 @@ module Slayer
       super message
     end
   end
-	
-  class FormValidationException < StandardError; end
 
+  class FormValidationError < StandardError; end
   class ServiceDependencyError < StandardError; end
 end

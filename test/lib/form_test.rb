@@ -19,24 +19,9 @@ class Slayer::FormTest < Minitest::Test
     assert form.age.is_a? Integer
   end
 
-  def test_validates_good_data
-    form = PersonForm.new({name: "Luke Skywalker", age: 20})
-
-    assert form.valid?
-    refute form.invalid?
-  end
-
-  def test_invalidates_bad_data
-    form = PersonForm.new({name: "Luke Skywalker"})
-
-    refute form.valid?
-    assert form.invalid?
-  end
-
-  def test_revalidates_after_data_is_updated
-    form = PersonForm.new({name: "Luke Skywalker"})
-    refute form.valid?
-    form.age = 20
-    assert form.valid?
+  def test_validate_raises_exception_if_validating_without_rails
+    assert_raises NotImplementedError do
+      PersonForm.new().validate!
+    end
   end
 end
