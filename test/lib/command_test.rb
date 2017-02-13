@@ -57,7 +57,7 @@ class Slayer::CommandTest < Minitest::Test
       ArgCommand.call(arg: 'arg') do |r|
         r.pass
         r.fail   { flunk }
-        r.ensure { executes}
+        r.ensure { executes }
       end
     end
   end
@@ -67,7 +67,7 @@ class Slayer::CommandTest < Minitest::Test
       ArgCommand.call(arg: nil) do |r|
         r.pass   { flunk }
         r.fail
-        r.ensure { executes}
+        r.ensure { executes }
       end
     end
   end
