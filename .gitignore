@@ -11,3 +11,4 @@
 /log*/*
 
 .byebug_history
+*.gem

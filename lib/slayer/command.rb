@@ -19,11 +19,23 @@ module Slayer
           command = self.new
           result  = command.tap { lamda.call(command, *args) }.result
 
-          # Run user block
-          block.call(result, command) unless block.nil?
-
           # Throw an exception if we don't return a result
-          raise CommandNotImplemented unless result.is_a? Result
+          raise CommandNotImplementedError unless result.is_a? Result
+
+          # Run user block
+          unless block.nil?
+            matcher = Slayer::ResultMatcher.new(result, command)
+
+            block.call(matcher)
+
+            # raise error if not all defaults were handled
+            if !matcher.handled_defaults?
+              raise CommandResultNotHandledError.new("The pass or fail condition of a result was not handled")
+            end
+
+            matcher.execute_matching_block
+          end
+
           return result
         end
     end
@@ -31,7 +43,7 @@ module Slayer
     def run(*args)
       begin
         call(*args)
-      rescue CommandFailure
+      rescue CommandFailureError
       end
     end
 
@@ -41,14 +53,14 @@ module Slayer
     end
 
     # Fail the Command
-    def fail!(result:, message: nil)
-      @result = Result.new(result, message)
+    def fail!(result:, status: :default, message: nil)
+      @result = Result.new(result, status, message)
       @result.fail!
     end
 
     # Pass the Command
-    def pass!(result:, message: nil)
-      @result = Result.new(result, message)
+    def pass!(result:, status: :default, message: nil)
+      @result = Result.new(result, status, message)
     end
 
     # Call the command
