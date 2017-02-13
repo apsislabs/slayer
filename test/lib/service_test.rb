@@ -5,7 +5,7 @@ class Slayer::ServiceTest < Minitest::Test
   # Dependencies
   def test_empty_dependencies_doesnt_raise
     Class.new(Slayer::Service) { dependencies() }
-    Class.new(Slayer::Service) { }
+    Class.new(Slayer::Service)
   end
 
   def test_raises_error_for_invalid_dependencies
@@ -27,7 +27,7 @@ class Slayer::ServiceTest < Minitest::Test
     end
 
     assert_raises Slayer::ServiceDependencyError do
-      Class.new(Slayer::Service) { dependencies; dependencies;}
+      Class.new(Slayer::Service) { dependencies; dependencies }
     end
 
     assert_raises Slayer::ServiceDependencyError do
@@ -50,7 +50,7 @@ class Slayer::ServiceTest < Minitest::Test
         SecondService.dependencies FirstService
 
         assert_raises Slayer::ServiceDependencyError do
-          FirstService.dependencies  SecondService
+          FirstService.dependencies SecondService
         end
       }
     }
@@ -123,7 +123,7 @@ class Slayer::ServiceTest < Minitest::Test
   end
 
   def create_service(name: nil, &block)
-    return Class.new(Slayer::Service, &block).tap{ |service|
+    return Class.new(Slayer::Service, &block).tap { |service|
       Object.const_set(name, service) if name
     }
   end

@@ -15,3 +15,7 @@ Metrics/LineLength:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+
+Style/ClassVars:
+  Exclude:
+    - 'lib/slayer/service.rb'

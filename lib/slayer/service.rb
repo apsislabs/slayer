@@ -41,7 +41,7 @@ module Slayer
     def self.dependencies(*deps)
       raise ServiceDependencyError.new("There were multiple dependencies calls of #{self}") if @deps
 
-      deps.each{ |dep|
+      deps.each { |dep|
         unless dep.is_a?(Class)
           raise ServiceDependencyError.new("The object #{dep} passed to dependencies service was not a class")
         end
@@ -63,123 +63,123 @@ module Slayer
 
     private
 
-    def self.transitive_dependencies(dependency_hash = {}, visited = [])
-      return @transitive_dependencies if @transitive_dependencies
+    class << self
+      attr_reader :deps
 
-      @deps ||= []
+      def transitive_dependencies(dependency_hash = {}, visited = [])
+        return @transitive_dependencies if @transitive_dependencies
 
-      # If we've already visited ourself, bail out. This is necessary to halt
-      # execution for a circular chain of dependencies. #halting-problem-solved
-      if visited.include?(self)
-        return dependency_hash[self]
-      end
+        @deps ||= []
 
-      visited << self
-      dependency_hash[self] ||= []
-
-      # Add each of our dependencies (and it's transitive dependency chain) to our
-      # own dependencies.
-
-      @deps.each { |dep|
-        dependency_hash[self] << dep
-
-        if !visited.include?(dep)
-          child_transitive_dependencies = dep.transitive_dependencies(dependency_hash, visited)
-          dependency_hash[self].concat(child_transitive_dependencies)
+        # If we've already visited ourself, bail out. This is necessary to halt
+        # execution for a circular chain of dependencies. #halting-problem-solved
+        if visited.include?(self)
+          return dependency_hash[self]
         end
 
-        dependency_hash[self].uniq
-      }
+        visited << self
+        dependency_hash[self] ||= []
 
-      # NO CIRCULAR DEPENDENCIES!
-      if dependency_hash[self].include? self
-        raise ServiceDependencyError.new("#{self} had a circular dependency")
-      end
+        # Add each of our dependencies (and it's transitive dependency chain) to our
+        # own dependencies.
 
-      # Store these now, so next time we can short-circuit.
-      @transitive_dependencies = dependency_hash[self]
+        @deps.each { |dep|
+          dependency_hash[self] << dep
 
-      return @transitive_dependencies
-    end
+          if !visited.include?(dep)
+            child_transitive_dependencies = dep.transitive_dependencies(dependency_hash, visited)
+            dependency_hash[self].concat(child_transitive_dependencies)
+          end
 
-    def self.before_each_method name
-      @deps ||= []
-      @@allowed_services ||= nil
+          dependency_hash[self].uniq
+        }
 
-      # Confirm that this method call is allowed
-      raise_if_not_allowed
-
-      @@allowed_services ||= []
-      @@allowed_services << @deps
-    end
-
-    def self.raise_if_not_allowed
-      if @@allowed_services
-        allowed = @@allowed_services.last
-        if !allowed || !allowed.include?(self)
-          raise ServiceDependencyError.new("Attempted to call #{self} from another #{Slayer::Service}"\
-                                           ' which did not declare it as a dependency')
+        # NO CIRCULAR DEPENDENCIES!
+        if dependency_hash[self].include? self
+          raise ServiceDependencyError.new("#{self} had a circular dependency")
         end
+
+        # Store these now, so next time we can short-circuit.
+        @transitive_dependencies = dependency_hash[self]
+
+        return @transitive_dependencies
       end
-    end
 
-    def self.after_each_method name
-      @@allowed_services.pop
-      @@allowed_services = nil if @@allowed_services.empty?
-    end
+      def before_each_method name
+        @deps ||= []
+        @@allowed_services ||= nil
 
-    def self.singleton_method_added name
-      return if self == Slayer::Service
-      return if @__last_methods_added && @__last_methods_added.include?(name)
+        # Confirm that this method call is allowed
+        raise_if_not_allowed
 
-      with = :"#{name}_with_before_each_method"
-      without = :"#{name}_without_before_each_method"
+        @@allowed_services ||= []
+        @@allowed_services << @deps
+      end
 
-      @__last_methods_added = [name, with, without]
-      define_singleton_method with do |*args, &block|
-        before_each_method name
-        begin
-          send without, *args, &block
-        rescue
-          raise
-        ensure
-          after_each_method name
+      def raise_if_not_allowed
+        if @@allowed_services
+          allowed = @@allowed_services.last
+          if !allowed || !allowed.include?(self)
+            raise ServiceDependencyError.new("Attempted to call #{self} from another #{Slayer::Service}"\
+                                             ' which did not declare it as a dependency')
+          end
         end
       end
 
-      singleton_class.send(:alias_method, without, name)
-      singleton_class.send(:alias_method, name, with)
-
-      @__last_methods_added = nil
-    end
-
-    def self.method_added name
-      return if self == Slayer::Service
-      return if @__last_methods_added && @__last_methods_added.include?(name)
-
-      with = :"#{name}_with_before_each_method"
-      without = :"#{name}_without_before_each_method"
-
-      @__last_methods_added = [name, with, without]
-      define_method with do |*args, &block|
-        self.class.before_each_method name
-        begin
-          send without, *args, &block
-        rescue
-          raise
-        ensure
-          self.class.after_each_method name
-        end
+      def after_each_method name
+        @@allowed_services.pop
+        @@allowed_services = nil if @@allowed_services.empty?
       end
 
-      alias_method without, name
-      alias_method name, with
+      def singleton_method_added name
+        return if self == Slayer::Service
+        return if @__last_methods_added && @__last_methods_added.include?(name)
 
-      @__last_methods_added = nil
-    end
+        with = :"#{name}_with_before_each_method"
+        without = :"#{name}_without_before_each_method"
 
-    def self.deps
-      @deps
-    end
-  end
-end
+        @__last_methods_added = [name, with, without]
+        define_singleton_method with do |*args, &block|
+          before_each_method name
+          begin
+            send without, *args, &block
+          rescue
+            raise
+          ensure
+            after_each_method name
+          end
+        end
+
+        singleton_class.send(:alias_method, without, name)
+        singleton_class.send(:alias_method, name, with)
+
+        @__last_methods_added = nil
+      end
+
+      def method_added name
+        return if self == Slayer::Service
+        return if @__last_methods_added && @__last_methods_added.include?(name)
+
+        with = :"#{name}_with_before_each_method"
+        without = :"#{name}_without_before_each_method"
+
+        @__last_methods_added = [name, with, without]
+        define_method with do |*args, &block|
+          self.class.before_each_method name
+          begin
+            send without, *args, &block
+          rescue
+            raise
+          ensure
+            self.class.after_each_method name
+          end
+        end
+
+        alias_method without, name
+        alias_method name, with
+
+        @__last_methods_added = nil
+      end
+    end # << self
+  end # class Service
+end # module Slayer

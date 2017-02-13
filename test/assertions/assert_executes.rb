@@ -24,7 +24,7 @@ module Minitest::Assertions
   alias refute_not_executes assert_executes # please nobody ever use this.
 
   def executes
-    @assert_executes_stack[-1] = @assert_executes_stack[-1]+1
+    @assert_executes_stack[-1] = @assert_executes_stack[-1] + 1
   end
 
   private
