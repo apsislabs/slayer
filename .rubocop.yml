@@ -22,3 +22,13 @@ Style/ClassAndModuleChildren:
 Style/ClassVars:
   Exclude:
     - 'lib/slayer/service.rb'
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/MutableConstant:
+  Exclude:
+    - 'lib/slayer/version.rb'

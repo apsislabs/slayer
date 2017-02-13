@@ -174,100 +174,54 @@ Style/MethodCallWithoutArgsParentheses:
     - 'test/lib/command_test.rb'
     - 'test/lib/service_test.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: require_parentheses, require_no_parentheses, require_no_parentheses_except_multiline
-Style/MethodDefParentheses:
-  Exclude:
-    - 'lib/slayer/service.rb'
-    - 'test/fixtures/arg_command.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MutableConstant:
-  Exclude:
-    - 'lib/slayer/version.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/NegatedIf:
-  Exclude:
-    - 'lib/slayer/command.rb'
-    - 'lib/slayer/service.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowSafeAssignment.
-Style/ParenthesesAroundCondition:
-  Exclude:
-    - 'test/assertions/assert_executes.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'slayer.gemspec'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-Style/Proc:
-  Exclude:
-    - 'test/assertions/assert_executes.rb'
-    - 'test/lib/service_test.rb'
-
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: compact, exploded
-Style/RaiseArgs:
-  Exclude:
-    - 'lib/slayer/command.rb'
-    - 'lib/slayer/service.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/slayer/command.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'lib/slayer/command.rb'
-    - 'lib/slayer/result_matcher.rb'
-    - 'lib/slayer/service.rb'
-    - 'test/fixtures/not_implemented_command.rb'
-    - 'test/lib/service_test.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Exclude:
-    - 'lib/ext/string_ext.rb'
-    - 'lib/slayer/command.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAsExpressionSeparator.
-Style/Semicolon:
-  Exclude:
-    - 'test/lib/service_test.rb'
-
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: AllowIfMethodIsEmpty.
-Style/SingleLineMethods:
-  Exclude:
-    - 'test/fixtures/transitive_services.rb'
-    - 'test/lib/service_test.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/SpaceAfterComma:
-  Exclude:
-    - 'lib/ext/string_ext.rb'
-    - 'test/assertions/assert_executes.rb'
+# # Offense count: 5
+# # Cop supports --auto-correct.
+# # Configuration parameters: EnforcedStyle, SupportedStyles.
+# # SupportedStyles: require_parentheses, require_no_parentheses, require_no_parentheses_except_multiline
+# Style/MethodDefParentheses:
+#   Exclude:
+#     - 'lib/slayer/service.rb'
+#     - 'test/fixtures/arg_command.rb'
+#
+# # Offense count: 1
+# # Cop supports --auto-correct.
+# Style/MutableConstant:
+#   Exclude:
+#     - 'lib/slayer/version.rb'
+#
+# # Offense count: 2
+# # Cop supports --auto-correct.
+# Style/NegatedIf:
+#   Exclude:
+#     - 'lib/slayer/command.rb'
+#     - 'lib/slayer/service.rb'
+#
+# # Offense count: 1
+# # Cop supports --auto-correct.
+# # Configuration parameters: AllowSafeAssignment.
+# Style/ParenthesesAroundCondition:
+#   Exclude:
+#     - 'test/assertions/assert_executes.rb'
+#
+# # Offense count: 1
+# # Cop supports --auto-correct.
+# # Configuration parameters: PreferredDelimiters.
+# Style/PercentLiteralDelimiters:
+#   Exclude:
+#     - 'slayer.gemspec'
+#
+# # Offense count: 5
+# # Cop supports --auto-correct.
+# Style/Proc:
+#   Exclude:
+#     - 'test/assertions/assert_executes.rb'
+#     - 'test/lib/service_test.rb'
+#
+# # Offense count: 7
+# # Cop supports --auto-correct.
+# # Configuration parameters: EnforcedStyle, SupportedStyles.
+# # SupportedStyles: compact, exploded
+# Style/RaiseArgs:
+#   Exclude:
+#     - 'lib/slayer/command.rb'
+#     - 'lib/slayer/service.rb'
