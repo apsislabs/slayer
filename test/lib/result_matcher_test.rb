@@ -213,55 +213,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
         end
     end
 
-    # TODO: Move me to test helpers
-    def test_assert_executes
-        assert_executes do
-            executes
-        end
-
-        assert_not_executes do
-        end
-
-        refute_executes do
-            assert_executes do
-                assert_executes do
-                    assert_not_executes do
-                    end
-
-                    executes
-                end
-
-                executes
-            end
-        end
-    end
-
     private
-
-    def assert_executes(message = "The given block did not execute the desired statement", &block)
-        @assert_executes_stack ||= []
-        @assert_executes_stack << false
-
-        yield
-
-        assert @assert_executes_stack.pop, message
-    end
-
-    def assert_not_executes(message = "The given block executed the statement it should not have executed", &block)
-        @assert_executes_stack ||= []
-        @assert_executes_stack << false
-
-        yield
-
-        refute @assert_executes_stack.pop, message
-    end
-
-    alias refute_executes assert_not_executes
-    alias refute_not_executes assert_executes # please nobody ever use this.
-
-    def executes
-        @assert_executes_stack[-1] = true
-    end
 
     def matcher_with_pass_result(status: :default)
         result = Slayer::Result.new(5, status, "my message")

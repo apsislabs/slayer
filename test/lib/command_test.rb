@@ -94,7 +94,7 @@ class Slayer::CommandTest < Minitest::Test
   def test_result_has_expected_properties_on_fail
     result = ArgCommand.call(arg: nil)
 
-    assert_equal result.value, nil
+    assert_nil result.value, nil
     refute result.success?
   end
 
