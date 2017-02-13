@@ -1,0 +1,61 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.3
+  Include:
+    - 'lib/**/*.rb'
+    - 'test/**/*.rb'
+  Exclude:
+    - 'bin/**/*'
+
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/CommentIndentation:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/IndentationConsistency:
+  EnforcedStyle: rails
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/ClassLength:
+  Max: 120
+
+Style/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
+# Temporarily disabled until this can be resolved in the todo file
+# Style/Documentation:
+#   Exclude:
+#     - 'spec/**/*'
+#     - 'test/**/*'
+#     - 'lib/ext/**/*'
+
+Style/ClassVars:
+  Exclude:
+    - 'lib/slayer/service.rb'
+
+Style/MutableConstant:
+  Exclude:
+    - 'lib/slayer/version.rb'

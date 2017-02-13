@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+echo "Starting unit tests"
+rake test
+if [ $? -ne 0 ]; then
+    echo ""
+    echo ""
+    echo "Unit tests failed; push aborted!"
+    exit 1
+fi
+
+echo
+echo "Starting rubocop"
+rubocop --format worst --format simple --format offenses
+if [ $? -ne 0 ]; then
+    echo ""
+    echo ""
+    echo "Rubocop failed; push aborted!"
+    exit 1
+fi
+
+echo
+echo "All pre-push checks passed! Pushing to remote"

@@ -1,6 +1,9 @@
-require "slayer/version"
-require "slayer/string_ext"
-require "slayer/errors"
-require "slayer/result"
-require "slayer/service"
-require "slayer/composer"
+require 'ext/string_ext' unless defined?(Rails)
+
+require 'slayer/version'
+require 'slayer/errors'
+require 'slayer/result'
+require 'slayer/result_matcher'
+require 'slayer/service'
+require 'slayer/command'
+require 'slayer/form'
