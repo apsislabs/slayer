@@ -14,31 +14,31 @@ module Slayer
 
       private
 
-        def execute_call(block, *args, &lamda)
-          # Run the Command and capture the result
-          command = self.new
-          result  = command.tap { lamda.call(command, *args) }.result
+      def execute_call(block, *args, &lamda)
+        # Run the Command and capture the result
+        command = self.new
+        result  = command.tap { lamda.call(command, *args) }.result
 
-          # Throw an exception if we don't return a result
-          raise CommandNotImplemented unless result.is_a? Result
+        # Throw an exception if we don't return a result
+        raise CommandNotImplemented unless result.is_a? Result
 
-          # Run user block
-          unless block.nil?
-            matcher = Slayer::ResultMatcher.new(result, command)
+        # Run user block
+        unless block.nil?
+          matcher = Slayer::ResultMatcher.new(result, command)
 
-            block.call(matcher)
+          block.call(matcher)
 
-            # raise error if not all defaults were handled
-            unless matcher.handled_defaults?
-              raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
-            end
-
-            matcher.execute_matching_block
+          # raise error if not all defaults were handled
+          unless matcher.handled_defaults?
+            raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
           end
 
-          return result
+          matcher.execute_matching_block
         end
-    end
+
+        return result
+      end
+    end # << self
 
     def run(*args)
       call(*args)

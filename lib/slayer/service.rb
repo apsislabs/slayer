@@ -73,9 +73,7 @@ module Slayer
 
         # If we've already visited ourself, bail out. This is necessary to halt
         # execution for a circular chain of dependencies. #halting-problem-solved
-        if visited.include?(self)
-          return dependency_hash[self]
-        end
+        return dependency_hash[self] if visited.include?(self)
 
         visited << self
         dependency_hash[self] ||= []

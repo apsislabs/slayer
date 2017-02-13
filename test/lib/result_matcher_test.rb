@@ -141,7 +141,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
     assert_executes do
       r = matcher_with_pass_result(status: :ok)
       r.pass      { flunk }
-      r.all(:ok) { executes }
+      r.all(:ok)  { executes }
       r.fail      { flunk }
       r.execute_matching_block
     end
@@ -149,7 +149,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
     assert_executes do
       r = matcher_with_fail_result(status: :ok)
       r.pass      { flunk }
-      r.all(:ok) { executes }
+      r.all(:ok)  { executes }
       r.fail      { flunk }
       r.execute_matching_block
     end
@@ -165,7 +165,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
 
     assert_executes do
       r = matcher_with_pass_result(status: :ok)
-      r.all         { executes }
+      r.all { executes }
       r.execute_matching_block
     end
   end

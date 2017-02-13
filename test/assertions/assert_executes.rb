@@ -1,7 +1,6 @@
 require 'minitest/assertions'
 
 module Minitest::Assertions
-
   def assert_executes(exactly: nil,
                       at_least: nil,
                       message: 'The given block did not execute the desired statement',

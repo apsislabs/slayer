@@ -4,7 +4,7 @@ require 'set'
 class Slayer::ServiceTest < Minitest::Test
   # Dependencies
   def test_empty_dependencies_doesnt_raise
-    Class.new(Slayer::Service) { dependencies() }
+    Class.new(Slayer::Service) { dependencies }
     Class.new(Slayer::Service)
   end
 
