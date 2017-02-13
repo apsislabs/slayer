@@ -61,9 +61,8 @@ module Slayer
       transitive_dependencies
     end
 
-    private
-
     class << self
+
       attr_reader :deps
 
       def transitive_dependencies(dependency_hash = {}, visited = [])
@@ -103,7 +102,7 @@ module Slayer
         return @transitive_dependencies
       end
 
-      def before_each_method(name)
+      def before_each_method(*)
         @deps ||= []
         @@allowed_services ||= nil
 
@@ -124,7 +123,7 @@ module Slayer
         end
       end
 
-      def after_each_method(name)
+      def after_each_method(*)
         @@allowed_services.pop
         @@allowed_services = nil if @@allowed_services.empty?
       end

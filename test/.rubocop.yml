@@ -6,3 +6,16 @@ Style/SingleLineMethods:
 
 Style/Semicolon:
   Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Lint/NestedMethodDefinition:
+  Exclude:
+    - 'lib/service_test.rb'

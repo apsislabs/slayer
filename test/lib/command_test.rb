@@ -36,7 +36,7 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_executes_pass_block_on_pass
     assert_executes do
-      result = ArgCommand.call(arg: 'arg') do |r|
+      ArgCommand.call(arg: 'arg') do |r|
         r.pass { executes }
         r.fail { flunk }
       end
@@ -45,7 +45,7 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_executes_fail_block_on_fail
     assert_executes do
-      result = ArgCommand.call(arg: nil) do |r|
+      ArgCommand.call(arg: nil) do |r|
         r.pass { flunk }
         r.fail { executes }
       end
