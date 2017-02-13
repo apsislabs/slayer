@@ -1,6 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  TargetRubyVersion: 2.3
   Include:
     - 'lib/**/*.rb'
     - 'test/**/*.rb'
@@ -26,8 +27,11 @@ Style/EmptyLinesAroundClassBody:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/CommentIndentation:
+  Enabled: false
+
 Style/BracesAroundHashParameters:
-  EnforcedStyle: braces
+  Enabled: false
 
 Style/IndentationConsistency:
   EnforcedStyle: rails

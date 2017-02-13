@@ -46,4 +46,3 @@ Style/Documentation:
     - 'lib/slayer/errors.rb'
     - 'lib/slayer/form.rb'
     - 'lib/slayer/result.rb'
-    - 'lib/slayer/result_matcher.rb'
