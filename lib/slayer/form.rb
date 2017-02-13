@@ -6,7 +6,9 @@ module Slayer
     include ActiveModel::Validations if defined?(Rails)
 
     def validate!
-      raise NotImplementedError unless self.respond_to?(:valid?)
+      validatable = self.respond_to?(:valid?) && self.respond_to?(:errors)
+
+      raise NotImplementedError unless validatable
       raise FormValidationError, errors unless valid?
     end
   end
