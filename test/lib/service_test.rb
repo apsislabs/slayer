@@ -115,7 +115,7 @@ class Slayer::ServiceTest < Minitest::Test
 
   private
 
-  def s(name, service_block = nil, &block)
+  def s(name, service_block = nil)
     create_service(name: name, &service_block)
 
     yield

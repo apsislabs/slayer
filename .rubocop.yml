@@ -30,8 +30,18 @@ Style/IndentationConsistency:
 Metrics/LineLength:
   Max: 120
 
+Metrics/ClassLength:
+  Max: 120
+
 Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
+
+# Temporarily disabled until this can be resolved in the todo file
+# Style/Documentation:
+#   Exclude:
+#     - 'spec/**/*'
+#     - 'test/**/*'
+#     - 'lib/ext/**/*'
 
 Style/ClassVars:
   Exclude:
