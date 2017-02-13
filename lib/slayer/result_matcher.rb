@@ -1,20 +1,20 @@
 module Slayer
   # ResultMatcher is the object passed to the block of a {Command.call}. The ResultMatcher
   # allows the block-author to specify which piece of logic they would like to invoke
-  # based on the state of the {Slayer::Result} object.
+  # based on the state of the {Result} object.
   #
-  # In the event that multiple blocks match the {Slayer::Result}, only the most specific
+  # In the event that multiple blocks match the {Result}, only the most specific
   # matching block will be invoked. Status matches take precedence over default matches.
   # If there are two blocks with a matching status, the pass/fail block takes precedence
   # over the all block.
   #
   # == Matching based on success or failure
   #
-  # The ResultMatcher matches calls to {#pass} to a {Result} that returns true
-  # for {Result#success?}, calls to {#fail} to a {Result} that returns true
+  # The ResultMatcher matches calls to {#pass} to a {Result} that returns +true+
+  # for {Result#success?}, calls to {#fail} to a {Result} that returns +true+
   # for {Result#failure?}, and calls to {#all} to a {Result} in either state.
   #
-  # A matching call to {#pass} or {#fail} takes precedence over any of the calls to {#all}
+  # A matching call to {#pass} or {#fail} takes precedence over matching calls to {#all}
   #
   # == Matching based on status
   #
@@ -22,9 +22,9 @@ module Slayer
   # or statuses is passed to {#pass}, {#fail}, or {#all}, these will only be invoked if the
   # status of the {Result} matches the passed in status.
   #
-  # If the default block is the same as the block for one of the statuses the status :default
-  # can be used to indicate which block should be used as the default. Status matches take
-  # precedence over default matches.
+  # If the default block is the same as the block for one of the statuses the status +:default+
+  # can be used to indicate which block should be used as the default. Successful status matches
+  # take precedence over default matchers.
   #
   # == Both pass and fail must be handled
   #
@@ -95,7 +95,6 @@ module Slayer
   #     m.pass(:ok, :default) { puts "Pass, OK!"}
   #   end
   #   # => raises CommandResultNotHandledError (because no default fail was provided)
-
   class ResultMatcher
     attr_reader :result, :command
 
