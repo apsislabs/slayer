@@ -6,7 +6,7 @@ require 'minitest/mock'
 require 'minitest/reporters'
 require 'mocha/mini_test'
 
-Dir["test/fixtures/**/*.rb"].each { |f| require File.expand_path(f) }
-Dir["test/assertions/**/*.rb"].each { |f| require File.expand_path(f) }
+Dir['test/fixtures/**/*.rb'].each { |f| require File.expand_path(f) }
+Dir['test/assertions/**/*.rb'].each { |f| require File.expand_path(f) }
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new

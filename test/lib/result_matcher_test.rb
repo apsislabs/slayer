@@ -216,13 +216,13 @@ class Slayer::ResultMatcherTest < Minitest::Test
   private
 
   def matcher_with_pass_result(status: :default)
-    result = Slayer::Result.new(5, status, "my message")
+    result = Slayer::Result.new(5, status, 'my message')
 
     Slayer::ResultMatcher.new(result, NoArgCommand.new)
   end
 
   def matcher_with_fail_result(status: :default)
-    result = Slayer::Result.new(5, status, "my message")
+    result = Slayer::Result.new(5, status, 'my message')
     begin
       result.fail!
     rescue Slayer::CommandFailure

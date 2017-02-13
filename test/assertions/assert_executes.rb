@@ -2,12 +2,20 @@ require 'minitest/assertions'
 
 module Minitest::Assertions
 
-  def assert_executes(exactly: nil, at_least: nil, message: "The given block did not execute the desired statement", &block)
+  def assert_executes(exactly: nil,
+                      at_least: nil,
+                      message: 'The given block did not execute the desired statement',
+                      &block)
+
     assert_proc = Proc.new { |a,m| assert(a,m) }
     internal_assert_executes(assert_method: assert_proc, message: message, exactly: exactly, at_least: at_least, &block)
   end
 
-  def refute_executes(exactly: nil, at_least: nil, message: "The given block executed the statement it should not have executed", &block)
+  def refute_executes(exactly: nil,
+                      at_least: nil,
+                      message: 'The given block executed the statement it should not have executed',
+                      &block)
+
     refute_proc = Proc.new { |a,m| refute(a,m) }
     internal_assert_executes(assert_method: refute_proc, message: message, exactly: exactly, at_least: at_least, &block)
   end

@@ -42,15 +42,22 @@ module Slayer
       raise ServiceDependencyError.new("There were multiple dependencies calls of #{self}") if @deps
 
       deps.each{ |dep|
-        raise ServiceDependencyError.new("The object #{dep} passed to dependencies service was not a class")       unless dep.is_a?(Class)
-        raise ServiceDependencyError.new("The object #{dep} passed to dependencies was not a subclass of #{self}") unless dep < Slayer::Service
+        unless dep.is_a?(Class)
+          raise ServiceDependencyError.new("The object #{dep} passed to dependencies service was not a class")
+        end
+
+        unless dep < Slayer::Service
+          raise ServiceDependencyError.new("The object #{dep} passed to dependencies was not a subclass of #{self}")
+        end
       }
 
-      raise ServiceDependencyError.new("There were duplicate dependencies in #{self}") unless deps.uniq.length == deps.length
+      unless deps.uniq.length == deps.length
+        raise ServiceDependencyError.new("There were duplicate dependencies in #{self}")
+      end
 
       @deps = deps
 
-      # Calculate the transitive dependencies and throw an error if there are circular dependencies
+      # Calculate the transitive dependencies and raise an error if there are circular dependencies
       transitive_dependencies
     end
 
@@ -110,7 +117,8 @@ module Slayer
       if @@allowed_services
         allowed = @@allowed_services.last
         if !allowed || !allowed.include?(self)
-          raise ServiceDependencyError.new("Attempted to call #{self} from another #{Slayer::Service} which did not declare it as a dependency")
+          raise ServiceDependencyError.new("Attempted to call #{self} from another #{Slayer::Service}"\
+                                           ' which did not declare it as a dependency')
         end
       end
     end

@@ -36,7 +36,7 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_executes_pass_block_on_pass
     assert_executes do
-      result = ArgCommand.call(arg: "arg") do |r|
+      result = ArgCommand.call(arg: 'arg') do |r|
         r.pass { executes }
         r.fail { flunk }
       end
@@ -64,7 +64,7 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_returns_result_on_pass
-    result = ArgCommand.call(arg: "arg")
+    result = ArgCommand.call(arg: 'arg')
     assert result.is_a? Slayer::Result
   end
 
@@ -74,9 +74,9 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_result_has_expected_properties_on_pass
-    result = ArgCommand.call(arg: "arg")
+    result = ArgCommand.call(arg: 'arg')
 
-    assert_equal result.value, "arg"
+    assert_equal result.value, 'arg'
     assert result.success?
   end
 
@@ -94,9 +94,9 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_can_be_run_with_exceptions_flag
-    result = ArgCommand.call!(arg: "arg")
+    result = ArgCommand.call!(arg: 'arg')
 
-    assert_equal result.value, "arg"
+    assert_equal result.value, 'arg'
     assert result.success?
   end
 
@@ -108,7 +108,7 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_raises_error_for_incorrect_args
     assert_raises ArgumentError do
-      ArgCommand.call(bar: "arg")
+      ArgCommand.call(bar: 'arg')
     end
   end
 
