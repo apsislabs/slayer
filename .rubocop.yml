@@ -7,27 +7,29 @@ AllCops:
   Exclude:
     - 'bin/**/*'
 
-# Offense count: 31
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Metrics/LineLength:
-  Max: 120
 
-Style/IndentationConsistency:
-  EnforcedStyle: rails
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/ClassVars:
-  Exclude:
-    - 'lib/slayer/service.rb'
 
 Style/RedundantSelf:
   Enabled: false
 
 Style/RedundantReturn:
   Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/IndentationConsistency:
+  EnforcedStyle: rails
+
+Metrics/LineLength:
+  Max: 120
+
+Style/ClassVars:
+  Exclude:
+    - 'lib/slayer/service.rb'
 
 Style/MutableConstant:
   Exclude:

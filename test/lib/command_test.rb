@@ -7,12 +7,12 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_instantiates_and_calls_expected_methods
     NoArgCommand.expects(:call).once
-    NoArgCommand.call()
+    NoArgCommand.call
   end
 
   def test_instantiates_and_calls_with_exceptions_flag
     NoArgCommand.expects(:call!).once
-    NoArgCommand.call!()
+    NoArgCommand.call!
   end
 
   # Implementation Tests
@@ -88,7 +88,7 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_can_be_run_with_no_block
-    result = NoArgCommand.call()
+    result = NoArgCommand.call
 
     assert result.success?
   end
