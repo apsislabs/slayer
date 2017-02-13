@@ -19,8 +19,8 @@ module Slayer
         command = self.new
         result  = command.tap { yield(command, *args) }.result
 
-          # Throw an exception if we don't return a result
-          raise CommandNotImplementedError unless result.is_a? Result
+        # Throw an exception if we don't return a result
+        raise CommandNotImplementedError unless result.is_a? Result
 
         # Run the command block if one was provided
         unless command_block.nil?

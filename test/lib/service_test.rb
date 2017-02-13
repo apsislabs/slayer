@@ -115,28 +115,28 @@ class Slayer::ServiceTest < Minitest::Test
 
   private
 
-  def s(name, service_block = nil)
-    create_service(name: name, &service_block)
+    def s(name, service_block = nil)
+      create_service(name: name, &service_block)
 
-    yield
+      yield
 
-    cleanup_service(name: name)
-  end
-
-  def create_service(name: nil, &block)
-    return Class.new(Slayer::Service, &block).tap do |service|
-      Object.const_set(name, service) if name
+      cleanup_service(name: name)
     end
-  end
 
-  def cleanup_service(name: nil)
-    Object.send(:remove_const, name)
-  end
+    def create_service(name: nil, &block)
+      return Class.new(Slayer::Service, &block).tap do |service|
+        Object.const_set(name, service) if name
+      end
+    end
 
-  def assert_array_contents_equal(actual, expected, message = nil)
-    actual_set   = Set.new actual
-    expected_set = Set.new expected
+    def cleanup_service(name: nil)
+      Object.send(:remove_const, name)
+    end
 
-    assert_equal actual_set, expected_set, message
-  end
+    def assert_array_contents_equal(actual, expected, message = nil)
+      actual_set   = Set.new actual
+      expected_set = Set.new expected
+
+      assert_equal actual_set, expected_set, message
+    end
 end
