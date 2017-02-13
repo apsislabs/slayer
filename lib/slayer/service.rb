@@ -41,7 +41,7 @@ module Slayer
     def self.dependencies(*deps)
       raise(ServiceDependencyError, "There were multiple dependencies calls of #{self}") if @deps
 
-      deps.each { |dep|
+      deps.each do |dep|
         unless dep.is_a?(Class)
           raise(ServiceDependencyError, "The object #{dep} passed to dependencies service was not a class")
         end
@@ -49,7 +49,7 @@ module Slayer
         unless dep < Slayer::Service
           raise(ServiceDependencyError, "The object #{dep} passed to dependencies was not a subclass of #{self}")
         end
-      }
+      end
 
       unless deps.uniq.length == deps.length
         raise(ServiceDependencyError, "There were duplicate dependencies in #{self}")
@@ -81,7 +81,7 @@ module Slayer
         # Add each of our dependencies (and it's transitive dependency chain) to our
         # own dependencies.
 
-        @deps.each { |dep|
+        @deps.each do |dep|
           dependency_hash[self] << dep
 
           unless visited.include?(dep)
@@ -90,7 +90,7 @@ module Slayer
           end
 
           dependency_hash[self].uniq
-        }
+        end
 
         # NO CIRCULAR DEPENDENCIES!
         if dependency_hash[self].include? self

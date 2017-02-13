@@ -21,8 +21,14 @@ Style/GuardClause:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
 Metrics/LineLength:
   Max: 120
+
+Style/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
 
 Style/ClassVars:
   Exclude:

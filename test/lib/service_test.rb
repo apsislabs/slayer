@@ -45,15 +45,15 @@ class Slayer::ServiceTest < Minitest::Test
 
   # Transitive and Circular Dependencies
   def test_raises_error_for_circular_dependencies
-    s(:FirstService) {
-      s(:SecondService) {
+    s(:FirstService) do
+      s(:SecondService) do
         SecondService.dependencies FirstService
 
         assert_raises Slayer::ServiceDependencyError do
           FirstService.dependencies SecondService
         end
-      }
-    }
+      end
+    end
   end
 
   def test_transitive_dependency_chain
@@ -76,22 +76,22 @@ class Slayer::ServiceTest < Minitest::Test
 
   def test_raises_error_for_disallowed_call_from_instance
     s(:NoDependencyListedService,
-      proc { def do_no_dependency_thing; AService.return_5 * 3; end }) {
+      proc { def do_no_dependency_thing; AService.return_5 * 3; end }) do
 
       assert_raises Slayer::ServiceDependencyError,
                     'Instance should not be able to call AService if it\'s not listed as a dependency' do
         NoDependencyListedService.new.do_no_dependency_thing
       end
-    }
+    end
 
     s(:NoDependencyListedService,
-      proc { def do_no_dependency_thing; AService.new.return_3 * 3; end }) {
+      proc { def do_no_dependency_thing; AService.new.return_3 * 3; end }) do
 
       assert_raises Slayer::ServiceDependencyError,
                     'Instance should not be able to call AService instance if it\'s not listed as a dependency' do
         NoDependencyListedService.new.do_no_dependency_thing
       end
-    }
+    end
   end
 
   def test_calls_allowed_from_non_service_class
@@ -104,16 +104,17 @@ class Slayer::ServiceTest < Minitest::Test
 
   def test_raises_error_for_disallowed_call
     s(:NoDependencyListedService,
-      proc { def self.do_no_dependency_thing; AService.return_5 * 3; end }) {
+      proc { def self.do_no_dependency_thing; AService.return_5 * 3; end }) do
 
       assert_raises Slayer::ServiceDependencyError,
                     'Should not be able to call AService if it\'s not listed as a dependency' do
         NoDependencyListedService.do_no_dependency_thing
       end
-    }
+    end
   end
 
   private
+
   def s(name, service_block = nil, &block)
     create_service(name: name, &service_block)
 
@@ -123,9 +124,9 @@ class Slayer::ServiceTest < Minitest::Test
   end
 
   def create_service(name: nil, &block)
-    return Class.new(Slayer::Service, &block).tap { |service|
+    return Class.new(Slayer::Service, &block).tap do |service|
       Object.const_set(name, service) if name
-    }
+    end
   end
 
   def cleanup_service(name: nil)
