@@ -52,6 +52,39 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
+  def test_executes_ensure_block_on_pass
+    assert_executes do
+      ArgCommand.call(arg: 'arg') do |r|
+        r.pass
+        r.fail   { flunk }
+        r.ensure { executes}
+      end
+    end
+  end
+
+  def test_executes_ensure_block_on_fail
+    assert_executes do
+      ArgCommand.call(arg: nil) do |r|
+        r.pass   { flunk }
+        r.fail
+        r.ensure { executes}
+      end
+    end
+  end
+
+  def test_executes_ensure_block_on_error
+
+    assert_executes do
+      assert_raises ArgumentError do
+        ArgCommand.call(arg: 'arg') do |r|
+          r.pass   { raise ArgumentError, "I died" }
+          r.fail   { flunk }
+          r.ensure { executes }
+        end
+      end
+    end
+  end
+
   def test_result_and_command_available_in_block
     NoArgCommand.call do |m|
       m.all do |r, c|

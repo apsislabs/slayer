@@ -90,6 +90,41 @@ class Slayer::ResultMatcherTest < Minitest::Test
     end
   end
 
+  def test_executes_ensure_block
+    assert_executes do
+      r = matcher_with_pass_result(status: :ok)
+      r.pass(:ok, :default)
+      r.fail(:ok)           { flunk }
+      r.ensure              { executes }
+
+      r.execute_matching_block
+      r.execute_ensure_block
+    end
+  end
+
+  def test_executes_only_one_ensure_block
+    assert_executes(exactly: 1) do
+      r = matcher_with_pass_result(status: :ok)
+      r.pass(:ok, :default)
+      r.fail(:ok)           { flunk }
+      r.ensure              { executes }
+      r.ensure              { executes }
+
+      r.execute_matching_block
+      r.execute_ensure_block
+    end
+  end
+
+  def test_succeeds_without_ensure_block
+    # don't raise
+    r = matcher_with_pass_result(status: :ok)
+    r.pass(:ok, :default)
+    r.fail(:ok)           { flunk }
+
+    r.execute_matching_block
+    r.execute_ensure_block
+  end
+
   def test_executes_default_pass_block
     assert_executes do
       r = matcher_with_pass_result(status: :ok)

@@ -33,7 +33,11 @@ module Slayer
             raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
           end
 
-          matcher.execute_matching_block
+          begin
+            matcher.execute_matching_block
+          ensure
+            matcher.execute_ensure_block
+          end
         end
 
         return result
