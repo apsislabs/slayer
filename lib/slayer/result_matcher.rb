@@ -99,6 +99,7 @@ module Slayer
   class ResultMatcher
     attr_reader :result, :command
 
+    # @api private
     def initialize(result, command)
       @result = result
       @command = command
@@ -116,6 +117,14 @@ module Slayer
       @default_all          = false
     end
 
+    # Provide a block that should be invoked if the {Result} is a success.
+    #
+    # @param statuses [Array<status>] Statuses that should be compared to the {Result}. If
+    #   any of provided statuses match the {Result} this block will be considered a match.
+    #   The symbol +:default+ can also be used to indicate that this should match any {Result}
+    #   not matched by other matchers.
+    #
+    #   If no value is provided for statuses it defaults to +:default+.
     def pass(*statuses, &block)
       statuses << :default if statuses.empty?
       @handled_default_pass ||= statuses.include?(:default)
@@ -127,6 +136,14 @@ module Slayer
       @default_block  = block if block_is_default
     end
 
+    # Provide a block that should be invoked if the {Result} is a failure.
+    #
+    # @param statuses [Array<status>] Statuses that should be compared to the {Result}. If
+    #   any of provided statuses match the {Result} this block will be considered a match.
+    #   The symbol +:default+ can also be used to indicate that this should match any {Result}
+    #   not matched by other matchers.
+    #
+    #   If no value is provided for statuses it defaults to +:default+.
     def fail(*statuses, &block)
       statuses << :default if statuses.empty?
       @handled_default_fail ||= statuses.include?(:default)
@@ -138,6 +155,15 @@ module Slayer
       @default_block  = block if block_is_default
     end
 
+    # Provide a block that should be invoked for any {Result}. This has a lower precedence that
+    # either {#pass} or {#fail}.
+    #
+    # @param statuses [Array<status>] Statuses that should be compared to the {Result}. If
+    #   any of provided statuses match the {Result} this block will be considered a match.
+    #   The symbol +:default+ can also be used to indicate that this should match any {Result}
+    #   not matched by other matchers.
+    #
+    #   If no value is provided for statuses it defaults to +:default+.
     def all(*statuses, &block)
       statuses << :default if statuses.empty?
       @handled_default_pass ||= statuses.include?(:default)
@@ -150,10 +176,17 @@ module Slayer
       @default_all  = block if block_is_default
     end
 
+    # @return Whether both the pass and the fail defaults have been handled.
+    #
+    # @api private
     def handled_defaults?
       return @handled_default_pass && @handled_default_fail
     end
 
+    # Executes the provided block that best matched the {Result}. If no block matched
+    # nothing is executed
+    #
+    # @api private
     def execute_matching_block
       if @matching_block != false # nil should pass this test
         @matching_block&.call(@result, @command) # explicit nil will not get called with
