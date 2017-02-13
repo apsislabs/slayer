@@ -8,7 +8,6 @@ AllCops:
     - 'bin/**/*'
 
 
-
 Style/RedundantSelf:
   Enabled: false
 
@@ -22,6 +21,9 @@ Style/ClassAndModuleChildren:
   Enabled: false
 
 Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/IndentationConsistency:
