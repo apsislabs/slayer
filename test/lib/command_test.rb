@@ -24,43 +24,32 @@ class Slayer::CommandTest < Minitest::Test
   # directory for correctness.
 
   def test_executes_block_passed_to_command
-    @truthy = false
-    NoArgCommand.call do |r|
-      @truthy = true
-      r.all
-      assert r.is_a? Slayer::ResultMatcher
-    end
+    assert_executes do
+      NoArgCommand.call do |r|
+        assert r.is_a? Slayer::ResultMatcher
+        r.all
 
-    assert_equal true, @truthy
+        executes
+      end
+    end
   end
 
   def test_executes_pass_block_on_pass
-    @truthy = false
-    result = ArgCommand.call(arg: "arg") {|r|
-      r.pass {
-        @truthy = true
-      }
-      r.fail {
-        flunk "Should not have called the fail block on a pass"
-      }
-    }
-
-    assert_equal true, @truthy
+    assert_executes do
+      result = ArgCommand.call(arg: "arg") do |r|
+        r.pass { executes }
+        r.fail { flunk }
+      end
+    end
   end
 
-  # TODO: Refactor into an "assert_executes" test helper
   def test_executes_fail_block_on_fail
-    @truthy = false
-    result = ArgCommand.call(arg: nil) {|r|
-      r.pass {
-        flunk "Should not have called the fail block on a pass"
-      }
-      r.fail {
-        @truthy = true
-      }
-    }
-
-    assert_equal true, @truthy
+    assert_executes do
+      result = ArgCommand.call(arg: nil) do |r|
+        r.pass { flunk }
+        r.fail { executes }
+      end
+    end
   end
 
   def test_result_and_command_available_in_block
