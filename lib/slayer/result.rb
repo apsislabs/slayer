@@ -1,9 +1,10 @@
 module Slayer
   class Result
-    attr_reader :result, :message
+    attr_reader :value, :status, :message
 
-    def initialize(result, message)
-      @result = result
+    def initialize(value, status, message)
+      @value   = value
+      @status  = status
       @message = message
     end
 
