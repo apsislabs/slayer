@@ -18,3 +18,6 @@ if [ $? -ne 0 ]; then
     echo "Rubocop failed; push aborted!"
     exit 1
 fi
+
+echo
+echo "All pre-push checks passed! Pushing to remote"
