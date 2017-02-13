@@ -114,6 +114,7 @@ module Slayer
       @matching_all         = false
       @default_block        = false
       @default_all          = false
+      @ensure_block         = false
     end
 
     # Provide a block that should be invoked if the {Result} is a success.
@@ -175,6 +176,12 @@ module Slayer
       @default_all  = block if block_is_default
     end
 
+    # Provide a block that should be always be invoked after other blocks have executed. This block
+    # will be invoked even if the other block raises an error.
+    def ensure(&block)
+      @ensure_block = block
+    end
+
     # @return Whether both the pass and the fail defaults have been handled.
     #
     # @api private
@@ -197,6 +204,14 @@ module Slayer
       elsif @default_all
         @default_all&.call(@result, @command)
       end
+    end
+
+    def execute_ensure_block
+      # rubocop:disable Style/IfUnlessModifier
+      if @ensure_block != false # nil should pass this test
+        @ensure_block.call(@result, @command)
+      end
+      # rubocop:enable Style/IfUnlessModifier
     end
   end
 end
