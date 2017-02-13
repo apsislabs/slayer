@@ -23,10 +23,10 @@ module Slayer
           raise CommandNotImplemented unless result.is_a? Result
 
           # Run user block
-          if block_given?
-            matcher = Slayer::ResultMatcher.new(result, self)
+          unless block.nil?
+            matcher = Slayer::ResultMatcher.new(result, command)
 
-            block.call(matcher) unless block.nil?
+            block.call(matcher)
 
             # raise error if not all defaults were handled
             if !matcher.handled_defaults?

@@ -25,9 +25,10 @@ class Slayer::CommandTest < Minitest::Test
 
   def test_executes_block_passed_to_command
     @truthy = false
-    NoArgCommand.call do |r, c|
+    NoArgCommand.call do |r|
       @truthy = true
-      r.pass; r.fail
+      r.all
+      assert r.is_a? Slayer::ResultMatcher
     end
 
     assert_equal true, @truthy
@@ -63,44 +64,50 @@ class Slayer::CommandTest < Minitest::Test
   end
 
   def test_result_and_command_available_in_block
-    NoArgCommand.call do |r, c|
-      assert c.is_a? NoArgCommand
+    NoArgCommand.call do |m|
+      m.all do |r, c|
+        assert c.is_a? NoArgCommand
 
-      assert r.is_a? Slayer::Result
-      assert_equal true, r.success?
-
-      r.pass; r.fail
+        assert r.is_a? Slayer::Result
+        assert_equal true, r.success?
+      end
     end
   end
 
   def test_returns_result_on_pass
-    result = ArgCommand.call(arg: "arg") {|r| r.pass; r.fail; }
+    result = ArgCommand.call(arg: "arg")
     assert result.is_a? Slayer::Result
   end
 
   def test_returns_result_on_fail
-    result = ArgCommand.call(arg: nil)  {|r| r.pass; r.fail; }
+    result = ArgCommand.call(arg: nil)
     assert result.is_a? Slayer::Result
   end
 
   def test_result_has_expected_properties_on_pass
-    result = ArgCommand.call(arg: "arg") {|r| r.pass; r.fail; }
+    result = ArgCommand.call(arg: "arg")
 
-    assert_equal result.result, "arg"
+    assert_equal result.value, "arg"
     assert result.success?
   end
 
   def test_result_has_expected_properties_on_fail
-    result = ArgCommand.call(arg: nil) {|r| r.pass; r.fail; }
+    result = ArgCommand.call(arg: nil)
 
-    assert_nil result.result
+    assert_equal result.value, nil
     refute result.success?
   end
 
-  def test_can_be_run_with_exceptions_flag
-    result = ArgCommand.call!(arg: "arg") {|r| r.pass; r.fail; }
+  def test_can_be_run_with_no_block
+    result = NoArgCommand.call()
 
-    assert_equal result.result, "arg"
+    assert result.success?
+  end
+
+  def test_can_be_run_with_exceptions_flag
+    result = ArgCommand.call!(arg: "arg")
+
+    assert_equal result.value, "arg"
     assert result.success?
   end
 
