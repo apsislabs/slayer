@@ -10,6 +10,7 @@ SimpleCov.formatters = [
 
 SimpleCov.start do
   add_filter '/test/'
+  minimum_coverage(95)
 end
 
 require 'slayer'
