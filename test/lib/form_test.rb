@@ -27,10 +27,4 @@ class Slayer::FormTest < Minitest::Test
     assert form.name.is_a? String
     assert form.age.is_a? Integer
   end
-
-  def test_validate_raises_exception_if_validating_without_rails
-    assert_raises NotImplementedError do
-      PersonForm.new.validate!
-    end
-  end
 end
