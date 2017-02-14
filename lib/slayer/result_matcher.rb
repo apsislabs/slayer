@@ -195,23 +195,20 @@ module Slayer
     # @api private
     def execute_matching_block
       if @matching_block != false # nil should pass this test
-        @matching_block&.call(@result, @command) # explicit nil will not get called with
-                                                 # safe navigation (&.)
+        @matching_block.call(@result, @command) if @matching_block # explicit nil should fail this test
       elsif @matching_all != false
-        @matching_all&.call(@result, @command)
+        @matching_all.call(@result, @command) if @matching_all
       elsif @default_block != false
-        @default_block&.call(@result, @command)
+        @default_block.call(@result, @command) if @default_block
       elsif @default_all
-        @default_all&.call(@result, @command)
+        @default_all.call(@result, @command) if @default_all
       end
     end
 
     def execute_ensure_block
-      # rubocop:disable Style/IfUnlessModifier
       if @ensure_block != false # nil should pass this test
-        @ensure_block.call(@result, @command)
+        @ensure_block.call(@result, @command) if @ensure_block
       end
-      # rubocop:enable Style/IfUnlessModifier
     end
   end
 end
