@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Starting unit tests"
-rake test
+bundle exec rake test
 if [ $? -ne 0 ]; then
     echo ""
     echo ""
@@ -11,7 +11,7 @@ fi
 
 echo
 echo "Starting rubocop"
-rubocop --format worst --format simple --format offenses
+bundle exec rubocop --format worst --format simple --format offenses
 if [ $? -ne 0 ]; then
     echo ""
     echo ""
