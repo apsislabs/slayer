@@ -132,6 +132,18 @@ class Slayer::CommandTest < Minitest::Test
     assert result.success?
   end
 
+  def test_can_call_pass_with_no_result
+    result = NoResultCommand.call(should_pass: true)
+
+    assert_nil result.value
+    assert result.success?
+
+    result = NoResultCommand.call(should_pass: false)
+
+    assert_nil result.value
+    assert result.failure?
+  end
+
   def test_raises_error_for_run_with_exceptions_flag
     assert_raises Slayer::CommandFailureError do
       ArgCommand.call!(arg: nil)
