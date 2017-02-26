@@ -56,13 +56,14 @@ module Slayer
     end
 
     # Fail the Command
-    def fail!(value:, status: :default, message: nil)
+
+    def fail!(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
       @result.fail!
     end
 
     # Pass the Command
-    def pass!(value:, status: :default, message: nil)
+    def pass!(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
     end
 

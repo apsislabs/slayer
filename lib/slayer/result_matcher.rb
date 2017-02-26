@@ -195,20 +195,26 @@ module Slayer
     # @api private
     def execute_matching_block
       if @matching_block != false # nil should pass this test
-        @matching_block.call(@result, @command) if @matching_block # explicit nil should fail this test
+        run_block(@matching_block)
       elsif @matching_all != false
-        @matching_all.call(@result, @command) if @matching_all
+        run_block(@matching_all)
       elsif @default_block != false
-        @default_block.call(@result, @command) if @default_block
+        run_block(@default_block)
       elsif @default_all
-        @default_all.call(@result, @command) if @default_all
+        run_block(@default_all)
       end
     end
 
+    # Executes the ensure block if one exists.
+    # @api private
     def execute_ensure_block
-      if @ensure_block != false # nil should pass this test
-        @ensure_block.call(@result, @command) if @ensure_block
-      end
+      run_block(@ensure_block) if @ensure_block != false # nil should pass this test
     end
+
+    private
+
+      def run_block(block)
+        block.call(@result.value, @result, @command) if block # explicit nil should fail this test
+      end
   end
 end

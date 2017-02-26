@@ -84,13 +84,15 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
-  def test_result_and_command_available_in_block
+  def test_value_result_and_command_available_in_block
     NoArgCommand.call do |m|
-      m.all do |r, c|
-        assert c.is_a? NoArgCommand
+      m.all do |value, result, command|
+        assert command.is_a? NoArgCommand
 
-        assert r.is_a? Slayer::Result
-        assert_equal true, r.success?
+        assert value.is_a? String
+        assert_equal 'pass', value
+        assert result.is_a? Slayer::Result
+        assert_equal true, result.success?
       end
     end
   end
@@ -130,6 +132,18 @@ class Slayer::CommandTest < Minitest::Test
 
     assert_equal result.value, 'arg'
     assert result.success?
+  end
+
+  def test_can_call_pass_with_no_result
+    result = NoResultCommand.call(should_pass: true)
+
+    assert_nil result.value
+    assert result.success?
+
+    result = NoResultCommand.call(should_pass: false)
+
+    assert_nil result.value
+    assert result.failure?
   end
 
   def test_raises_error_for_run_with_exceptions_flag
