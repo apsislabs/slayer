@@ -48,7 +48,7 @@ $ gem install slayer
 
 ### Commands
 
-Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a `message`, and a `result` payload object.
+Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a 'value' payload object, a 'status' value, and a user presentable `message`.
 
 ```ruby
 # A Command that passes when given the string "foo"
@@ -56,9 +56,9 @@ Slayer Commands should implement `call`, which will `pass` or `fail` the service
 class FooCommand < Slayer::Command
   def call(foo:)
     if foo == "foo"
-      pass! result: foo, message: "Passing FooCommand"
+      pass! value: foo, message: "Passing FooCommand"
     else
-      fail! result: foo, message: "Failing FooCommand"
+      fail! value: foo, message: "Failing FooCommand"
     end
   end
 end
