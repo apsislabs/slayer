@@ -84,13 +84,15 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
-  def test_result_and_command_available_in_block
+  def test_value_result_and_command_available_in_block
     NoArgCommand.call do |m|
-      m.all do |r, c|
-        assert c.is_a? NoArgCommand
+      m.all do |value, result, command|
+        assert command.is_a? NoArgCommand
 
-        assert r.is_a? Slayer::Result
-        assert_equal true, r.success?
+        assert value.is_a? String
+        assert_equal 'pass', value
+        assert result.is_a? Slayer::Result
+        assert_equal true, result.success?
       end
     end
   end
