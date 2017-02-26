@@ -44,6 +44,50 @@ Or install it yourself as:
 $ gem install slayer
 ```
 
+## Rails Integration
+
+While Slayer is independent of any framework, we do offer a first-class integration with Ruby on Rails. To install the Rails extensions, add this line to your application's Gemfile:
+
+```ruby
+gem 'slayer_rails'
+```
+
+And then execute:
+
+```sh
+$ bundle
+```
+
+And that's it. The integration provides a small handful of features that make your life easier when working with Ruby on Rails.
+
+### Form Validations
+
+With `slayer_rails`, `Slayer::Form` objects are automatically extended with `ActiveRecord` validations. You can use the same validations you would on your `ActiveRecord` models, but directly on your forms.
+
+### Transactions
+
+`Slayer::Command` and `Slayer::Service` objects are extended with access to `ActiveRecord` transactions. Anywhere in your `Command` or `Service` objects, you can execute a `transaction` block, which will let you bundle database interactions.
+
+```ruby
+class FooCommand < Slayer::Command
+  def call
+    transaction do
+      # => database interactions
+    end
+  end
+end
+```
+
+### Generators
+
+Use generators to make sure your `Slayer` objects are always in the right place. `slayer_rails` includes generators for `Slayer::Form`, `Slayer::Command`, and `Slayer::Service` objects.
+
+```sh
+$ bin/rails g slayer:form foo_form
+$ bin/rails g slayer:command foo_command
+$ bin/rails g slayer:service foo_service
+```
+
 ## Usage
 
 ### Commands
