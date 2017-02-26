@@ -64,6 +64,39 @@ And that's it. The integration provides a small handful of features that make yo
 
 With `slayer_rails`, `Slayer::Form` objects are automatically extended with `ActiveRecord` validations. You can use the same validations you would on your `ActiveRecord` models, but directly on your forms.
 
+### Form Creation
+
+With `slayer_rails` there are two new methods for instantiating `Slayer::Form` objects: `from_params` and `from_model`. These make it easier to populate forms with data while in your Rails controllers.
+
+Take the following example for a `FooController`:
+
+```ruby
+class FooController < ApplicationController
+  def new
+    @foo_form = FooForm.new
+  end
+
+  def edit
+    @foo = Foo.find(params[:id])
+    @foo_form = FooForm.from_model(@foo)
+  end
+
+  def create
+    @foo_form = FooForm.from_params(foo_params)
+  end
+
+  def update
+    @foo_form = FooForm.from_params(foo_params)
+  end
+
+  private
+
+    def foo_params
+      params.require(:foo).permit(:bar, :baz)
+    end
+end
+```
+
 ### Transactions
 
 `Slayer::Command` and `Slayer::Service` objects are extended with access to `ActiveRecord` transactions. Anywhere in your `Command` or `Service` objects, you can execute a `transaction` block, which will let you bundle database interactions.
