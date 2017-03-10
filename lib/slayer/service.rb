@@ -110,7 +110,7 @@ module Slayer
         raise_if_not_allowed
 
         @@allowed_services ||= []
-        @@allowed_services << @deps
+        @@allowed_services << (@deps + [self])
       end
 
       def raise_if_not_allowed

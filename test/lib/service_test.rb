@@ -74,6 +74,10 @@ class Slayer::ServiceTest < Minitest::Test
                                              '15 using AService'
   end
 
+  def test_calls_allowed_for_call_to_self
+    assert_equal AService.return_10, 10, 'ASerivce should\'ve been allowed to call itself'
+  end
+
   def test_raises_error_for_disallowed_call_from_instance
     s(:NoDependencyListedService,
       proc { def do_no_dependency_thing; AService.return_5 * 3; end }) do
