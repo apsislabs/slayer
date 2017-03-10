@@ -1,5 +1,6 @@
 class AService < Slayer::Service
   def self.return_5; 5; end
+  def self.return_10; AService.return_5 + 5; end
 
   def return_3; 3; end
 end
