@@ -43,7 +43,7 @@ module Slayer
 
     def self.inherited(klass)
       klass.include Hook
-      klass.hook :result_machinery
+      klass.hook :__service_hook
     end
 
     hook :__service_hook
