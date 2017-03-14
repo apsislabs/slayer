@@ -2,7 +2,7 @@ module Slayer
   class Service
     include Hook
 
-    skip_hooking :pass!, :fail!, :try!
+    skip_hook :pass!, :fail!, :try!
 
     def self.pass!(value: nil, status: :default, message: nil)
       Fiber.yield Result.new(value, status, message)

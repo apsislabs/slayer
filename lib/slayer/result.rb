@@ -18,6 +18,7 @@ module Slayer
 
     def fail
       @failure = true
+      self
     end
   end
 end
