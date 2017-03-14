@@ -1,4 +1,9 @@
 module Slayer
+  # A service is intended to be business logic that can be shared and reused by
+  # a number of commands.
+  #
+  # Service methods produce a result and have the same `pass!`, `fail!` and `try!`
+  # mechanisms that are available to Commands.
   class Service
     include Hook
 
@@ -9,9 +14,7 @@ module Slayer
     end
 
     def self.fail!(value: nil, status: :default, message: nil)
-      r = Result.new(value, status, message)
-      r.fail
-      Fiber.yield r
+      Fiber.yield  Result.new(value, status, message).fail
     end
 
     def self.try!(value: nil, status: nil, message: nil)
@@ -43,9 +46,9 @@ module Slayer
       klass.hook :result_machinery
     end
 
-    hook :result_machinery
+    hook :__service_hook
 
-    def self.result_machinery(name, service_block)
+    def self.__service_hook(name, service_block)
       service_fiber = Fiber.new do
         yield
       end
