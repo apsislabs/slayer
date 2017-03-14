@@ -1,12 +1,12 @@
 module Slayer
-  class CommandFailureError < StandardError
-    attr_reader :result
-
-    def initialize(result)
-      @result = result
-      super
-    end
-  end
+  # class CommandFailureError < StandardError
+  #   attr_reader :result
+  #
+  #   def initialize(result)
+  #     @result = result
+  #     super
+  #   end
+  # end
 
   class CommandNotImplementedError < StandardError
     def initialize(message = nil)

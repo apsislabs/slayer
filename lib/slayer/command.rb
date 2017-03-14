@@ -17,7 +17,17 @@ module Slayer
       def execute_call(command_block, *args)
         # Run the Command and capture the result
         command = self.new
-        result  = command.tap { yield(command, *args) }.result
+        command_fiber = Fiber.new do
+          puts "Starting Command Fiber"
+
+          r = command.tap { yield(command, *args) }.result
+
+          puts "Command fiber ran to completion: #{r.inspect}"
+
+          r
+        end
+        result = command_fiber.resume
+
 
         # Throw an exception if we don't return a result
         raise CommandNotImplementedError unless result.is_a? Result
@@ -46,8 +56,6 @@ module Slayer
 
     def run(*args)
       call(*args)
-    rescue CommandFailureError
-      # Swallow the Command Failure
     end
 
     # Run the Command
@@ -59,12 +67,15 @@ module Slayer
 
     def fail!(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
-      @result.fail!
+      @result.fail
+      Fiber.yield @result
+
     end
 
     # Pass the Command
     def pass!(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
+      Fiber.yield @result
     end
 
     # Call the command

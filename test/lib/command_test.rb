@@ -146,12 +146,6 @@ class Slayer::CommandTest < Minitest::Test
     assert result.failure?
   end
 
-  def test_raises_error_for_run_with_exceptions_flag
-    assert_raises Slayer::CommandFailureError do
-      ArgCommand.call!(arg: nil)
-    end
-  end
-
   def test_raises_error_for_incorrect_args
     assert_raises ArgumentError do
       ArgCommand.call(bar: 'arg')
