@@ -1,32 +1,28 @@
 require 'test_helper'
 
 class Slayer::ServiceTest < Minitest::Test
-  def test_hooks_run
-    a = Slayer::Service.new
 
-    puts "---------------------------------------------------------------------"
-    a.do_instance_thing
-    puts "---------------------------------------------------------------------"
-    Slayer::Service.do_self_thing
-    puts "---------------------------------------------------------------------"
+  def test_instance_pass_should_be_success
+    assert MultiplyingService.new.inst_mul(5, 5).success?
   end
 
-  def test_child_hooks_run
-    # klass = Class.new(Slayer::Service) { def child_instance_thing; puts "child instance"; end; def self.child_self_thing; puts "child self"; end }
-    #
-    # k = klass.new
-    o = Slayer::Other.new
-
-    puts "---------------------------------------------------------------------"
-    o.do_other_thing
-    puts "---------------------------------------------------------------------"
-    o.do_instance_thing
-
-    puts "---------------------------------------------------------------------"
-    Slayer::Other.self_other_thing
-    puts "---------------------------------------------------------------------"
-    Slayer::Other.do_self_thing
-    puts "---------------------------------------------------------------------"
+  def test_instance_fail_should_be_failure
+    assert MultiplyingService.new.inst_mul(0, 5).failure?
   end
-  def test_should_have_tests; skip; end
+
+  def test_static_pass_should_be_success
+    assert MultiplyingService.mul(5, 5).success?
+  end
+
+  def test_static_fail_should_be_failure
+    assert MultiplyingService.mul(0, 5).failure?
+  end
+
+  def test_pass_should_halt_execution
+    assert RaisingService.early_pass.success?
+  end
+
+  def test_fail_should_halt_execution
+    assert RaisingService.early_fail.failure?
+  end
 end

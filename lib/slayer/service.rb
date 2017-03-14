@@ -2,6 +2,28 @@ module Slayer
   class Service
     include Hook
 
+    skip_hooking :pass!, :fail!
+
+    def self.pass!(value: nil, status: :default, message: nil)
+      Fiber.yield Result.new(value, status, message)
+    end
+
+    def self.fail!(value: nil, status: :default, message: nil)
+      r = Result.new(value, status, message)
+      r.fail
+      Fiber.yield r
+    end
+
+    def pass!(*args)
+      self.class.pass!(*args)
+    end
+
+    def fail!(*args)
+      self.class.fail!(*args)
+    end
+
+    private
+
     def self.inherited(klass)
       klass.include Hook
       klass.hook :result_machinery
@@ -9,32 +31,29 @@ module Slayer
 
     hook :result_machinery
 
-    def self.result_machinery(name)
-      puts "PRE result machinery (#{name})"
+    def self.result_machinery(name, service_block)
+      service_fiber = Fiber.new do
+        yield
+      end
+      result = service_fiber.resume
 
-      yield
+      unless service_block.nil?
+        matcher = Slayer::ResultMatcher.new(result, nil)
 
-      puts "POST result machinery (#{name})"
+        service_block.call(matcher)
+
+        # raise error if not all defaults were handled
+        unless matcher.handled_defaults?
+          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
+        end
+
+        begin
+          matcher.execute_matching_block
+        ensure
+          matcher.execute_ensure_block
+        end
+      end
+      return result
     end
   end # class Service
-
-  # class Other < Service
-  #   def do_other_thing
-  #     puts "other"
-  #   end
-  #
-  #   def self.self_other_thing
-  #     puts "self other"
-  #   end
-  # end
-  #
-  # class EvenFurther < Other
-  #   def do_further_thing
-  #     puts "further"
-  #   end
-  #
-  #   def self.self_further_thing
-  #     puts "self further"
-  #   end
-  # end
 end # module Slayer

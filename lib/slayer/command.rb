@@ -18,13 +18,7 @@ module Slayer
         # Run the Command and capture the result
         command = self.new
         command_fiber = Fiber.new do
-          puts "Starting Command Fiber"
-
-          r = command.tap { yield(command, *args) }.result
-
-          puts "Command fiber ran to completion: #{r.inspect}"
-
-          r
+          command.tap { yield(command, *args) }.result
         end
         result = command_fiber.resume
 
@@ -40,7 +34,7 @@ module Slayer
 
           # raise error if not all defaults were handled
           unless matcher.handled_defaults?
-            raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
+            raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
           end
 
           begin
