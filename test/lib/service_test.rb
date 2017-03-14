@@ -12,19 +12,20 @@ class Slayer::ServiceTest < Minitest::Test
   end
 
   def test_child_hooks_run
-    klass = Class.new(Slayer::Service) { def child_instance_thing; puts "child instance"; end; def self.child_self_thing; puts "child self"; end }
-
-    k = klass.new
-
-    puts "---------------------------------------------------------------------"
-    k.child_instance_thing
-    puts "---------------------------------------------------------------------"
-    k.do_instance_thing
+    # klass = Class.new(Slayer::Service) { def child_instance_thing; puts "child instance"; end; def self.child_self_thing; puts "child self"; end }
+    #
+    # k = klass.new
+    o = Slayer::Other.new
 
     puts "---------------------------------------------------------------------"
-    klass.child_self_thing
+    o.do_other_thing
     puts "---------------------------------------------------------------------"
-    klass.do_self_thing
+    o.do_instance_thing
+
+    puts "---------------------------------------------------------------------"
+    Slayer::Other.self_other_thing
+    puts "---------------------------------------------------------------------"
+    Slayer::Other.do_self_thing
     puts "---------------------------------------------------------------------"
   end
   def test_should_have_tests; skip; end

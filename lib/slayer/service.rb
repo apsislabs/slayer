@@ -2,25 +2,39 @@ module Slayer
   class Service
     include Hook
 
-    puts "SELF WITH HOOKS: #{self.inspect}"
-    puts "SELF WITH HOOKS: #{self.methods.sort}"
+    def self.inherited(klass)
+      klass.include Hook
+      klass.hook :result_machinery
+    end
 
     hook :result_machinery
 
-    def do_instance_thing
-      puts "instance"
-    end
-
-    def self.do_self_thing
-      puts "self"
-    end
-
-    def self.result_machinery
-      puts "PRE result machinery"
+    def self.result_machinery(name)
+      puts "PRE result machinery (#{name})"
 
       yield
 
-      puts "POST result machinery"
+      puts "POST result machinery (#{name})"
     end
   end # class Service
+
+  # class Other < Service
+  #   def do_other_thing
+  #     puts "other"
+  #   end
+  #
+  #   def self.self_other_thing
+  #     puts "self other"
+  #   end
+  # end
+  #
+  # class EvenFurther < Other
+  #   def do_further_thing
+  #     puts "further"
+  #   end
+  #
+  #   def self.self_further_thing
+  #     puts "self further"
+  #   end
+  # end
 end # module Slayer

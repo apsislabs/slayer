@@ -24,6 +24,10 @@ module Slayer
       klass.extend ClassMethods
     end
 
+    def self.inherited(klass)
+      puts "INHERITED BY #{klass}"
+    end
+
     # Everything in Dependable::ClassMethods automatically get extended onto the
     # class that includes Dependable.
     module ClassMethods
@@ -35,18 +39,10 @@ module Slayer
       def __hook
         @__hook ||= nil
       end
-      #
-      # def after_hooks(*hook_methods)
-      #   @__after_hooks = hook_methods
-      # end
-      #
-      # def __after_hooks
-      #   @__after_hooks ||= []
-      # end
 
-      def run_hook(&block)
+      def run_hook(name, &block)
         if __hook
-          send(__hook, &block)
+          send(__hook, name, &block)
         else
           yield
         end
@@ -81,7 +77,7 @@ module Slayer
         @__current_methods = [name, with_hooks, without_hooks]
         send(define_method_fn, with_hooks) do |*args, &block|
 
-          hook_target.run_hook do
+          hook_target.run_hook(name) do
             send without_hooks, *args, &block
           end
         end
