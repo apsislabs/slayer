@@ -16,11 +16,11 @@ class RaisingService < Slayer::Service
 
   def self.early_flunk
     flunk
-    raise "Error after flunk"
+    raise 'Error after flunk'
   end
 
   def early_flunk
     flunk
-    raise "Error after flunk"
+    raise 'Error after flunk'
   end
 end

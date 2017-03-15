@@ -46,7 +46,7 @@ module Slayer
       self.class.try!(*args, &block)
     end
 
-    private
+    private_class_method
 
     def self.inherited(klass)
       klass.include Hook
@@ -55,9 +55,7 @@ module Slayer
 
     hook :__service_hook
 
-    def self.__service_hook(name, service_block)
-
-      result = nil
+    def self.__service_hook(_, service_block)
       begin
         result = yield
       rescue ResultFailureError => error
