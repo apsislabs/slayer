@@ -8,10 +8,6 @@ module Slayer
         execute_call(block, *args) { |c, *a| c.run(*a) }
       end
 
-      def call!(*args, &block)
-        execute_call(block, *args) { |c, *a| c.run!(*a) }
-      end
-
       private
 
       def execute_call(command_block, *args)
@@ -46,25 +42,34 @@ module Slayer
 
     def run(*args)
       call(*args)
-    rescue CommandFailureError
+    rescue ResultFailureError
       # Swallow the Command Failure
     end
 
-    # Run the Command
-    def run!(*args)
-      call(*args)
+    # Create a passing Result
+    def pass(value: nil, status: :default, message: nil)
+      @result = Result.new(value, status, message)
     end
 
-    # Fail the Command
-
-    def fail!(value: nil, status: :default, message: nil)
-      @result = Result.new(value, status, message)
-      @result.fail!
+    # Create a failing Result
+    def flunk(value: nil, status: :default, message: nil)
+      @result = Result.new(value, status, message).fail
     end
 
-    # Pass the Command
-    def pass!(value: nil, status: :default, message: nil)
-      @result = Result.new(value, status, message)
+    # Create a failing Result and halt execution of the Command
+    def flunk!(value: nil, status: :default, message: nil)
+      flunk(value: value, status: status, message: message)
+      raise ResultFailureError, self
+    end
+
+    # If the block produces a successful result the value of the result will be
+    # returned. Otherwise, this will create a failing result and halt the execution
+    # of the Command.
+    def try!(value: nil, status: nil, message: nil)
+      r = yield
+      flunk!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
+      return r.value if r.success?
+      flunk!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 
     # Call the command

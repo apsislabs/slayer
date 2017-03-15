@@ -10,11 +10,6 @@ class Slayer::CommandTest < Minitest::Test
     NoArgCommand.call
   end
 
-  def test_instantiates_and_calls_with_exceptions_flag
-    NoArgCommand.expects(:call!).once
-    NoArgCommand.call!
-  end
-
   # Implementation Tests
   # ---------------------------------------------
   #
@@ -84,6 +79,14 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
+  def test_raises_if_all_defaults_not_handled
+    assert_raises do
+      ArgCommand.call(arg: 'arg') do |r|
+        r.pass {}
+      end
+    end
+  end
+
   def test_value_result_and_command_available_in_block
     NoArgCommand.call do |m|
       m.all do |value, result, command|
@@ -127,13 +130,6 @@ class Slayer::CommandTest < Minitest::Test
     assert result.success?
   end
 
-  def test_can_be_run_with_exceptions_flag
-    result = ArgCommand.call!(arg: 'arg')
-
-    assert_equal result.value, 'arg'
-    assert result.success?
-  end
-
   def test_can_call_pass_with_no_result
     result = NoResultCommand.call(should_pass: true)
 
@@ -144,12 +140,6 @@ class Slayer::CommandTest < Minitest::Test
 
     assert_nil result.value
     assert result.failure?
-  end
-
-  def test_raises_error_for_run_with_exceptions_flag
-    assert_raises Slayer::CommandFailureError do
-      ArgCommand.call!(arg: nil)
-    end
   end
 
   def test_raises_error_for_incorrect_args
@@ -166,5 +156,16 @@ class Slayer::CommandTest < Minitest::Test
     assert_raises NotImplementedError do
       InvalidCommand.call
     end
+  end
+
+  def test_try_bubbles_up_error
+    assert TryCommand.call(value: :my_value, succeed: false).failure?
+  end
+
+  def test_try_returns_value
+    result = TryCommand.call(value: :my_value, succeed: true)
+
+    assert result.success?
+    assert_equal :my_value, result.value
   end
 end
