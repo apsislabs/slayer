@@ -84,7 +84,7 @@ module Slayer
           if __hook
             send(__hook, name, passed_block, &block)
           else
-            yield
+            block.call
           end
         end
 
