@@ -10,11 +10,6 @@ class Slayer::CommandTest < Minitest::Test
     NoArgCommand.call
   end
 
-  def test_instantiates_and_calls_with_exceptions_flag
-    NoArgCommand.expects(:call!).once
-    NoArgCommand.call!
-  end
-
   # Implementation Tests
   # ---------------------------------------------
   #
@@ -127,13 +122,6 @@ class Slayer::CommandTest < Minitest::Test
     assert result.success?
   end
 
-  def test_can_be_run_with_exceptions_flag
-    result = ArgCommand.call!(arg: 'arg')
-
-    assert_equal result.value, 'arg'
-    assert result.success?
-  end
-
   def test_can_call_pass_with_no_result
     result = NoResultCommand.call(should_pass: true)
 
@@ -144,12 +132,6 @@ class Slayer::CommandTest < Minitest::Test
 
     assert_nil result.value
     assert result.failure?
-  end
-
-  def test_raises_error_for_run_with_exceptions_flag
-    assert_raises Slayer::ResultFailureError do
-      ArgCommand.call!(arg: nil)
-    end
   end
 
   def test_raises_error_for_incorrect_args

@@ -133,9 +133,9 @@ Slayer Commands should implement `call`, which will `pass` or `fail` the service
 class FooCommand < Slayer::Command
   def call(foo:)
     if foo == "foo"
-      pass! value: foo, message: "Passing FooCommand"
+      return pass value: foo, message: "Passing FooCommand"
     else
-      fail! value: foo, message: "Failing FooCommand"
+      return fail value: foo, message: "Failing FooCommand"
     end
   end
 end

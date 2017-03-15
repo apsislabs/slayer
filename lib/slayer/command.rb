@@ -8,10 +8,6 @@ module Slayer
         execute_call(block, *args) { |c, *a| c.run(*a) }
       end
 
-      def call!(*args, &block)
-        execute_call(block, *args) { |c, *a| c.run!(*a) }
-      end
-
       private
 
       def execute_call(command_block, *args)
@@ -48,11 +44,6 @@ module Slayer
       call(*args)
     rescue ResultFailureError
       # Swallow the Command Failure
-    end
-
-    # Run the Command
-    def run!(*args)
-      call(*args)
     end
 
     # Create a passing Result

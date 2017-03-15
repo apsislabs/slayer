@@ -1,9 +1,9 @@
 class ArgCommand < Slayer::Command
   def call(arg: nil)
     if !arg.nil?
-      pass! value: arg
+      return pass value: arg
     else
-      fail! value: arg
+      return fail value: arg
     end
   end
 end

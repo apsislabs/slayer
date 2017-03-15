@@ -260,11 +260,7 @@ class Slayer::ResultMatcherTest < Minitest::Test
     # as we are intentionally accessing a matcher with a failed
     # result for testing in isolation.
     def matcher_with_fail_result(status: :default)
-      result = Slayer::Result.new(5, status, 'my message')
-      begin
-        result.fail!
-      rescue Slayer::ResultFailureError
-      end
+      result = Slayer::Result.new(5, status, 'my message').fail
 
       Slayer::ResultMatcher.new(result, NoArgCommand.new)
     end

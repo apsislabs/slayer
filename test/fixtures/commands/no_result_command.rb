@@ -1,9 +1,9 @@
 class NoResultCommand < Slayer::Command
   def call(should_pass: true)
     if should_pass
-      pass!
+      return pass
     else
-      fail!
+      return fail
     end
   end
 end
