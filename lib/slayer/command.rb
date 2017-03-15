@@ -46,7 +46,7 @@ module Slayer
 
     def run(*args)
       call(*args)
-    rescue CommandFailureError
+    rescue ResultFailureError
       # Swallow the Command Failure
     end
 
@@ -55,16 +55,30 @@ module Slayer
       call(*args)
     end
 
-    # Fail the Command
-
-    def fail!(value: nil, status: :default, message: nil)
+    # Create a passing Result
+    def pass(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
-      @result.fail!
     end
 
-    # Pass the Command
-    def pass!(value: nil, status: :default, message: nil)
-      @result = Result.new(value, status, message)
+    # Create a failing Result
+    def fail(value: nil, status: :default, message: nil)
+      @result = Result.new(value, status, message).fail
+    end
+
+    # Create a failing Result and halt execution of the Command
+    def fail!(value: nil, status: :default, message: nil)
+      fail(value: value, status: status, message: message)
+      raise ResultFailureError, self
+    end
+
+    # If the block produces a successful result the value of the result will be
+    # returned. Otherwise, this will create a failing result and halt the execution
+    # of the Command.
+    def try!(value: nil, status: nil, message: nil)
+      r = yield
+      fail!(value: value, status: status || :default, message: message) unless r.kind_of?(Result)
+      return r.value if r.success?
+      fail!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 
     # Call the command
