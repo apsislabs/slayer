@@ -149,4 +149,15 @@ class Slayer::CommandTest < Minitest::Test
       InvalidCommand.call
     end
   end
+
+  def test_try_bubbles_up_error
+    assert TryCommand.call(value: :my_value, succeed: false).failure?
+  end
+
+  def test_try_returns_value
+    result = TryCommand.call(value: :my_value, succeed: true)
+
+    assert result.success?
+    assert_equal :my_value, result.value
+  end
 end
