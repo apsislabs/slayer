@@ -1,10 +1,10 @@
 class TryCommand < Slayer::Command
   def call(value:, succeed: false)
     v = try! do
-      next ok value: value if succeed
-      next err value: value unless succeed
+      next pass value: value if succeed
+      next flunk value: value unless succeed
     end
 
-    return ok value: v
+    pass value: v
   end
 end

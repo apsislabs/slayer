@@ -1,5 +1,5 @@
 class NoArgCommand < Slayer::Command
   def call
-    ok value: 'pass'
+    pass value: 'pass'
   end
 end

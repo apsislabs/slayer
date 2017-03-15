@@ -47,18 +47,18 @@ module Slayer
     end
 
     # Create a passing Result
-    def ok(value: nil, status: :default, message: nil)
+    def pass(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message)
     end
 
     # Create a failing Result
-    def err(value: nil, status: :default, message: nil)
+    def flunk(value: nil, status: :default, message: nil)
       @result = Result.new(value, status, message).fail
     end
 
     # Create a failing Result and halt execution of the Command
-    def err!(value: nil, status: :default, message: nil)
-      err(value: value, status: status, message: message)
+    def flunk!(value: nil, status: :default, message: nil)
+      flunk(value: value, status: status, message: message)
       raise ResultFailureError, self
     end
 
@@ -67,9 +67,9 @@ module Slayer
     # of the Command.
     def try!(value: nil, status: nil, message: nil)
       r = yield
-      err!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
+      flunk!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
       return r.value if r.success?
-      err!(value: value || r.value, status: status || r.status, message: message || r.message)
+      flunk!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 
     # Call the command
