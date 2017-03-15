@@ -26,7 +26,7 @@ module Slayer
 
           # raise error if not all defaults were handled
           unless matcher.handled_defaults?
-            raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
+            raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
           end
 
           begin
@@ -58,8 +58,8 @@ module Slayer
 
     # Create a failing Result and halt execution of the Command
     def flunk!(value: nil, status: :default, message: nil)
-      flunk(value: value, status: status, message: message)
-      raise ResultFailureError, self
+      result = flunk(value: value, status: status, message: message)
+      raise ResultFailureError, result
     end
 
     # If the block produces a successful result the value of the result will be
