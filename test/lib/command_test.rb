@@ -79,6 +79,14 @@ class Slayer::CommandTest < Minitest::Test
     end
   end
 
+  def test_raises_if_all_defaults_not_handled
+    assert_raises do
+      ArgCommand.call(arg: 'arg') do |r|
+        r.pass { }
+      end
+    end
+  end
+
   def test_value_result_and_command_available_in_block
     NoArgCommand.call do |m|
       m.all do |value, result, command|
