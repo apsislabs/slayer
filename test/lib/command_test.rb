@@ -82,7 +82,7 @@ class Slayer::CommandTest < Minitest::Test
   def test_raises_if_all_defaults_not_handled
     assert_raises do
       ArgCommand.call(arg: 'arg') do |r|
-        r.pass { }
+        r.pass {}
       end
     end
   end
