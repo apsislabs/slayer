@@ -15,7 +15,7 @@ module Slayer
     end
   end
 
-  class CommandResultNotHandledError < StandardError; end
+  class ResultNotHandledError < StandardError; end
   class FormValidationError < StandardError; end
   class ServiceDependencyError < StandardError; end
 end
