@@ -6,14 +6,14 @@ module Slayer
       def method_added(name)
         super(name)
 
-        # Bail on hardcoded methods
+        # Bail early for conditions we don't want to wrap
+        return if private_instance_methods.include? name
+        return if private_methods.include? name
         return if [:pass, :flunk, :flunk!, :try!].include? name
         return if @__last_methods_added && @__last_methods_added.include?(name)
 
         run_method = :"__run_#{name}"
         @__last_methods_added = [name, run_method]
-
-        puts "Defining methods #{name}, #{run_method} for #{self}"
 
         # Define method for running instance method in a wrapped
         # way.
