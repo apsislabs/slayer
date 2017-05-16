@@ -15,6 +15,8 @@ module Slayer
         run_method = :"__run_#{name}"
         @__last_methods_added = [name, run_method]
 
+        puts "Define methods for #{name}, #{run_method} on #{self}"
+
         # Define method for running instance method in a wrapped
         # way.
         define_method run_method do |*args|
