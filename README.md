@@ -6,6 +6,8 @@
 
 Slayer is intended to operate as a minimal service layer for your ruby application. To achieve this, Slayer provides base classes for business logic.
 
+**Slayer is still under development, and not yet ready for production use. We are targetting a stable API with the 0.4.0 launch, so expect breaking changes until then.**
+
 ## Application Structure
 
 Slayer provides 3 base classes for organizing your business logic: `Forms`, `Commands`, and `Services`. Each of these has a distinct role in your application's structure.
