@@ -6,7 +6,7 @@ class AService < Slayer::Service
 end
 
 class BService < Slayer::Service
-  dependencies AService
+  # dependencies AService
 
   def self.return_10; AService.return_5 * 2;     end
   def return_6;       AService.new.return_3 * 2; end
@@ -14,7 +14,7 @@ class BService < Slayer::Service
 end
 
 class CService < Slayer::Service
-  dependencies BService
+  # dependencies BService
 
   def self.return_11; BService.return_10 + 1;    end
   def self.return_8;  BService.new.return_6 + 2; end

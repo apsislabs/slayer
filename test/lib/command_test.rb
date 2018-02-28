@@ -10,6 +10,19 @@ class Slayer::CommandTest < Minitest::Test
     NoArgCommand.call
   end
 
+  def test_wraps_correct_methods
+    # Instance Methods accessible
+    command_instance = ScopedCommand.new
+    assert command_instance.respond_to? :call
+    assert command_instance.respond_to? :not_call
+    refute command_instance.respond_to? :private_call
+
+    # Class methods accessible
+    assert ScopedCommand.respond_to? :call
+    refute ScopedCommand.respond_to? :not_call
+    refute ScopedCommand.respond_to? :private_call
+  end
+
   # Implementation Tests
   # ---------------------------------------------
   #
