@@ -13,11 +13,11 @@ module Slayer
     end
 
     def failure?
-      @failure || false
+      @failure ||= false
     end
 
     def fail
-      @failure = true
+      @failure ||= true
       self
     end
   end
