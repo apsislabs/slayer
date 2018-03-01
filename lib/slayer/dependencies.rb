@@ -92,9 +92,7 @@ module Slayer
         end
 
         # NO CIRCULAR DEPENDENCIES!
-        if dependency_hash[self].include? self
-          raise(ServiceDependencyError, "#{self} had a circular dependency")
-        end
+        raise(ServiceDependencyError, "#{self} had a circular dependency") if dependency_hash[self].include? self
 
         # Store these now, so next time we can short-circuit.
         @transitive_dependencies = dependency_hash[self]
@@ -140,7 +138,7 @@ module Slayer
           before_each_method name
           begin
             send without, *args, &block
-          rescue
+          rescue StandardError
             raise
           ensure
             after_each_method name
@@ -165,7 +163,7 @@ module Slayer
           self.class.before_each_method name
           begin
             send without, *args, &block
-          rescue
+          rescue StandardError
             raise
           ensure
             self.class.after_each_method name

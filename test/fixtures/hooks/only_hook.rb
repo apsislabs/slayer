@@ -14,7 +14,7 @@ class OnlyHook
   def c; end
   def self.c; end
 
-  def self.wrapper(_, instance, wrapper_block)
+  def self.wrapper(_, _instance, wrapper_block)
     wrapper_block.call
     yield
   end

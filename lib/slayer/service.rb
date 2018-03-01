@@ -1,6 +1,6 @@
 module Slayer
   class Service
-	include Hook
+    include Hook
 
     skip_hook :pass, :flunk, :flunk!, :try!
     singleton_skip_hook :pass, :flunk, :flunk!, :try!
@@ -49,7 +49,7 @@ module Slayer
     def try!(*args, &block)
       self.class.try!(*args, &block)
     end
-    
+
     # Make sure child classes also hook correctly
     def self.inherited(klass)
       klass.include Hook

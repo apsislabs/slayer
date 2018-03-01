@@ -6,7 +6,7 @@ class SimpleHook
   def simple; end
   def self.simple; end
 
-  def self.wrapper(_, instance, wrapper_block)
+  def self.wrapper(_, _instance, wrapper_block)
     wrapper_block.call
     yield
   end
