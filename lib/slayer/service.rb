@@ -60,7 +60,7 @@ module Slayer
     end
 
     hook :__service_hook
-    
+
     # rubocop:disable Metrics/MethodLength
     def self.__service_hook(_, instance, service_block)
       begin
