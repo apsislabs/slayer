@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'virtus', '~> 1.0'
-  spec.add_dependency 'dry-validation', '~> 0.10'
 
   spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'simplecov', '~> 0.13'
@@ -30,5 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'mocha', '~> 1.2'
   spec.add_development_dependency 'byebug', '~> 9.0'
   spec.add_development_dependency 'yard', '~> 0.9'
-  spec.add_development_dependency 'rubocop', '~> 0.47.1'
+  spec.add_development_dependency 'rubocop', '~> 0.48.1'
 end
