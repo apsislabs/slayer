@@ -5,22 +5,25 @@ class Slayer::ServiceTest < Minitest::Test
   # Class Tests
   # ---------------------------------------------
 
-  def test_instantiates_and_calls_expected_methods
-    ScopedService.expects(:call).once
-    ScopedService.call
+  def test_instance_pass_should_be_success
+    assert MultiplyingService.new.inst_mul(5, 5).success?
   end
 
-  def test_wraps_correct_methods
-    # Instance Methods accessible
-    service_instance = ScopedService.new
-    assert service_instance.respond_to? :call
-    assert service_instance.respond_to? :not_call
-    refute service_instance.respond_to? :private_call
+  def test_instance_fail_should_be_failure
+    assert MultiplyingService.new.inst_mul(0, 5).failure?
+  end
 
-    # Class methods accessible
-    assert ScopedService.respond_to? :call
-    assert ScopedService.respond_to? :not_call
-    refute ScopedService.respond_to? :private_call
+  def test_static_pass_should_be_success
+    assert MultiplyingService.mul(5, 5).success?
+  end
+
+  def test_static_fail_should_be_failure
+    assert MultiplyingService.mul(0, 5).failure?
+  end
+
+  def test_flunk_bang_should_halt_execution
+    assert RaisingService.early_halting_flunk.failure?
+    assert RaisingService.new.early_halting_flunk.failure?
   end
 
   # Instance Tests
