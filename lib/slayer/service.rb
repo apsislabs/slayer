@@ -1,4 +1,7 @@
 module Slayer
+  # Slayer Services are objects that should implement re-usable pieces of
+  # application logic or common tasks. All methods in a service are wrapped
+  # by default to enforce the return of a +Slayer::Result+ object.
   class Service
     include Hook
 
