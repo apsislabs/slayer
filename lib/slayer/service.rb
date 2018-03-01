@@ -68,7 +68,6 @@ module Slayer
         result = error.result
       end
 
-      # Throw an exception if we don't return a result
       raise CommandNotImplementedError unless result.is_a? Result
 
       unless service_block.nil?
