@@ -60,7 +60,8 @@ module Slayer
     end
 
     hook :__service_hook
-
+    
+    # rubocop:disable Metrics/MethodLength
     def self.__service_hook(_, instance, service_block)
       begin
         result = yield
@@ -88,6 +89,7 @@ module Slayer
       end
       return result
     end
+    # rubocop:enable Metrics/MethodLength
 
     private_class_method :inherited
     private_class_method :__service_hook
