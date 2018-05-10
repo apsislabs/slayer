@@ -1,3 +1,4 @@
+# rubocop:disable Style/SingleLineMethods
 class AService < Slayer::Service
   def self.return_5; 5; end
   def self.return_10; AService.return_5 + 5; end
@@ -20,3 +21,4 @@ class CService < Slayer::Service
   def self.return_8;  BService.new.return_6 + 2; end
   def return_7;       BService.new.return_6 + 1; end
 end
+# rubocop:enable Style/SingleLineMethods
