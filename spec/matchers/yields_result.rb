@@ -1,3 +1,5 @@
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
 class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
   def with_pass
     @pass_expected = true
@@ -51,3 +53,5 @@ module RSpec::Matchers
     YieldResult.new
   end
 end
+# rubocop:enable Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/PerceivedComplexity

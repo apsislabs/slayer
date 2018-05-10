@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Slayer::Command do
   let(:fake_result) { Slayer::Result.new(nil, :default, nil) }
 
@@ -153,3 +154,4 @@ RSpec.describe Slayer::Command do
     it { expect { InvalidCommand.call }.to raise_error(NotImplementedError) }
   end
 end
+# rubocop:enable Metrics/BlockLength
