@@ -77,7 +77,7 @@ RSpec.describe Slayer::Command do
     end
 
     it 'raises error if not all defaults are handled' do
-      expect { NoArgCommand.call { |r| r.pass{} } }
+      expect { NoArgCommand.call { |r| r.pass {} } }
         .to raise_error(Slayer::ResultNotHandledError)
     end
 
