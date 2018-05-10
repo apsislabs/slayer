@@ -17,7 +17,7 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
   def matches?(block)
     is_matcher = false
 
-    @probe = RSpec::Matchers::BuiltIn::YieldProbe.probe(block) { |r|
+    @probe = RSpec::Matchers::BuiltIn::YieldProbe.probe(block) do |r|
       is_matcher = r.is_a? Slayer::ResultMatcher
 
       r.pass { @passed = true }
@@ -25,7 +25,7 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
       r.ensure { @ensured = true }
 
       r.all
-    }
+    end
 
     return false unless @probe.has_block?
     return false unless is_matcher

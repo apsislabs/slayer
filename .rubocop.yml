@@ -5,6 +5,7 @@ AllCops:
   Include:
     - 'lib/**/*.rb'
     - 'test/**/*.rb'
+    - 'spec/**/*.rb'
   Exclude:
     - 'bin/**/*'
 
