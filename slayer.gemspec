@@ -23,8 +23,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.12'
   spec.add_development_dependency 'byebug', '~> 9.0'
   spec.add_development_dependency 'coveralls'
+
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'minitest-reporters', '~> 1.1'
+
+  spec.add_development_dependency 'rspec', '~> 3.5'
+
   spec.add_development_dependency 'mocha', '~> 1.2'
   spec.add_development_dependency 'rubocop', '~> 0.48.1'
   spec.add_development_dependency 'rake', '~> 10.0'
