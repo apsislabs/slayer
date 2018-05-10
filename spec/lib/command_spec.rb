@@ -39,7 +39,7 @@ RSpec.describe Slayer::Command do
 
   context 'result blocks' do
     it 'can run with no block' do
-      result = PassCommand.call(pass: true)
+      result = PassCommand.call(should_pass: true)
       expect(result.success?).to be(true)
     end
 
@@ -48,18 +48,18 @@ RSpec.describe Slayer::Command do
     end
 
     it 'executes pass block on pass' do
-      expect { |m| PassCommand.call(pass: true, &m) }.to yield_result.with_pass
-      expect { |m| PassCommand.call(pass: false, &m) }.not_to yield_result.with_pass
+      expect { |m| PassCommand.call(should_pass: true, &m) }.to yield_result.with_pass
+      expect { |m| PassCommand.call(should_pass: false, &m) }.not_to yield_result.with_pass
     end
 
     it 'exectues fail block on fail' do
-      expect { |m| PassCommand.call(pass: false, &m) }.to yield_result.with_fail
-      expect { |m| PassCommand.call(pass: true, &m) }.not_to yield_result.with_fail
+      expect { |m| PassCommand.call(should_pass: false, &m) }.to yield_result.with_fail
+      expect { |m| PassCommand.call(should_pass: true, &m) }.not_to yield_result.with_fail
     end
 
     it 'executes ensure block on fail and pass' do
-      expect { |m| PassCommand.call(pass: false, &m) }.to yield_result.with_ensure
-      expect { |m| PassCommand.call(pass: true, &m) }.to yield_result.with_ensure
+      expect { |m| PassCommand.call(should_pass: false, &m) }.to yield_result.with_ensure
+      expect { |m| PassCommand.call(should_pass: true, &m) }.to yield_result.with_ensure
     end
 
     #   def test_executes_ensure_block_on_error
@@ -100,7 +100,7 @@ RSpec.describe Slayer::Command do
   context 'result' do
     context 'pass' do
       it 'returns result' do
-        expect(PassCommand.call(pass: true)).to be_a(Slayer::Result)
+        expect(PassCommand.call(should_pass: true)).to be_a(Slayer::Result)
       end
 
       it 'has the correct value' do
@@ -118,7 +118,7 @@ RSpec.describe Slayer::Command do
 
     context 'fail' do
       it 'returns result' do
-        expect(PassCommand.call(pass: false)).to be_a(Slayer::Result)
+        expect(PassCommand.call(should_pass: false)).to be_a(Slayer::Result)
       end
 
       it 'has the correct value' do
