@@ -228,6 +228,42 @@ end
 
 ### Services
 
+## RSpec & Minitest Integrations
+
+`Slayer` provides assertions and matchers that make testing your `Commands` simpler.
+
+### RSpec
+
+To use with RSpec, update your `spec_helper.rb` file to include:
+
+`require 'slayer/rspec'`
+
+This provides you with two new matchers: `be_successful_result` and `be_failed_result`, both of which can be chained with a `with_status` expectation:
+
+```ruby
+RSpec.describe RSpecCommand do
+  describe '#call' do
+    context 'should pass' do
+      subject(:result) { RSpecCommand.call(should_pass: true) }
+
+      it { is_expected.to be_success_result }
+      it { is_expected.not_to be_failed_result }
+      it { is_expected.not_to be_successful_result.with_status(:no_status) }
+    end
+
+    context 'should fail' do
+      subject(:result) { RSpecCommand.call(should_pass: false) }
+
+      it { is_expected.to be_failed_result }
+      it { is_expected.not_to be_failed_result }
+      it { is_expected.not_to be_failed_result.with_status(:no_status) }
+    end
+  end
+end
+```
+
+### Minitest
+
 ## Rails Integration
 
 While Slayer is independent of any framework, we do offer a first-class integration with Ruby on Rails. To install the Rails extensions, add this line to your application's Gemfile:
