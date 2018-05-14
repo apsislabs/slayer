@@ -18,7 +18,9 @@ Slayer provides 3 base classes for organizing your business logic: `Forms`, `Com
 
 `Slayer::Commands` are the bread and butter of your application's business logic, and a specific implementation of the `Slayer::Service` object. `Commands` are where you compose services, and perform one-off business logic tasks. In our applications, we usually create a single `Command` per `Controller` endpoint.
 
-`Slayer::Commands` always return a structured `Slayer::Result` object, and when called, enforce handling of both `pass` and `fail` conditions for that result. This helps provide confidence that your core business logic is behaving in expected ways, and helps coerce you to develop in a clean and testable way.
+`Slayer::Commands` must implement a `call` method, which always return a structured `Slayer::Result` object making operating on results straightforward. The `call` method can also take a block, which provides `Slayer::ResultMatcher` object, and enforces handling of both `pass` and `fail` conditions for that result.
+
+This helps provide confidence that your core business logic is behaving in expected ways, and helps coerce you to develop in a clean and testable way.
 
 ### Services
 
