@@ -226,28 +226,6 @@ end
 
 ### Services
 
-Slayer Services are objects that should implement re-usable pieces of application logic or common tasks. To prevent circular dependencies Services are required to declare which other Service classes they depend on. If a circular dependency is detected an error is raised.
-
-In order to enforce the lack of circular dependencies, Service objects can only call other Services that are declared in their dependencies.
-
-```ruby
-class NetworkService < Slayer::Service
-    def self.post()
-        ...
-    end
-end
-
-class StripeService < Slayer::Service
-  dependencies NetworkService
-
-  def self.pay()
-    ...
-    NetworkService.post(url: "stripe.com", body: my_payload)
-    ...
-  end
-end
-```
-
 ## Rails Integration
 
 While Slayer is independent of any framework, we do offer a first-class integration with Ruby on Rails. To install the Rails extensions, add this line to your application's Gemfile:
