@@ -4,7 +4,7 @@ module Slayer
 
     def initialize(result)
       @result = result
-      super
+      super "Slayer ResultFailureError: Error thrown to flunk #{result}. See https://github.com/apsislabs/slayer/wiki/Catching-the-ResultFailureError."
     end
   end
 
