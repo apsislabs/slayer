@@ -1,5 +1,5 @@
 module Slayer
-  class ResultFailureError < StandardError
+  class ResultFailureError < Exception
     attr_reader :result
 
     def initialize(result)
@@ -8,14 +8,17 @@ module Slayer
     end
   end
 
-  class CommandNotImplementedError < StandardError
+  # Base Slayer::Error
+  class Error < StandardError; end
+
+  class CommandNotImplementedError < Error
     def initialize(message = nil)
       message ||= 'Command implementation must return a <Slayer::Result> object'
       super message
     end
   end
 
-  class ResultNotHandledError < StandardError; end
-  class FormValidationError < StandardError; end
-  class ServiceDependencyError < StandardError; end
+  class ResultNotHandledError < Error; end
+  class FormValidationError < Error; end
+  class ServiceDependencyError < Error; end
 end
