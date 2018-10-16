@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+source bin/helpers/docker
+runOnDocker ruby
+
+echo "== Starting unit tests =="
+bundle exec rake test
+if [ $? -ne 0 ]; then
+    echo -e "\n== Tests failed; push aborted! ==\n"
+    exit 1
+fi

@@ -349,6 +349,12 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 To generate documentation run `yard`. To view undocumented files run `yard stats --list-undoc`.
 
+### Development w/ Docker
+
+    $ docker-compose up
+    $ bin/ssh_to_container
+    $ bin/console
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/apsislabs/slayer.
