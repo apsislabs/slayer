@@ -3,13 +3,16 @@ module Slayer
     singleton_skip_hook :call
 
     class << self
-      def method_added(name)
-        return unless name == :call
-        super(name)
-      end
-
       def call(*args, &block)
         self.new.call(*args, &block)
+      end
+
+      private
+
+      def inherited(klass)
+        super(klass)
+        klass.wrap_service_methods!
+        klass.only_hook :call
       end
     end
 

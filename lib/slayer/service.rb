@@ -5,8 +5,24 @@ module Slayer
   class Service
     include Hook
 
-    skip_hook :pass, :flunk, :flunk!, :try!, :opt_in?, :__opt_in
-    singleton_skip_hook :pass, :flunk, :flunk!, :try!, :opt_in?, :opt_in!, :__opt_in
+    skip_hook(
+      :pass,
+      :flunk,
+      :flunk!,
+      :try!,
+      :wrap_service_methods?,
+      :__opt_in
+    )
+    singleton_skip_hook(
+      :pass,
+      :flunk,
+      :flunk!,
+      :try!,
+      :wrap_service_methods?,
+      :wrap_service_methods!,
+      :do_not_wrap_service_methods!,
+      :__opt_in
+    )
 
     attr_accessor :result
 
@@ -36,20 +52,25 @@ module Slayer
         flunk!(value: value || r.value, status: status || r.status, message: message || r.message)
       end
 
-      def opt_in!
+      def wrap_service_methods!
         @__opt_in = true
       end
 
-      def opt_in?
+      def do_not_wrap_service_methods!
+        @__opt_in = false
+      end
+
+      def wrap_service_methods?
         __opt_in
       end
 
       private
 
         def __opt_in
-          @__opt_in = true if @__opt_in.nil?
-          @__opt_in
+          @__opt_in = false unless defined?(@__opt_in)
+          @__opt_in == true
         end
+
     end
 
     def pass(*args)
@@ -68,8 +89,8 @@ module Slayer
       self.class.try!(*args, &block)
     end
 
-    def opt_in?
-      self.class.opt_in?
+    def wrap_service_methods?
+      self.class.wrap_service_methods?
     end
 
     # Make sure child classes also hook correctly
@@ -82,7 +103,7 @@ module Slayer
 
     # rubocop:disable Metrics/MethodLength
     def self.__service_hook(_, instance, service_block)
-      return yield unless opt_in?
+      return yield unless wrap_service_methods?
 
       begin
         result = yield
