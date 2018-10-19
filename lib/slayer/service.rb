@@ -37,7 +37,7 @@ module Slayer
       end
 
       def opt_in!
-        @__opt_in
+        @__opt_in = true
       end
 
       def opt_in?
@@ -47,8 +47,8 @@ module Slayer
       private
 
         def __opt_in
-          __opt_in = true if __opt_in == nil
-          __opt_in
+          @__opt_in = true if @__opt_in.nil?
+          @__opt_in
         end
     end
 
@@ -115,5 +115,5 @@ module Slayer
     private_class_method :inherited
     private_class_method :__service_hook
 
-  end # class Service
-end # module Slayer
+  end
+end
