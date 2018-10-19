@@ -1,4 +1,5 @@
 class TestService < Slayer::Service
+  wrap_service_methods!
   class << self
     def pass_5
       pass value: 5

@@ -5,6 +5,26 @@ class Slayer::ServiceTest < Minitest::Test
   # Class Tests
   # ---------------------------------------------
 
+  def test_default_does_not_wrap
+    refute_executes do
+      result = BoringService.new.add(2, 2) do
+        executes
+      end
+      assert result.is_a? Numeric
+      assert_equal result, 4
+    end
+  end
+
+  def test_default_does_not_wrap_class_methods
+    refute_executes do
+      result = BoringService.add(2, 2) do
+        executes
+      end
+      assert result.is_a? Numeric
+      assert_equal result, 4
+    end
+  end
+
   def test_instance_pass_should_be_success
     assert MultiplyingService.new.inst_mul(5, 5).success?
   end

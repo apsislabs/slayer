@@ -1,4 +1,5 @@
 class MultiplyingService < Slayer::Service
+  wrap_service_methods!
   def inst_mul(x, y)
     m = x * y
 
