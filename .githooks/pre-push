@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+if [[ $DOCKER_CONTAINER -ne 1 ]]; then
+    if [[ $(docker-compose ps -q | wc -l) -gt 0 ]]; then
+        source bin/helpers/docker
+        runOnDocker ruby
+    fi
+fi
+
 echo "Starting unit tests"
 bundle exec rake spec
 if [ $? -ne 0 ]; then
