@@ -5,8 +5,8 @@ module Slayer
   class Service
     include Hook
 
-    skip_hook :pass, :flunk, :flunk!, :try!
-    singleton_skip_hook :pass, :flunk, :flunk!, :try!
+    skip_hook :pass, :flunk, :flunk!, :try!, :opt_in?, :__opt_in
+    singleton_skip_hook :pass, :flunk, :flunk!, :try!, :opt_in?, :opt_in!, :__opt_in
 
     attr_accessor :result
 
@@ -35,6 +35,21 @@ module Slayer
         return r.value if r.success?
         flunk!(value: value || r.value, status: status || r.status, message: message || r.message)
       end
+
+      def opt_in!
+        @__opt_in
+      end
+
+      def opt_in?
+        __opt_in
+      end
+
+      private
+
+        def __opt_in
+          __opt_in = true if __opt_in == nil
+          __opt_in
+        end
     end
 
     def pass(*args)
@@ -53,6 +68,10 @@ module Slayer
       self.class.try!(*args, &block)
     end
 
+    def opt_in?
+      self.class.opt_in?
+    end
+
     # Make sure child classes also hook correctly
     def self.inherited(klass)
       klass.include Hook
@@ -63,6 +82,8 @@ module Slayer
 
     # rubocop:disable Metrics/MethodLength
     def self.__service_hook(_, instance, service_block)
+      return yield unless opt_in?
+
       begin
         result = yield
       rescue ResultFailureError => error
