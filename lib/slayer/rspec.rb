@@ -1,9 +1,7 @@
 require 'rspec/expectations'
 
 RSpec::Matchers.define :be_success_result do
-  match do |result|
-    result.success?
-  end
+  match(&:success?)
 
   chain :with_status do |status|
     @status = status

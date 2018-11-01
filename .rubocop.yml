@@ -7,6 +7,7 @@ AllCops:
     - 'test/**/*.rb'
   Exclude:
     - 'bin/**/*'
+    - 'test/fixtures/**/*.rb'
 
 
 Style/RedundantSelf:
@@ -21,19 +22,19 @@ Style/GuardClause:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/EmptyLinesAroundClassBody:
+Layout/EmptyLinesAroundClassBody:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/CommentIndentation:
+Layout/CommentIndentation:
   Enabled: false
 
 Style/BracesAroundHashParameters:
   Enabled: false
 
-Style/IndentationConsistency:
+Layout/IndentationConsistency:
   EnforcedStyle: rails
 
 Metrics/LineLength:
@@ -42,8 +43,12 @@ Metrics/LineLength:
 Metrics/ClassLength:
   Max: 120
 
-Style/EmptyLineBetweenDefs:
+Layout/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
+
+Naming/UncommunicativeMethodParamName:
+  AllowedNames:
+    - _
 
 # Temporarily disabled until this can be resolved in the todo file
 # Style/Documentation:
