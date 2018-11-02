@@ -20,4 +20,3 @@ class CService < Slayer::Service
   def self.return_8;  BService.new.return_6 + 2; end
   def return_7;       BService.new.return_6 + 1; end
 end
-# rubocop:enable Style/SingleLineMethods
