@@ -3,11 +3,11 @@ RSpec.shared_examples 'a normal method' do
     expect { |m| subject.add(2, 2, &m) }.not_to yield_control
   end
 
-  it "returns the expected value" do
+  it 'returns the expected value' do
     expect(subject.add(2, 2)).to eq(4)
   end
 
-  it "returns the expected type" do
+  it 'returns the expected type' do
     expect(subject.add(2, 2)).to be_a(Numeric)
   end
 end
@@ -65,11 +65,11 @@ RSpec.describe Slayer::Service do
 
   context 'TestService' do
     it 'calls block' do
-      expect { |m|
+      expect do |m|
         TestService.pass_5 do |r|
           r.all(&m)
         end
-      }.to yield_control
+      end.to yield_control
     end
 
     it 'calls block with correct args' do
@@ -80,12 +80,12 @@ RSpec.describe Slayer::Service do
     end
 
     it 'calls pass block' do
-      expect { |m|
+      expect do |m|
         TestService.pass_5 do |r|
           r.pass(&m)
-          r.fail { fail("Called Fail Matcher incorrectly") }
+          r.fail { raise('Called Fail Matcher incorrectly') }
         end
-      }.to yield_control
+      end.to yield_control
     end
 
     it 'returns pass result with value' do
@@ -97,12 +97,12 @@ RSpec.describe Slayer::Service do
     end
 
     it 'calls fail block' do
-      expect { |m|
+      expect do |m|
         TestService.flunk_10 do |r|
-          r.pass { fail("Called Pass Matcher incorrectly") }
+          r.pass { raise('Called Pass Matcher incorrectly') }
           r.fail(&m)
         end
-      }.to yield_control
+      end.to yield_control
     end
 
     it 'returns fail result with value' do

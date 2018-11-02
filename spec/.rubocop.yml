@@ -17,5 +17,7 @@ Metrics/AbcSize:
   Enabled: false
 
 Naming/UncommunicativeMethodParamName:
-  Exclude:
-    - 'spec/fixtures/*'
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false

@@ -1,9 +1,9 @@
 # Shared Examples:
 RSpec.shared_examples 'a hooked method' do |method_name, times|
   it "#{times == 0 ? 'does not wrap' : 'wraps'} the method" do
-    expect {
-      |m| subject.send(method_name, &m)
-    }.to yield_control.exactly(times).times
+    expect do |m|
+      subject.send(method_name, &m)
+    end.to yield_control.exactly(times).times
   end
 end
 
