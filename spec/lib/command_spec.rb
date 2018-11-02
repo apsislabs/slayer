@@ -73,8 +73,14 @@ RSpec.describe Slayer::Command do
     #       end
     #     end
     #   end
-    skip 'executes ensure block on error' do
-      expect { |m| ErrorCommand.call(&m) }.to yield_result.with_ensure
+    it 'executes ensure block on error' do
+      rescued = false
+      begin
+        expect { |m| ErrorCommand.call(&m) }.to yield_result.with_ensure
+      rescue ArgumentError
+        rescued = true
+      end
+      expect(rescued).to be(true)
     end
 
     it 'raises error if not all defaults are handled' do

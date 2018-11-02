@@ -1,4 +1,6 @@
 class RaisingService < Slayer::Service
+  wrap_service_methods!
+
   def self.early_pass
     pass
     raise 'Error after pass'
