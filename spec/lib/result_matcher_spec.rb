@@ -23,6 +23,13 @@ RSpec.describe Slayer::ResultMatcher do
       }
     end
 
+    context 'with default all' do
+      it {
+        matcher.all
+        expect(matcher.handled_defaults?).to be(true)
+      }
+    end
+
     context 'default fail and pass' do
       context 'with implicit defaults' do
         it 'passes with implicit defaults' do

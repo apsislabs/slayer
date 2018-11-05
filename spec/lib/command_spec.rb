@@ -153,6 +153,62 @@ RSpec.describe Slayer::Command do
     end
   end
 
+  context 'matchers' do
+    it 'calls pass matcher' do
+      success = false
+      PassCommand.call(should_pass: true) do |m|
+        m.pass { success = true }
+        m.fail { fail "Should Pass, not fail" }
+        m.all { fail "Should Pass, and not call `all`" }
+      end
+      expect(success).to be true
+    end
+
+    it 'calls fail matcher' do
+      success = false
+      PassCommand.call(should_pass: false) do |m|
+        m.pass { fail "Should fail, not pass" }
+        m.fail { success = true}
+        m.all { fail "Should Fail, and not call `all`" }
+      end
+      expect(success).to be true
+    end
+
+    it 'calls all matcher' do
+      success = false
+      PassCommand.call(should_pass: true) do |m|
+        m.all { success = true }
+      end
+      expect(success).to be true
+    end
+
+    it 'calls default pass matcher' do
+      success = false
+      PassCommand.call(should_pass: true) do |m|
+        m.fail(:default) { fail "Shouldn't hit this code" }
+        m.pass(:default) { success = true }
+      end
+      expect(success).to be true
+    end
+
+    it 'calls default fail matcher' do
+      success = false
+      PassCommand.call(should_pass: false) do |m|
+        m.fail(:default) { success = true }
+        m.pass(:default) { fail "Shouldn't hit this code" }
+      end
+      expect(success).to be true
+    end
+
+    it 'calls default all matcher' do
+      success = false
+      PassCommand.call(should_pass: false) do |m|
+        m.all(:default) { success = true }
+      end
+      expect(success).to be true
+    end
+  end
+
   context 'invalid calls' do
     it { expect { ArgCommand.call(bar: 'arg') }.to raise_error(ArgumentError) }
     it { expect { NotImplementedCommand.call }.to raise_error(Slayer::CommandNotImplementedError) }
