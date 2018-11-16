@@ -158,8 +158,8 @@ RSpec.describe Slayer::Command do
       success = false
       PassCommand.call(should_pass: true) do |m|
         m.pass { success = true }
-        m.fail { fail "Should Pass, not fail" }
-        m.all { fail "Should Pass, and not call `all`" }
+        m.fail { raise 'Should Pass, not fail' }
+        m.all { raise 'Should Pass, and not call `all`' }
       end
       expect(success).to be true
     end
@@ -167,9 +167,9 @@ RSpec.describe Slayer::Command do
     it 'calls fail matcher' do
       success = false
       PassCommand.call(should_pass: false) do |m|
-        m.pass { fail "Should fail, not pass" }
-        m.fail { success = true}
-        m.all { fail "Should Fail, and not call `all`" }
+        m.pass { raise 'Should fail, not pass' }
+        m.fail { success = true }
+        m.all { raise 'Should Fail, and not call `all`' }
       end
       expect(success).to be true
     end
@@ -185,7 +185,7 @@ RSpec.describe Slayer::Command do
     it 'calls default pass matcher' do
       success = false
       PassCommand.call(should_pass: true) do |m|
-        m.fail(:default) { fail "Shouldn't hit this code" }
+        m.fail(:default) { raise "Shouldn't hit this code" }
         m.pass(:default) { success = true }
       end
       expect(success).to be true
@@ -195,7 +195,7 @@ RSpec.describe Slayer::Command do
       success = false
       PassCommand.call(should_pass: false) do |m|
         m.fail(:default) { success = true }
-        m.pass(:default) { fail "Shouldn't hit this code" }
+        m.pass(:default) { raise "Shouldn't hit this code" }
       end
       expect(success).to be true
     end
@@ -211,9 +211,9 @@ RSpec.describe Slayer::Command do
     it 'calls default matcher' do
       success = false
       NoDefaultCommand.call do |m|
-        m.pass(:bar) { fail 'This should never be called' }
-        m.pass(:default) { success = true}
-        m.fail { fail 'This should never be called' }
+        m.pass(:bar) { raise 'This should never be called' }
+        m.pass(:default) { success = true }
+        m.fail { raise 'This should never be called' }
       end
       expect(success).to be true
     end
