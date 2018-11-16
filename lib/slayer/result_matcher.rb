@@ -201,6 +201,7 @@ module Slayer
       elsif @default_block != false
         run_block(@default_block)
       elsif @default_all
+        byebug
         run_block(@default_all)
       end
     end
