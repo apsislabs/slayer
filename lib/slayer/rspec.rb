@@ -1,4 +1,3 @@
-# :nocov:
 require 'rspec/expectations'
 
 RSpec::Matchers.define :be_success_result do
@@ -16,6 +15,7 @@ RSpec::Matchers.define :be_success_result do
     @value = value
   end
 
+  # :nocov:
   failure_message do |result|
     return 'expected command to succeed' if @status.nil? && @value.nil? && @message.nil?
     return "expected command to succeed with status: :#{@status}, but got: :#{result.status}" unless @status.nil?
@@ -29,6 +29,7 @@ RSpec::Matchers.define :be_success_result do
     return "expected command not to have status :#{@status}" if !@status.nil? && result.status == @status
     return 'expected command to fail'
   end
+  # :nocov:
 end
 
 RSpec::Matchers.define :be_failed_result do
@@ -49,6 +50,7 @@ RSpec::Matchers.define :be_failed_result do
     @value = value
   end
 
+  # :nocov:
   failure_message do |result|
     return 'expected command to fail' if @status.nil? && @value.nil? && @message.nil?
     return "expected command to fail with status: :#{@status}, but got: :#{result.status}" unless @status.nil?
@@ -62,6 +64,5 @@ RSpec::Matchers.define :be_failed_result do
     return "expected command to have status :#{@status}" if !@status.nil? && result.status == @status
     return 'expected command to succeed'
   end
+  # :nocov:
 end
-
-# :nocov:
