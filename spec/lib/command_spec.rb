@@ -217,6 +217,14 @@ RSpec.describe Slayer::Command do
       end
       expect(success).to be true
     end
+
+    it 'calls default matcher' do
+      success = false
+      NoDefaultCommand.call do |m|
+        m.all { success = true }
+      end
+      expect(success).to be true
+    end
   end
 
   context 'invalid calls' do

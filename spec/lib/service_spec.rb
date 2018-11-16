@@ -38,6 +38,10 @@ RSpec.describe Slayer::Service do
       it 'invalid arguments return an failed response' do
         expect(subject.mul(0, 5).failure?).to eq(true)
       end
+
+      it 'should #wrap_service_methods?' do
+        expect(subject.wrap_service_methods?).to be true
+      end
     end
 
     context 'instance methods' do
@@ -49,6 +53,10 @@ RSpec.describe Slayer::Service do
 
       it 'invalid arguments return an failed response' do
         expect(subject.inst_mul(0, 5).failure?).to eq(true)
+      end
+
+      it 'should .wrap_service_methods?' do
+        expect(subject.wrap_service_methods?).to be true
       end
     end
   end
