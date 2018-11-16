@@ -238,7 +238,7 @@ To use with RSpec, update your `spec_helper.rb` file to include:
 
 `require 'slayer/rspec'`
 
-This provides you with two new matchers: `be_successful_result` and `be_failed_result`, both of which can be chained with a `with_status` expectation:
+This provides you with two new matchers: `be_successful_result` and `be_failed_result`, both of which can be chained with a `with_status`, `with_message`, or `with_value` expectations:
 
 ```ruby
 RSpec.describe RSpecCommand do
@@ -248,21 +248,54 @@ RSpec.describe RSpecCommand do
 
       it { is_expected.to be_success_result }
       it { is_expected.not_to be_failed_result }
-      it { is_expected.not_to be_successful_result.with_status(:no_status) }
+      it { is_expected.to be_success_result.with_status(:no_status) }
+      it { is_expected.to be_success_result.with_message("message") }
+      it { is_expected.to be_success_result.with_value("value") }
     end
 
     context 'should fail' do
       subject(:result) { RSpecCommand.call(should_pass: false) }
 
       it { is_expected.to be_failed_result }
-      it { is_expected.not_to be_failed_result }
-      it { is_expected.not_to be_failed_result.with_status(:no_status) }
+      it { is_expected.not_to be_success_result }
+      it { is_expected.to be_failed_result.with_status(:no_status) }
+      it { is_expected.to be_failed_result.with_message("message") }
+      it { is_expected.to be_failed_result.with_value("value") }
     end
   end
 end
 ```
 
 ### Minitest
+
+To use with Minitest, updaet your 'test_helper' file to include:
+
+`require slayer/minitest`
+
+This provides you with new assertions: `assert_success` and `assert_failed`:
+
+```ruby
+require "minitest/autorun"
+
+class MinitestCommandTest < Minitest::Test
+  def setup
+    @success_result = MinitestCommand.call(should_pass: true)
+    @failed_result = MinitestCommand.call(should_pass: false)
+  end
+
+  def test_is_success
+    assert_success @success_result, status: :no_status, message: 'message', value: 'value'
+    refute_failed @success_result, status: :no_status, message: 'message', value: 'value'
+  end
+
+  def test_is_failed
+    assert_failed @failed_result, status: :no_status, message: 'message', value: 'value'
+    refute_success @failed_result, status: :no_status, message: 'message', value: 'value'
+  end
+end
+```
+
+**Note:** There is no current integration for `Minitest::Spec`.
 
 ## Rails Integration
 
