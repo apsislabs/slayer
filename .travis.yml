@@ -1,6 +1,6 @@
 sudo: false
-before_install: gem update --system
+before_install: gem install bundler -v 1.16.1
 language: ruby
 rvm:
   - 2.3.0
-  - 2.4.0
+  - 2.4.2

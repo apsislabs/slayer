@@ -56,10 +56,6 @@ module Slayer
         @__opt_in = true
       end
 
-      def do_not_wrap_service_methods!
-        @__opt_in = false
-      end
-
       def wrap_service_methods?
         __opt_in
       end

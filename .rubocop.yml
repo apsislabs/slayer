@@ -5,6 +5,9 @@ AllCops:
   Include:
     - 'lib/**/*.rb'
     - 'test/**/*.rb'
+    - 'spec/**/*.rb'
+    - '**/Gemfile'
+    - '**/Rakefile'
   Exclude:
     - 'bin/**/*'
     - 'test/fixtures/**/*.rb'
