@@ -268,7 +268,7 @@ end
 
 ### Minitest
 
-To use with Minitest, updaet your 'test_helper' file to include:
+To use with Minitest, update your 'test_helper' file to include:
 
 `require slayer/minitest`
 
