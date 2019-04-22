@@ -13,12 +13,12 @@ module Slayer
     end
 
     def failure?
-      @failure || false
+      @failure ||= false
     end
 
-    def fail!
-      @failure = true
-      raise CommandFailureError, self
+    def fail
+      @failure ||= true
+      self
     end
   end
 end

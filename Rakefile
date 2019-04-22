@@ -1,10 +1,17 @@
 require 'bundler/gem_tasks'
-require 'rake/testtask'
+require 'rspec/core/rake_task'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'test'
-  t.libs << 'lib'
-  t.test_files = FileList['test/**/*_test.rb']
+RSpec::Core::RakeTask.new(:spec)
+
+if defined? Chandler
+  # Set Chandler options
+  Chandler::Tasks.configure do |config|
+    config.changelog_path = 'CHANGELOG.md'
+    config.github_repository = 'apsislabs/slayer'
+  end
+
+  # Add chandler as a prerequisite for `rake release`
+  task 'release:rubygem_push' => 'chandler:push'
 end
 
-task :default => :test
+task default: :spec

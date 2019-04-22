@@ -30,7 +30,7 @@ module Slayer
   #
   # If the block form of a {Command.call} is invoked, both the block must handle the default
   # status for both a {Result#success?} and a {Result#failure?}. If both are not handled,
-  # the matching block will not be invoked and a {CommandResultNotHandledError} will be
+  # the matching block will not be invoked and a {ResultNotHandledError} will be
   # raised.
   #
   # @example Matcher invokes the matching pass block, with precedence given to {#pass} and {#fail}
@@ -74,7 +74,7 @@ module Slayer
   #     m.pass(:ok) { puts "Pass, OK!"}
   #     m.fail      { puts "Fail!" }
   #   end
-  #   # => raises CommandResultNotHandledError (because no default pass was provided)
+  #   # => raises ResultNotHandledError (because no default pass was provided)
   #
   #   # Call produces a successful Result with status :ok
   #   SuccessCommand.call do |m|
@@ -94,7 +94,7 @@ module Slayer
   #   SuccessCommand.call do |m|
   #     m.pass(:ok, :default) { puts "Pass, OK!"}
   #   end
-  #   # => raises CommandResultNotHandledError (because no default fail was provided)
+  #   # => raises ResultNotHandledError (because no default fail was provided)
   class ResultMatcher
     attr_reader :result, :command
 

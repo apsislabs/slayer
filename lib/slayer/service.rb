@@ -1,182 +1,136 @@
 module Slayer
   # Slayer Services are objects that should implement re-usable pieces of
-  # application logic or common tasks. To prevent circular dependencies Services
-  # are required to declare which other Service classes they depend on. If a
-  # circular dependency is detected an error is raised.
-  #
-  # In order to enforce the lack of circular dependencies, Service objects can
-  # only call other Services that are declared in their dependencies.
+  # application logic or common tasks. All methods in a service are wrapped
+  # by default to enforce the return of a +Slayer::Result+ object.
   class Service
-    # List the other Service class that this service class depends on. Only
-    # dependencies that are included in this call my be invoked from class
-    # or instances methods of this service class.
-    #
-    # If no dependencies are provided, no other Service classes may be used by
-    # this Service class.
-    #
-    # @param deps [Array<Class>] An array of the other Slayer::Service classes that are used as dependencies
-    #
-    # @example Service calls with dependency declared
-    #   class StripeService < Slayer::Service
-    #     dependencies NetworkService
-    #
-    #     def self.pay()
-    #       ...
-    #       NetworkService.post(url: "stripe.com", body: my_payload) # OK
-    #       ...
-    #     end
-    #   end
-    #
-    # @example Service calls without a dependency declared
-    #   class JiraApiService < Slayer::Service
-    #
-    #     def self.create_issue()
-    #       ...
-    #       NetworkService.post(url: "stripe.com", body: my_payload) # Raises Slayer::ServiceDependencyError
-    #       ...
-    #     end
-    #   end
-    #
-    # @return [Array<Class>] The transitive closure of dependencies for this object.
-    def self.dependencies(*deps)
-      raise(ServiceDependencyError, "There were multiple dependencies calls of #{self}") if @deps
+    include Hook
 
-      deps.each do |dep|
-        unless dep.is_a?(Class)
-          raise(ServiceDependencyError, "The object #{dep} passed to dependencies service was not a class")
-        end
+    skip_hook(
+      :pass,
+      :flunk,
+      :flunk!,
+      :try!,
+      :wrap_service_methods?,
+      :__opt_in
+    )
+    singleton_skip_hook(
+      :pass,
+      :flunk,
+      :flunk!,
+      :try!,
+      :wrap_service_methods?,
+      :wrap_service_methods!,
+      :do_not_wrap_service_methods!,
+      :__opt_in
+    )
 
-        unless dep < Slayer::Service
-          raise(ServiceDependencyError, "The object #{dep} passed to dependencies was not a subclass of #{self}")
-        end
-      end
-
-      unless deps.uniq.length == deps.length
-        raise(ServiceDependencyError, "There were duplicate dependencies in #{self}")
-      end
-
-      @deps = deps
-
-      # Calculate the transitive dependencies and raise an error if there are circular dependencies
-      transitive_dependencies
-    end
+    attr_accessor :result
 
     class << self
+      # Create a passing Result
+      def pass(value: nil, status: :default, message: nil)
+        Result.new(value, status, message)
+      end
 
-      attr_reader :deps
+      # Create a failing Result
+      def flunk(value: nil, status: :default, message: nil)
+        Result.new(value, status, message).fail
+      end
 
-      def transitive_dependencies(dependency_hash = {}, visited = [])
-        return @transitive_dependencies if @transitive_dependencies
+      # Create a failing Result and halt execution of the Command
+      def flunk!(value: nil, status: :default, message: nil)
+        raise ResultFailureError, flunk(value: value, status: status, message: message)
+      end
 
-        @deps ||= []
+      # If the block produces a successful result the value of the result will be
+      # returned. Otherwise, this will create a failing result and halt the execution
+      # of the Command.
+      def try!(value: nil, status: nil, message: nil)
+        r = yield
+        flunk!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
+        return r.value if r.success?
+        flunk!(value: value || r.value, status: status || r.status, message: message || r.message)
+      end
 
-        # If we've already visited ourself, bail out. This is necessary to halt
-        # execution for a circular chain of dependencies. #halting-problem-solved
-        return dependency_hash[self] if visited.include?(self)
+      def wrap_service_methods!
+        @__opt_in = true
+      end
 
-        visited << self
-        dependency_hash[self] ||= []
+      def wrap_service_methods?
+        __opt_in
+      end
 
-        # Add each of our dependencies (and it's transitive dependency chain) to our
-        # own dependencies.
+      private
 
-        @deps.each do |dep|
-          dependency_hash[self] << dep
-
-          unless visited.include?(dep)
-            child_transitive_dependencies = dep.transitive_dependencies(dependency_hash, visited)
-            dependency_hash[self].concat(child_transitive_dependencies)
-          end
-
-          dependency_hash[self].uniq
+        def __opt_in
+          @__opt_in = false unless defined?(@__opt_in)
+          @__opt_in == true
         end
 
-        # NO CIRCULAR DEPENDENCIES!
-        if dependency_hash[self].include? self
-          raise(ServiceDependencyError, "#{self} had a circular dependency")
+    end
+
+    def pass(*args)
+      self.class.pass(*args)
+    end
+
+    def flunk(*args)
+      self.class.flunk(*args)
+    end
+
+    def flunk!(*args)
+      self.class.flunk!(*args)
+    end
+
+    def try!(*args, &block)
+      self.class.try!(*args, &block)
+    end
+
+    def wrap_service_methods?
+      self.class.wrap_service_methods?
+    end
+
+    # Make sure child classes also hook correctly
+    def self.inherited(klass)
+      klass.include Hook
+      klass.hook :__service_hook
+    end
+
+    hook :__service_hook
+
+    # rubocop:disable Metrics/MethodLength
+    def self.__service_hook(_, instance, service_block)
+      return yield unless wrap_service_methods?
+
+      begin
+        result = yield
+      rescue ResultFailureError => error
+        result = error.result
+      end
+
+      raise CommandNotImplementedError unless result.is_a? Result
+
+      unless service_block.nil?
+        matcher = Slayer::ResultMatcher.new(result, instance)
+
+        service_block.call(matcher)
+
+        # raise error if not all defaults were handled
+        unless matcher.handled_defaults?
+          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
         end
 
-        # Store these now, so next time we can short-circuit.
-        @transitive_dependencies = dependency_hash[self]
-
-        return @transitive_dependencies
-      end
-
-      def before_each_method(*)
-        @deps ||= []
-        @@allowed_services ||= nil
-
-        # Confirm that this method call is allowed
-        raise_if_not_allowed
-
-        @@allowed_services ||= []
-        @@allowed_services << (@deps + [self])
-      end
-
-      def raise_if_not_allowed
-        if @@allowed_services
-          allowed = @@allowed_services.last
-          if !allowed || !allowed.include?(self)
-            raise(ServiceDependencyError, "Attempted to call #{self} from another #{Slayer::Service}"\
-                                          ' which did not declare it as a dependency')
-          end
+        begin
+          matcher.execute_matching_block
+        ensure
+          matcher.execute_ensure_block
         end
       end
+      return result
+    end
+    # rubocop:enable Metrics/MethodLength
 
-      def after_each_method(*)
-        @@allowed_services.pop
-        @@allowed_services = nil if @@allowed_services.empty?
-      end
+    private_class_method :inherited
+    private_class_method :__service_hook
 
-      def singleton_method_added(name)
-        return if self == Slayer::Service
-        return if @__last_methods_added && @__last_methods_added.include?(name)
-
-        with = :"#{name}_with_before_each_method"
-        without = :"#{name}_without_before_each_method"
-
-        @__last_methods_added = [name, with, without]
-        define_singleton_method with do |*args, &block|
-          before_each_method name
-          begin
-            send without, *args, &block
-          rescue
-            raise
-          ensure
-            after_each_method name
-          end
-        end
-
-        singleton_class.send(:alias_method, without, name)
-        singleton_class.send(:alias_method, name, with)
-
-        @__last_methods_added = nil
-      end
-
-      def method_added(name)
-        return if self == Slayer::Service
-        return if @__last_methods_added && @__last_methods_added.include?(name)
-
-        with = :"#{name}_with_before_each_method"
-        without = :"#{name}_without_before_each_method"
-
-        @__last_methods_added = [name, with, without]
-        define_method with do |*args, &block|
-          self.class.before_each_method name
-          begin
-            send without, *args, &block
-          rescue
-            raise
-          ensure
-            self.class.after_each_method name
-          end
-        end
-
-        alias_method without, name
-        alias_method name, with
-
-        @__last_methods_added = nil
-      end
-    end # << self
-  end # class Service
-end # module Slayer
+  end
+end
