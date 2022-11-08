@@ -2,31 +2,17 @@ module Slayer
   class Command
     class << self
       def call(*args, &block)
+        instance = self.new
+
         begin
-          res = self.new.call(*args, &block)
-        rescue ResultFailureError => error
-          res = error.result
+          res = instance.call(*args, &block)
+        rescue ResultFailureError => e
+          res = e.result
         end
 
         raise CommandNotImplementedError unless res.is_a? Result
 
-        if block_given?
-          matcher = Slayer::ResultMatcher.new(res, self.new)
-
-          block.call(matcher)
-
-          # raise error if not all defaults were handled
-          unless matcher.handled_defaults?
-            raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
-          end
-
-          begin
-            matcher.execute_matching_block
-          ensure
-            matcher.execute_ensure_block
-          end
-        end
-
+        handle_match(res, instance, block) if block_given?
         return res
       end
       ruby2_keywords :call if respond_to?(:ruby2_keywords, true)
@@ -37,14 +23,33 @@ module Slayer
       alias pass ok
 
       def ko(value: nil, status: :default, message: nil)
-        ok(value: value, status: status, message: message).fail
+        ok(value:, status:, message:).fail
       end
       alias flunk ko
 
       def ko!(value: nil, status: :default, message: nil)
-        raise ResultFailureError, ko(value: value, status: status, message: message)
+        raise ResultFailureError, ko(value:, status:, message:)
       end
       alias flunk! ko!
+
+      private
+
+      def handle_match(res, instance, block)
+        matcher = Slayer::ResultMatcher.new(res, instance)
+
+        block.call(matcher)
+
+        # raise error if not all defaults were handled
+        unless matcher.handled_defaults?
+          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
+        end
+
+        begin
+          matcher.execute_matching_block
+        ensure
+          matcher.execute_ensure_block
+        end
+      end
     end
 
     def ok(*args)
@@ -67,8 +72,9 @@ module Slayer
 
     def try!(value: nil, status: nil, message: nil)
       r = yield
-      ko!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
+      ko!(value:, status: status || :default, message:) unless r.is_a?(Result)
       return r.value if r.success?
+
       ko!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 

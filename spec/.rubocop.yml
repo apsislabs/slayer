@@ -16,8 +16,5 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Enabled: false
 
-Naming/UncommunicativeMethodParamName:
-  Enabled: false
-
 Metrics/BlockLength:
   Enabled: false

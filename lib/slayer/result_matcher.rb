@@ -213,8 +213,8 @@ module Slayer
 
     private
 
-      def run_block(block)
-        block.call(@result.value, @result, @command) if block # explicit nil should fail this test
-      end
+    def run_block(block)
+      block&.call(@result.value, @result, @command) # explicit nil should fail this test
+    end
   end
 end

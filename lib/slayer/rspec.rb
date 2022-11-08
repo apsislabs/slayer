@@ -33,6 +33,7 @@ RSpec::Matchers.define :be_success_result do
     return "expected command not to have message: #{@message}" if !@message.nil? && result.message == @message
     return "expected command not to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command not to have status :#{@status}" if !@status.nil? && result.status == @status
+
     return 'expected command to fail'
   end
   # :nocov:
@@ -71,6 +72,7 @@ RSpec::Matchers.define :be_failed_result do
     return "expected command to have message: #{@message}" if !@message.nil? && result.message == @message
     return "expected command to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command to have status :#{@status}" if !@status.nil? && result.status == @status
+
     return 'expected command to succeed'
   end
   # :nocov:

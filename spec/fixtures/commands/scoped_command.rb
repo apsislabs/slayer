@@ -9,7 +9,7 @@ class ScopedCommand < Slayer::Command
 
   private
 
-    def private_call
-      puts 'private_call'
-    end
+  def private_call
+    puts 'private_call'
+  end
 end

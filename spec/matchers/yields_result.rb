@@ -44,11 +44,11 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
   end
 
   def failure_message
-    'expected given block to handle results' + failure_reason
+    "expected given block to handle results#{failure_reason}"
   end
 
   def failure_message_when_negated
-    'expected given block not to handle results' + failure_reason
+    "expected given block not to handle results#{failure_reason}"
   end
 end
 

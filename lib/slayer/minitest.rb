@@ -1,6 +1,5 @@
 # :nocov:
 require 'minitest/assertions'
-# rubocop:disable Style/Documentation
 # rubocop:disable Metrics/MethodLength
 module Minitest::Assertions
   def assert_success(result, status: nil, message: nil, value: nil)
