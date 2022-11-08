@@ -8,16 +8,18 @@ module Slayer
       @message = message
     end
 
-    def success?
-      !failure?
+    def passed?
+      !failed?
     end
+    alias success? passed?
 
-    def failure?
-      @failure ||= false
+    def failed?
+      @failed ||= false
     end
+    alias failure? failed?
 
     def fail
-      @failure ||= true
+      @failed ||= true
       self
     end
   end
