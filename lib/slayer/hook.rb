@@ -137,6 +137,9 @@ module Slayer
           alias_target.send(:alias_method, without_hooks, name)
           alias_target.send(:alias_method, name, with_hooks)
 
+          alias_target.send(:ruby2_keywords, with_hooks) if alias_target.respond_to?(:ruby2_keywords, true)
+          alias_target.send(:ruby2_keywords, without_hooks) if alias_target.respond_to?(:ruby2_keywords, true)
+
           @__current_methods = nil
         end
 

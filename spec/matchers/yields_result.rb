@@ -36,7 +36,11 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
     return false if @fail_expected && (!@failed || @passed)
     return false if @ensure_expected && !@ensured
 
-    @probe.num_yields.__send__(@expectation_type, @expected_yields_count)
+    if @expectation_type
+      @probe.num_yields.__send__(@expectation_type, @expected_yields_count)
+    else
+      @probe.yielded_once?(:yield_control)
+    end
   end
 
   def failure_message
