@@ -1,5 +1,4 @@
 FROM ruby:3.1.2-alpine
-MAINTAINER contact@apsis.io
 
 RUN apk add --no-cache --update \
     bash \
