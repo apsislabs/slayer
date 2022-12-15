@@ -61,17 +61,6 @@ RSpec.describe Slayer::Command do
       expect { |m| PassCommand.call(should_pass: true, &m) }.to yield_result.with_ensure
     end
 
-    #   def test_executes_ensure_block_on_error
-    #     assert_executes do
-    #       assert_raises ArgumentError do
-    #         ArgCommand.call(arg: 'arg') do |r|
-    #           r.pass   { raise ArgumentError, 'I died' }
-    #           r.fail   { flunk }
-    #           r.ensure { executes }
-    #         end
-    #       end
-    #     end
-    #   end
     it 'executes ensure block on error' do
       rescued = false
       begin

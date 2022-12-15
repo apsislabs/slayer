@@ -20,17 +20,28 @@ module Slayer
       def ok(value: nil, status: :default, message: nil)
         Result.new(value, status, message)
       end
-      alias pass ok
 
-      def ko(value: nil, status: :default, message: nil)
+      def pass(value: nil, status: :default, message: nil)
+        warn "[DEPRECATION] `pass` is deprecated.  Please use `ok` instead."
+      end
+
+      def err(value: nil, status: :default, message: nil)
         ok(value:, status:, message:).fail
       end
-      alias flunk ko
 
-      def ko!(value: nil, status: :default, message: nil)
-        raise ResultFailureError, ko(value:, status:, message:)
+      def flunk(value: nil, status: :default, message: nil)
+        warn "[DEPRECATION] `flunk` is deprecated.  Please use `err` instead."
       end
-      alias flunk! ko!
+
+      def err!(value: nil, status: :default, message: nil)
+        warn "[DEPRECATION] `err!` is deprecated.  Please use `return err` instead."
+        raise ResultFailureError, err(value:, status:, message:)
+      end
+
+      def flunk!(value: nil, status: :default, message: nil)
+        warn "[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead."
+        err!(value: value, status: status, message: message)
+      end
 
       private
 
@@ -58,24 +69,24 @@ module Slayer
     alias pass ok
     ruby2_keywords :ok if respond_to?(:ruby2_keywords, true)
 
-    def ko(*args)
-      self.class.ko(*args)
+    def err(*args)
+      self.class.err(*args)
     end
-    alias flunk ko
-    ruby2_keywords :ko if respond_to?(:ruby2_keywords, true)
+    alias flunk err
+    ruby2_keywords :err if respond_to?(:ruby2_keywords, true)
 
-    def ko!(*args)
-      self.class.ko!(*args)
+    def err!(*args)
+      self.class.err!(*args)
     end
-    alias flunk! ko!
-    ruby2_keywords :ko! if respond_to?(:ruby2_keywords, true)
+    alias flunk! err!
+    ruby2_keywords :err! if respond_to?(:ruby2_keywords, true)
 
     def try!(value: nil, status: nil, message: nil)
       r = yield
-      ko!(value:, status: status || :default, message:) unless r.is_a?(Result)
+      err!(value:, status: status || :default, message:) unless r.is_a?(Result)
       return r.value if r.success?
 
-      ko!(value: value || r.value, status: status || r.status, message: message || r.message)
+      err!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 
     def call

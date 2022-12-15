@@ -8,18 +8,26 @@ module Slayer
       @message = message
     end
 
-    def passed?
-      !failed?
+    def ok?
+      !err?
     end
-    alias success? passed?
 
-    def failed?
-      @failed ||= false
+    def success?
+      warn "[DEPRECATION] `success?` is deprecated.  Please use `ok?` instead."
+      ok?
     end
-    alias failure? failed?
+
+    def err?
+      @err ||= false
+    end
+
+    def failure?
+      warn "[DEPRECATION] `failure?` is deprecated.  Please use `err?` instead."
+      err?
+    end
 
     def fail
-      @failed ||= true
+      @err ||= true
       self
     end
   end

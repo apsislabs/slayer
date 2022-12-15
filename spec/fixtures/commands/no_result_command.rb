@@ -3,7 +3,7 @@ class NoResultCommand < Slayer::Command
     if should_pass
       return pass
     else
-      return flunk
+      return err
     end
   end
 end
