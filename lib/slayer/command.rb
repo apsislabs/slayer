@@ -22,7 +22,7 @@ module Slayer
       end
 
       def pass(value: nil, status: :default, message: nil)
-        warn "[DEPRECATION] `pass` is deprecated.  Please use `ok` instead."
+        warn '[DEPRECATION] `pass` is deprecated.  Please use `ok` instead.'
       end
 
       def err(value: nil, status: :default, message: nil)
@@ -30,17 +30,17 @@ module Slayer
       end
 
       def flunk(value: nil, status: :default, message: nil)
-        warn "[DEPRECATION] `flunk` is deprecated.  Please use `err` instead."
+        warn '[DEPRECATION] `flunk` is deprecated.  Please use `err` instead.'
       end
 
       def err!(value: nil, status: :default, message: nil)
-        warn "[DEPRECATION] `err!` is deprecated.  Please use `return err` instead."
+        warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
         raise ResultFailureError, err(value:, status:, message:)
       end
 
       def flunk!(value: nil, status: :default, message: nil)
-        warn "[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead."
-        err!(value: value, status: status, message: message)
+        warn '[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead.'
+        err!(value:, status:, message:)
       end
 
       private
