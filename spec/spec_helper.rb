@@ -2,7 +2,7 @@ require 'bundler/setup'
 require 'simplecov'
 
 SimpleCov.formatters = [
-  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::HTMLFormatter
 ]
 
 SimpleCov.start do
