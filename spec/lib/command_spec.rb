@@ -39,7 +39,7 @@ RSpec.describe Slayer::Command do
   context 'result blocks' do
     it 'can run with no block' do
       result = PassCommand.call(should_pass: true)
-      expect(result.success?).to be(true)
+      expect(result.ok?).to be(true)
     end
 
     it 'yields a result block' do
@@ -72,7 +72,7 @@ RSpec.describe Slayer::Command do
     end
 
     it 'raises error if not all defaults are handled' do
-      expect { NoArgCommand.call { |r| r.pass { true } } }
+      expect { NoArgCommand.call { |m| m.ok { true } } }
         .to raise_error(Slayer::ResultNotHandledError)
     end
 
@@ -83,7 +83,7 @@ RSpec.describe Slayer::Command do
           expect(value).to eq('pass')
 
           expect(result).to be_a(Slayer::Result)
-          expect(result.success?).to eq(true)
+          expect(result.ok?).to eq(true)
 
           expect(command).to be_a(NoArgCommand)
         end
@@ -100,13 +100,13 @@ RSpec.describe Slayer::Command do
       it 'has the correct value' do
         result = ArgCommand.call(arg: 'arg')
         expect(result.value).to eq('arg')
-        expect(result.success?).to be(true)
+        expect(result.ok?).to be(true)
       end
 
       it 'passes with no result' do
         result = NoResultCommand.call(should_pass: true)
         expect(result.value).to be(nil)
-        expect(result.success?).to be(true)
+        expect(result.ok?).to be(true)
       end
     end
 
@@ -118,26 +118,26 @@ RSpec.describe Slayer::Command do
       it 'has the correct value' do
         result = ArgCommand.call(arg: nil)
         expect(result.value).to eq(nil)
-        expect(result.success?).to be(false)
+        expect(result.ok?).to be(false)
       end
 
       it 'fails with no result' do
         result = NoResultCommand.call(should_pass: false)
         expect(result.value).to be(nil)
-        expect(result.failure?).to be(true)
+        expect(result.err?).to be(true)
       end
     end
 
     context 'try' do
       it 'bubbles up errors' do
         result = TryCommand.call(value: :my_value, succeed: false)
-        expect(result.failure?).to be(true)
+        expect(result.err?).to be(true)
       end
 
       it 'has the correct value' do
         result = TryCommand.call(value: :my_value, succeed: true)
         expect(result.value).to eq(:my_value)
-        expect(result.success?).to be(true)
+        expect(result.ok?).to be(true)
       end
     end
   end
@@ -146,8 +146,8 @@ RSpec.describe Slayer::Command do
     it 'calls pass matcher' do
       success = false
       PassCommand.call(should_pass: true) do |m|
-        m.pass { success = true }
-        m.fail { raise 'Should Pass, not fail' }
+        m.ok { success = true }
+        m.err { raise 'Should Pass, not fail' }
         m.all { raise 'Should Pass, and not call `all`' }
       end
       expect(success).to be true
@@ -156,8 +156,8 @@ RSpec.describe Slayer::Command do
     it 'calls fail matcher' do
       success = false
       PassCommand.call(should_pass: false) do |m|
-        m.pass { raise 'Should fail, not pass' }
-        m.fail { success = true }
+        m.ok { raise 'Should fail, not pass' }
+        m.err { success = true }
         m.all { raise 'Should Fail, and not call `all`' }
       end
       expect(success).to be true
@@ -174,8 +174,8 @@ RSpec.describe Slayer::Command do
     it 'calls default pass matcher' do
       success = false
       PassCommand.call(should_pass: true) do |m|
-        m.fail(:default) { raise "Shouldn't hit this code" }
-        m.pass(:default) { success = true }
+        m.err(:default) { raise "Shouldn't hit this code" }
+        m.ok(:default) { success = true }
       end
       expect(success).to be true
     end
@@ -183,8 +183,8 @@ RSpec.describe Slayer::Command do
     it 'calls default fail matcher' do
       success = false
       PassCommand.call(should_pass: false) do |m|
-        m.fail(:default) { success = true }
-        m.pass(:default) { raise "Shouldn't hit this code" }
+        m.err(:default) { success = true }
+        m.ok(:default) { raise "Shouldn't hit this code" }
       end
       expect(success).to be true
     end
@@ -200,9 +200,9 @@ RSpec.describe Slayer::Command do
     it 'calls default matcher' do
       success = false
       NoDefaultCommand.call do |m|
-        m.pass(:bar) { raise 'This should never be called' }
-        m.pass(:default) { success = true }
-        m.fail { raise 'This should never be called' }
+        m.ok(:bar) { raise 'This should never be called' }
+        m.ok(:default) { success = true }
+        m.err { raise 'This should never be called' }
       end
       expect(success).to be true
     end

@@ -1,6 +1,7 @@
 require 'rspec/expectations'
+
 # rubocop:disable Metrics/BlockLength
-RSpec::Matchers.define :be_success_result do
+RSpec::Matchers.define :be_ok_result do
   match do |result|
     status_matches = @status.nil? || @status == result.status
     message_matches = @message.nil? || @message == result.message
@@ -45,7 +46,7 @@ RSpec::Matchers.define :be_success_result do
   # :nocov:
 end
 
-RSpec::Matchers.define :be_failed_result do
+RSpec::Matchers.define :be_err_result do
   match do |result|
     status_matches = @status.nil? || @status == result.status
     message_matches = @message.nil? || @message == result.message
@@ -90,3 +91,6 @@ RSpec::Matchers.define :be_failed_result do
   # :nocov:
 end
 # rubocop:enable Metrics/BlockLength
+
+RSpec::Matchers.alias_matcher :be_failed_result, :be_err_result
+RSpec::Matchers.alias_matcher :be_success_result, :be_ok_result

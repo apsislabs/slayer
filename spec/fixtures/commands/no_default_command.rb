@@ -1,5 +1,5 @@
 class NoDefaultCommand < Slayer::Command
   def call
-    pass status: :foo
+    ok status: :foo
   end
 end

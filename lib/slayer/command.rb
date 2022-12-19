@@ -86,7 +86,7 @@ module Slayer
     def try!(value: nil, status: nil, message: nil)
       r = yield
       err!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
-      return r.value if r.success?
+      return r.value if r.ok?
 
       err!(value: value || r.value, status: status || r.status, message: message || r.message)
     end

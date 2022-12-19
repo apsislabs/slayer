@@ -22,8 +22,8 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
     @probe = RSpec::Matchers::BuiltIn::YieldProbe.probe(block) do |r|
       is_matcher = r.is_a? Slayer::ResultMatcher
 
-      r.pass { @passed = true }
-      r.fail { @failed = true }
+      r.ok { @passed = true }
+      r.err { @failed = true }
       r.ensure { @ensured = true }
 
       r.all

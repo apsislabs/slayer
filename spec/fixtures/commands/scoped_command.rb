@@ -1,6 +1,6 @@
 class ScopedCommand < Slayer::Command
   def call
-    pass value: true
+    ok value: true
   end
 
   def not_call
