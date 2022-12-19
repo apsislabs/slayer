@@ -12,18 +12,8 @@ module Slayer
       !err?
     end
 
-    def success?
-      warn '[DEPRECATION] `success?` is deprecated.  Please use `ok?` instead.'
-      ok?
-    end
-
     def err?
       @err ||= false
-    end
-
-    def failure?
-      warn '[DEPRECATION] `failure?` is deprecated.  Please use `err?` instead.'
-      err?
     end
 
     def fail

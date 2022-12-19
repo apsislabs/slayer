@@ -136,11 +136,6 @@ module Slayer
       @default_block  = block if block_is_default
     end
 
-    def pass(...)
-      warn '[DEPRECATION] `pass` is deprecated.  Please use `ok` instead.'
-      ok(...)
-    end
-
     # Provide a block that should be invoked if the {Result} is a failure.
     #
     # @param statuses [Array<status>] Statuses that should be compared to the {Result}. If
@@ -158,11 +153,6 @@ module Slayer
 
       @matching_block = block if block_is_match
       @default_block  = block if block_is_default
-    end
-
-    def fail(...)
-      warn '[DEPRECATION] `fail` is deprecated.  Please use `err` instead.'
-      err(...)
     end
 
     # Provide a block that should be invoked for any {Result}. This has a lower precedence that

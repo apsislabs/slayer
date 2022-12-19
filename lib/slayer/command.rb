@@ -21,28 +21,13 @@ module Slayer
         Result.new(value, status, message)
       end
 
-      def pass(value: nil, status: :default, message: nil)
-        warn '[DEPRECATION] `pass` is deprecated.  Please use `ok` instead.'
-        ok(value: value, status: status, message: message)
-      end
-
       def err(value: nil, status: :default, message: nil)
         ok(value: value, status: status, message: message).fail
-      end
-
-      def flunk(value: nil, status: :default, message: nil)
-        warn '[DEPRECATION] `flunk` is deprecated.  Please use `err` instead.'
-        err(value: value, status: status, message: message)
       end
 
       def err!(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
         raise ResultFailureError, err(value: value, status: status, message: message)
-      end
-
-      def flunk!(value: nil, status: :default, message: nil)
-        warn '[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead.'
-        err!(value: value, status: status, message: message)
       end
 
       private
@@ -68,19 +53,16 @@ module Slayer
     def ok(*args)
       self.class.ok(*args)
     end
-    alias pass ok
     ruby2_keywords :ok if respond_to?(:ruby2_keywords, true)
 
     def err(*args)
       self.class.err(*args)
     end
-    alias flunk err
     ruby2_keywords :err if respond_to?(:ruby2_keywords, true)
 
     def err!(*args)
       self.class.err!(*args)
     end
-    alias flunk! err!
     ruby2_keywords :err! if respond_to?(:ruby2_keywords, true)
 
     def try!(value: nil, status: nil, message: nil)

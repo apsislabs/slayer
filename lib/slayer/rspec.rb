@@ -90,7 +90,6 @@ RSpec::Matchers.define :be_err_result do
   end
   # :nocov:
 end
+
 # rubocop:enable Metrics/BlockLength
 
-RSpec::Matchers.alias_matcher :be_failed_result, :be_err_result
-RSpec::Matchers.alias_matcher :be_success_result, :be_ok_result

@@ -29,9 +29,7 @@ module Minitest::Assertions
       )
     end
   end
-  alias assert_success assert_ok
   alias refute_err assert_ok
-  alias refute_failed assert_ok
 
   def refute_ok(result, status: nil, message: nil, value: nil)
     refute result.ok?, 'Expected command to fail.'
@@ -61,8 +59,6 @@ module Minitest::Assertions
     end
   end
   alias assert_err refute_ok
-  alias assert_failed refute_ok
-  alias refute_success refute_ok
 end
 # rubocop:enable Style/Documentation
 # rubocop:enable Metrics/MethodLength

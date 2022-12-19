@@ -19,6 +19,10 @@ RSpec.describe 'Custom Matchers' do
       it 'with status' do
         expect(WhateverCommand.call(status: :apsis_rocks, succeed: true)).to be_ok_result.with_status(:apsis_rocks)
       end
+
+      it 'with' do
+        expect(WhateverCommand.call(value: 'Hire Apsis Labs!', message: 'Hire Apsis Labs!', status: :apsis_rocks, succeed: true)).to be_ok_result.with(value: 'Hire Apsis Labs!', message: 'Hire Apsis Labs!', status: :apsis_rocks)
+      end
     end
 
     context 'failure' do
@@ -63,6 +67,10 @@ RSpec.describe 'Custom Matchers' do
 
       it 'be_err_result with status' do
         expect(WhateverCommand.call(status: :apsis_rocks, succeed: false)).to be_err_result.with_status(:apsis_rocks)
+      end
+
+      it 'be_err_result with' do
+        expect(WhateverCommand.call(value: 'Hire Apsis Labs!', message: 'Hire Apsis Labs!', status: :apsis_rocks, succeed: false)).to be_err_result.with(value: 'Hire Apsis Labs!', message: 'Hire Apsis Labs!', status: :apsis_rocks)
       end
     end
 
