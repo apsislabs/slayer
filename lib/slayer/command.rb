@@ -23,24 +23,26 @@ module Slayer
 
       def pass(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `pass` is deprecated.  Please use `ok` instead.'
+        ok(value: value, status: status, message: message)
       end
 
       def err(value: nil, status: :default, message: nil)
-        ok(value:, status:, message:).fail
+        ok(value: value, status: status, message: message).fail
       end
 
       def flunk(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `flunk` is deprecated.  Please use `err` instead.'
+        err(value: value, status: status, message: message)
       end
 
       def err!(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
-        raise ResultFailureError, err(value:, status:, message:)
+        raise ResultFailureError, err(value: value, status: status, message: message)
       end
 
       def flunk!(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead.'
-        err!(value:, status:, message:)
+        err!(value: value, status: status, message: message)
       end
 
       private
@@ -83,7 +85,7 @@ module Slayer
 
     def try!(value: nil, status: nil, message: nil)
       r = yield
-      err!(value:, status: status || :default, message:) unless r.is_a?(Result)
+      err!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
       return r.value if r.success?
 
       err!(value: value || r.value, status: status || r.status, message: message || r.message)

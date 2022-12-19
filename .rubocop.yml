@@ -12,6 +12,9 @@ AllCops:
     - 'bin/**/*'
     - 'test/fixtures/**/*.rb'
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
 Style/Documentation:
   Enabled: false
 
