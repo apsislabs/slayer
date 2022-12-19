@@ -136,9 +136,9 @@ module Slayer
       @default_block  = block if block_is_default
     end
 
-    def pass(*statuses, &block)
+    def pass(...)
       warn '[DEPRECATION] `pass` is deprecated.  Please use `ok` instead.'
-      ok(*statuses, &block)
+      ok(...)
     end
 
     # Provide a block that should be invoked if the {Result} is a failure.
@@ -160,9 +160,9 @@ module Slayer
       @default_block  = block if block_is_default
     end
 
-    def fail(*statuses, &block)
+    def fail(...)
       warn '[DEPRECATION] `fail` is deprecated.  Please use `err` instead.'
-      err(*statuses, &block)
+      err(...)
     end
 
     # Provide a block that should be invoked for any {Result}. This has a lower precedence that
