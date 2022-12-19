@@ -26,7 +26,7 @@ RSpec.describe 'Custom Matchers' do
         # These pending tests are actually real tests. If they start passing that's bad
         # But if they start passing, the test suite will fail.
         # https://relishapp.com/rspec/rspec-core/v/3-8/docs/pending-and-skipped-examples/pending-examples
-        pending("A failed test here means you're passing. So this are permanently 'pending'")
+        pending("A failed test here means you're passing. So these are permanently 'pending'")
       end
 
       it 'works' do
@@ -71,7 +71,7 @@ RSpec.describe 'Custom Matchers' do
         # These pending tests are actually real tests. If they start passing that's bad
         # But if they start passing, the test suite will fail.
         # https://relishapp.com/rspec/rspec-core/v/3-8/docs/pending-and-skipped-examples/pending-examples
-        pending("A failed test here means you're passing. So this are permanently 'pending'")
+        pending("A failed test here means you're passing. So these are permanently 'pending'")
       end
 
       it 'works' do

@@ -54,7 +54,7 @@ Slayer Commands should implement `call`, which will `pass` or `fail` the service
 class FooCommand < Slayer::Command
   def call(foo:)
     unless foo == "foo"
-      ko! value: foo, message: "Argument must be foo!"
+      return err value: foo, message: "Argument must be foo!"
     end
 
     ok value: foo
@@ -66,11 +66,11 @@ Handling the results of a command can be done in two ways. The primary way is th
 
 ```ruby
 FooCommand.call(foo: "foo") do |m|
-  m.pass do |result|
+  m.ok do |value|
     puts "This code runs on success"
   end
 
-  m.fail do |result|
+  m.err do |_value, result|
     puts "This code runs on failure. Message: #{result.message}"
   end
 
@@ -88,10 +88,10 @@ The second is less comprehensive, but can be useful for very simple commands. Th
 
 ```ruby
 result = FooCommand.call(foo: "foo")
-puts result.passed? # => true
+puts result.oked? # => true
 
 result = FooCommand.call(foo: "bar")
-puts result.passed? # => false
+puts result.oked? # => false
 ```
 
 Here's a more complex example demonstrating how the command pattern can be used to encapuslate the logic for validating and creating a new user. This example is shown using a `rails` controller, but the same approach can be used regardless of the framework.
@@ -101,7 +101,7 @@ Here's a more complex example demonstrating how the command pattern can be used 
 class CreateUserCommand < Slayer::Command
   def call(create_user_form:)
     unless arguments_valid?(create_user_form)
-      ko! value: create_user_form, status: :arguments_invalid
+      return err value: create_user_form, status: :arguments_invalid
     end
 
     user = nil
@@ -110,7 +110,7 @@ class CreateUserCommand < Slayer::Command
     end
 
     unless user.persisted?
-      ko! message: I18n.t('user.create.error'), status: :unprocessible_entity
+      return err message: I18n.t('user.create.error'), status: :unprocessible_entity
     end
 
     ok value: user
@@ -129,17 +129,17 @@ class UsersController < ApplicationController
     @create_user_form = CreateUserForm.from_params(create_user_params)
 
     CreateUserCommand.call(create_user_form: @create_user_form) do |m|
-      m.pass do |user|
+      m.ok do |user|
         auto_login(user)
         redirect_to root_path, notice: t('user.create.success')
       end
 
-      m.fail(:arguments_invalid) do |result|
+      m.err(:arguments_invalid) do |_user, result|
         flash[:error] = result.errors.full_messages.to_sentence
         render :new, status: :unprocessible_entity
       end
 
-      m.fail do |result|
+      m.err do |_user, result|
         flash[:error] = t('user.create.error')
         render :new, status: :bad_request
       end
@@ -174,7 +174,7 @@ The result matcher block can take 4 types of handler blocks: `pass`, `fail`, `al
 
 #### Handler Params
 
-Every handler in the result matcher block is given three arguments: `value`, `result`, and `command`. These encapsulate the `value` provided in the `ok` or `ko!` call from the `Command`, the returned `Slayer::Result` object, and the `Slayer::Command` instance that was just run:
+Every handler in the result matcher block is given three arguments: `value`, `result`, and `command`. These encapsulate the `value` provided in the `ok` or `return err` call from the `Command`, the returned `Slayer::Result` object, and the `Slayer::Command` instance that was just run:
 
 ```ruby
 class NoArgCommand < Slayer::Command
@@ -188,35 +188,36 @@ end
 NoArgCommand.call do |m|
   m.all do |value, result, command|
     puts value # => 'pass'
-    puts result.passed? # => true
+    puts result.oked? # => true
     puts command.instance_var # => 'instance'
   end
-endpoint
+end
 ```
 
 #### Statuses
 
-You can pass a `status` flag to both the `ok` and `ko!` methods that allows the result matcher to process different kinds of successes and failures differently:
+You can pass a `status` flag to both the `ok` and `return err` methods that allows the result matcher to process different kinds of successes and failures differently:
 
 ```ruby
 class StatusCommand < Slayer::Command
   def call
-    ko! message: "Generic ko"
-    ko! message: "Specific ko", status: :specific_ko
-    ko! message: "Extra specific ko", status: :extra_specific_ko
+    return err message: "Extra specific ko", status: :extra_specific_err if extra_specific_err?
+    return err message: "Specific ko", status: :specific_err if specific_err?
+    return err message: "Generic ko" if generic_err?
+
+    return ok message: "Specific pass", status: :specific_pass if specific_pass?
 
     ok message: "Generic pass"
-    ok message: "Specific pass", status: :specific_pass
   end
 end
 
 StatusCommand.call do |m|
-  m.fail                        { puts "generic fail" }
-  m.fail(:specific_ko)       { puts "specific ko" }
-  m.fail(:extra_specific_ko) { puts "extra specific ko" }
+  m.err                         { puts "generic err" }
+  m.err(:specific_err)          { puts "specific err" }
+  m.err(:extra_specific_err)    { puts "extra specific err" }
 
-  m.pass                        { puts "generic pass" }
-  m.pass(:specific_pass)        { puts "specific pass" }
+  m.ok                          { puts "generic pass" }
+  m.ok(:specific_pass)          { puts "specific pass" }
 end
 ```
 
@@ -275,12 +276,12 @@ class MinitestCommandTest < Minitest::Test
     @failed_result = MinitestCommand.call(should_pass: false)
   end
 
-  def test_is_success
+  def test_is_ok
     assert_success @success_result, status: :no_status, message: 'message', value: 'value'
     refute_failed @success_result, status: :no_status, message: 'message', value: 'value'
   end
 
-  def test_is_failed
+  def test_is_err
     assert_failed @failed_result, status: :no_status, message: 'message', value: 'value'
     refute_success @failed_result, status: :no_status, message: 'message', value: 'value'
   end
