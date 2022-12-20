@@ -88,10 +88,10 @@ The second is less comprehensive, but can be useful for very simple commands. Th
 
 ```ruby
 result = FooCommand.call(foo: "foo")
-puts result.oked? # => true
+puts result.ok? # => true
 
 result = FooCommand.call(foo: "bar")
-puts result.oked? # => false
+puts result.ok? # => false
 ```
 
 Here's a more complex example demonstrating how the command pattern can be used to encapuslate the logic for validating and creating a new user. This example is shown using a `rails` controller, but the same approach can be used regardless of the framework.
@@ -163,13 +163,13 @@ end
 
 The result matcher is an object that is used to handle `Slayer::Result` objects based on their status.
 
-#### Handlers: `pass`, `fail`, `all`, `ensure`
+#### Handlers: `ok`, `err`, `all`, `ensure`
 
-The result matcher block can take 4 types of handler blocks: `pass`, `fail`, `all`, and `ensure`. They operate as you would expect based on their names.
+The result matcher block can take 4 types of handler blocks: `ok`, `err`, `all`, and `ensure`. They operate as you would expect based on their names.
 
-* The `pass` block runs if the command was successful.
-* The `fail` block runs if the command was `koed`.
-* The `all` block runs on any type of result --- `pass` or `fail` --- unless the result has already been handled.
+* The `ok` block runs if the command was successful.
+* The `err` block runs if the command was `koed`.
+* The `all` block runs on any type of result --- `ok` or `err` --- unless the result has already been handled.
 * The `ensure` block always runs after the result has been handled.
 
 #### Handler Params
@@ -180,7 +180,7 @@ Every handler in the result matcher block is given three arguments: `value`, `re
 class NoArgCommand < Slayer::Command
   def call
     @instance_var = 'instance'
-    pass value: 'pass'
+    ok value: 'pass'
   end
 end
 
@@ -188,7 +188,7 @@ end
 NoArgCommand.call do |m|
   m.all do |value, result, command|
     puts value # => 'pass'
-    puts result.oked? # => true
+    puts result.ok? # => true
     puts command.instance_var # => 'instance'
   end
 end
