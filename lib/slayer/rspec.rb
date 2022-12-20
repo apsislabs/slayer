@@ -92,4 +92,3 @@ RSpec::Matchers.define :be_err_result do
 end
 
 # rubocop:enable Metrics/BlockLength
-

@@ -10,7 +10,6 @@ module Slayer
         ok(value: value, status: status, message: message)
       end
 
-
       def flunk(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `flunk` is deprecated.  Please use `err` instead.'
         err(value: value, status: status, message: message)
