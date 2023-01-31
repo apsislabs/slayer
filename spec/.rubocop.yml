@@ -16,6 +16,5 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Enabled: false
 
-Lint/NestedMethodDefinition:
-  Exclude:
-    - 'lib/service_test.rb'
+Metrics/BlockLength:
+  Enabled: false

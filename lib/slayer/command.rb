@@ -1,73 +1,78 @@
 module Slayer
   class Command
-    attr_accessor :result
-
-    # Internal: Command Class Methods
     class << self
       def call(*args, &block)
-        execute_call(block, *args) { |c, *a| c.run(*a) }
+        instance = self.new
+
+        begin
+          res = instance.call(*args, &block)
+        rescue ResultFailureError => e
+          res = e.result
+        end
+
+        raise CommandNotImplementedError unless res.is_a? Result
+
+        handle_match(res, instance, block) if block_given?
+        return res
+      end
+      ruby2_keywords :call if respond_to?(:ruby2_keywords, true)
+
+      def ok(value: nil, status: :default, message: nil)
+        Result.new(value, status, message)
       end
 
-      def call!(*args, &block)
-        execute_call(block, *args) { |c, *a| c.run!(*a) }
+      def err(value: nil, status: :default, message: nil)
+        ok(value: value, status: status, message: message).fail
+      end
+
+      def err!(value: nil, status: :default, message: nil)
+        warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
+        raise ResultFailureError, err(value: value, status: status, message: message)
       end
 
       private
 
-      def execute_call(command_block, *args)
-        # Run the Command and capture the result
-        command = self.new
-        result  = command.tap { yield(command, *args) }.result
+      def handle_match(res, instance, block)
+        matcher = Slayer::ResultMatcher.new(res, instance)
 
-        # Throw an exception if we don't return a result
-        raise CommandNotImplementedError unless result.is_a? Result
+        block.call(matcher)
 
-        # Run the command block if one was provided
-        unless command_block.nil?
-          matcher = Slayer::ResultMatcher.new(result, command)
-
-          command_block.call(matcher)
-
-          # raise error if not all defaults were handled
-          unless matcher.handled_defaults?
-            raise(CommandResultNotHandledError, 'The pass or fail condition of a result was not handled')
-          end
-
-          begin
-            matcher.execute_matching_block
-          ensure
-            matcher.execute_ensure_block
-          end
+        # raise error if not all defaults were handled
+        unless matcher.handled_defaults?
+          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
         end
 
-        return result
+        begin
+          matcher.execute_matching_block
+        ensure
+          matcher.execute_ensure_block
+        end
       end
-    end # << self
-
-    def run(*args)
-      call(*args)
-    rescue CommandFailureError
-      # Swallow the Command Failure
     end
 
-    # Run the Command
-    def run!(*args)
-      call(*args)
+    def ok(*args)
+      self.class.ok(*args)
+    end
+    ruby2_keywords :ok if respond_to?(:ruby2_keywords, true)
+
+    def err(*args)
+      self.class.err(*args)
+    end
+    ruby2_keywords :err if respond_to?(:ruby2_keywords, true)
+
+    def err!(*args)
+      self.class.err!(*args)
+    end
+    ruby2_keywords :err! if respond_to?(:ruby2_keywords, true)
+
+    def try!(value: nil, status: nil, message: nil)
+      r = yield
+      err!(value: value, status: status || :default, message: message) unless r.is_a?(Result)
+      return r.value if r.ok?
+
+      err!(value: value || r.value, status: status || r.status, message: message || r.message)
     end
 
-    # Fail the Command
-
-    def fail!(value: nil, status: :default, message: nil)
-      @result = Result.new(value, status, message)
-      @result.fail!
-    end
-
-    # Pass the Command
-    def pass!(value: nil, status: :default, message: nil)
-      @result = Result.new(value, status, message)
-    end
-
-    # Call the command
     def call
       raise NotImplementedError, 'Commands must define method `#call`.'
     end

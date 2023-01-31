@@ -10,7 +10,7 @@ Slayer is intended to operate as a minimal service layer for your ruby applicati
 
 ## Application Structure
 
-Slayer provides 3 base classes for organizing your business logic: `Forms`, `Commands`, and `Services`. Each of these has a distinct role in your application's structure.
+Slayer provides 2 base classes for organizing your business logic: `Forms` and `Commands`. These each have a distinct role in your application's structure.
 
 ### Forms
 
@@ -18,13 +18,11 @@ Slayer provides 3 base classes for organizing your business logic: `Forms`, `Com
 
 ### Commands
 
-`Slayer::Commands` are the bread and butter of your application's business logic. `Commands` are where you compose services, and perform one-off business logic tasks. In our applications, we usually create a single `Command` per `Controller` endpoint.
+`Slayer::Commands` are the bread and butter of your application's business logic. `Commands` wrap logic into easily tested, isolated, composable classes. In our applications, we usually create a single `Command` per `Controller` endpoint.
 
-`Commands` should call `Services`, but `Services` should never call `Commands`.
+`Slayer::Commands` must implement a `call` method, which always return a structured `Slayer::Result` object making operating on results straightforward. The `call` method can also take a block, which provides `Slayer::ResultMatcher` object, and enforces handling of both `pass` and `fail` conditions for that result.
 
-### Services
-
-`Services` are the building blocks of `Commands`, and encapsulate re-usable chunks of application logic.
+This helps provide confidence that your core business logic is behaving in expected ways, and helps coerce you to develop in a clean and testable way.
 
 ## Installation
 
@@ -45,6 +43,254 @@ Or install it yourself as:
 ```sh
 $ gem install slayer
 ```
+
+## Usage
+
+### Commands
+
+Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `passed?` or `failed?`, a 'value' payload object, a 'status' value, and a user presentable `message`.
+
+```ruby
+# A Command that passes when given the string "foo"
+# and fails if given anything else.
+class FooCommand < Slayer::Command
+  def call(foo:)
+    unless foo == "foo"
+      return err value: foo, message: "Argument must be foo!"
+    end
+
+    ok value: foo
+  end
+end
+```
+
+Handling the results of a command can be done in two ways. The primary way is through a handler block. This block is passed a handler object, which is in turn given blocks to handle different result outcomes:
+
+```ruby
+FooCommand.call(foo: "foo") do |m|
+  m.ok do |value|
+    puts "This code runs on success"
+  end
+
+  m.err do |_value, result|
+    puts "This code runs on failure. Message: #{result.message}"
+  end
+
+  m.all do
+    puts "This code runs on failure or success"
+  end
+
+  m.ensure do
+    puts "This code always runs after other handler blocks"
+  end
+end
+```
+
+The second is less comprehensive, but can be useful for very simple commands. The `call` method on a `Command` returns its result object, which has statuses set on itself:
+
+```ruby
+result = FooCommand.call(foo: "foo")
+puts result.ok? # => true
+
+result = FooCommand.call(foo: "bar")
+puts result.ok? # => false
+```
+
+Here's a more complex example demonstrating how the command pattern can be used to encapuslate the logic for validating and creating a new user. This example is shown using a `rails` controller, but the same approach can be used regardless of the framework.
+
+```ruby
+# commands/user_controller.rb
+class CreateUserCommand < Slayer::Command
+  def call(create_user_form:)
+    unless arguments_valid?(create_user_form)
+      return err value: create_user_form, status: :arguments_invalid
+    end
+
+    user = nil
+    transaction do
+      user = User.create(create_user_form.attributes)
+    end
+
+    unless user.persisted?
+      return err message: I18n.t('user.create.error'), status: :unprocessible_entity
+    end
+
+    ok value: user
+  end
+
+  def arguments_valid?(create_user_form)
+    create_user_form.kind_of?(CreateUserForm) &&
+      create_user_form.valid? &&
+      !User.exists?(email: create_user_form.email)
+  end
+end
+
+# controllers/user_controller.rb
+class UsersController < ApplicationController
+  def create
+    @create_user_form = CreateUserForm.from_params(create_user_params)
+
+    CreateUserCommand.call(create_user_form: @create_user_form) do |m|
+      m.ok do |user|
+        auto_login(user)
+        redirect_to root_path, notice: t('user.create.success')
+      end
+
+      m.err(:arguments_invalid) do |_user, result|
+        flash[:error] = result.errors.full_messages.to_sentence
+        render :new, status: :unprocessible_entity
+      end
+
+      m.err do |_user, result|
+        flash[:error] = t('user.create.error')
+        render :new, status: :bad_request
+      end
+    end
+  end
+
+  private
+
+    def required_user_params
+      [:first_name, :last_name, :email, :password]
+    end
+
+    def create_user_params
+      permitted_params = required_user_params << :password_confirmation
+      params.require(:user).permit(permitted_params)
+    end
+end
+```
+
+### Result Matcher
+
+The result matcher is an object that is used to handle `Slayer::Result` objects based on their status.
+
+#### Handlers: `ok`, `err`, `all`, `ensure`
+
+The result matcher block can take 4 types of handler blocks: `ok`, `err`, `all`, and `ensure`. They operate as you would expect based on their names.
+
+* The `ok` block runs if the command was successful.
+* The `err` block runs if the command was `koed`.
+* The `all` block runs on any type of result --- `ok` or `err` --- unless the result has already been handled.
+* The `ensure` block always runs after the result has been handled.
+
+#### Handler Params
+
+Every handler in the result matcher block is given three arguments: `value`, `result`, and `command`. These encapsulate the `value` provided in the `ok` or `return err` call from the `Command`, the returned `Slayer::Result` object, and the `Slayer::Command` instance that was just run:
+
+```ruby
+class NoArgCommand < Slayer::Command
+  def call
+    @instance_var = 'instance'
+    ok value: 'pass'
+  end
+end
+
+
+NoArgCommand.call do |m|
+  m.all do |value, result, command|
+    puts value # => 'pass'
+    puts result.ok? # => true
+    puts command.instance_var # => 'instance'
+  end
+end
+```
+
+#### Statuses
+
+You can pass a `status` flag to both the `ok` and `return err` methods that allows the result matcher to process different kinds of successes and failures differently:
+
+```ruby
+class StatusCommand < Slayer::Command
+  def call
+    return err message: "Extra specific ko", status: :extra_specific_err if extra_specific_err?
+    return err message: "Specific ko", status: :specific_err if specific_err?
+    return err message: "Generic ko" if generic_err?
+
+    return ok message: "Specific pass", status: :specific_pass if specific_pass?
+
+    ok message: "Generic pass"
+  end
+end
+
+StatusCommand.call do |m|
+  m.err                         { puts "generic err" }
+  m.err(:specific_err)          { puts "specific err" }
+  m.err(:extra_specific_err)    { puts "extra specific err" }
+
+  m.ok                          { puts "generic pass" }
+  m.ok(:specific_pass)          { puts "specific pass" }
+end
+```
+
+## RSpec & Minitest Integrations
+
+`Slayer` provides assertions and matchers that make testing your `Commands` simpler.
+
+### RSpec
+
+To use with RSpec, update your `spec_helper.rb` file to include:
+
+`require 'slayer/rspec'`
+
+This provides you with two new matchers: `be_successful_result` and `be_failed_result`, both of which can be chained with a `with_status`, `with_message`, or `with_value` expectations:
+
+```ruby
+RSpec.describe RSpecCommand do
+  describe '#call' do
+    context 'should pass' do
+      subject(:result) { RSpecCommand.call(should_pass: true) }
+
+      it { is_expected.to be_success_result }
+      it { is_expected.not_to be_failed_result }
+      it { is_expected.to be_success_result.with_status(:no_status) }
+      it { is_expected.to be_success_result.with_message("message") }
+      it { is_expected.to be_success_result.with_value("value") }
+    end
+
+    context 'should fail' do
+      subject(:result) { RSpecCommand.call(should_pass: false) }
+
+      it { is_expected.to be_failed_result }
+      it { is_expected.not_to be_success_result }
+      it { is_expected.to be_failed_result.with_status(:no_status) }
+      it { is_expected.to be_failed_result.with_message("message") }
+      it { is_expected.to be_failed_result.with_value("value") }
+    end
+  end
+end
+```
+
+### Minitest
+
+To use with Minitest, update your 'test_helper' file to include:
+
+`require slayer/minitest`
+
+This provides you with new assertions: `assert_success` and `assert_failed`:
+
+```ruby
+require "minitest/autorun"
+
+class MinitestCommandTest < Minitest::Test
+  def setup
+    @success_result = MinitestCommand.call(should_pass: true)
+    @failed_result = MinitestCommand.call(should_pass: false)
+  end
+
+  def test_is_ok
+    assert_success @success_result, status: :no_status, message: 'message', value: 'value'
+    refute_failed @success_result, status: :no_status, message: 'message', value: 'value'
+  end
+
+  def test_is_err
+    assert_failed @failed_result, status: :no_status, message: 'message', value: 'value'
+    refute_success @failed_result, status: :no_status, message: 'message', value: 'value'
+  end
+end
+```
+
+**Note:** There is no current integration for `Minitest::Spec`.
 
 ## Rails Integration
 
@@ -115,64 +361,11 @@ end
 
 ### Generators
 
-Use generators to make sure your `Slayer` objects are always in the right place. `slayer_rails` includes generators for `Slayer::Form`, `Slayer::Command`, and `Slayer::Service` objects.
+Use generators to make sure your `Slayer` objects are always in the right place. `slayer_rails` includes generators for `Slayer::Form` and `Slayer::Command`.
 
 ```sh
 $ bin/rails g slayer:form foo_form
 $ bin/rails g slayer:command foo_command
-$ bin/rails g slayer:service foo_service
-```
-
-## Usage
-
-### Commands
-
-Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a 'value' payload object, a 'status' value, and a user presentable `message`.
-
-```ruby
-# A Command that passes when given the string "foo"
-# and fails if given anything else.
-class FooCommand < Slayer::Command
-  def call(foo:)
-    if foo == "foo"
-      pass! value: foo, message: "Passing FooCommand"
-    else
-      fail! value: foo, message: "Failing FooCommand"
-    end
-  end
-end
-
-result = FooCommand.call(foo: "foo")
-result.success? # => true
-
-result = FooCommand.call(foo: "bar")
-result.success? # => false
-```
-
-### Forms
-
-### Services
-
-Slayer Services are objects that should implement re-usable pieces of application logic or common tasks. To prevent circular dependencies Services are required to declare which other Service classes they depend on. If a circular dependency is detected an error is raised.
-
-In order to enforce the lack of circular dependencies, Service objects can only call other Services that are declared in their dependencies.
-
-```ruby
-class NetworkService < Slayer::Service
-    def self.post()
-        ...
-    end
-end
-
-class StripeService < Slayer::Service
-  dependencies NetworkService
-
-  def self.pay()
-    ...
-    NetworkService.post(url: "stripe.com", body: my_payload)
-    ...
-  end
-end
 ```
 
 ## Development
@@ -183,10 +376,17 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 To generate documentation run `yard`. To view undocumented files run `yard stats --list-undoc`.
 
+### Development w/ Docker
+
+    $ docker-compose up
+    $ bin/ssh_to_container
+    $ bin/console
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/apsislabs/slayer.
 
+Any PRs should be accompanied with documentation in `README.md`, and changes documented in [`CHANGELOG.md`](https://keepachangelog.com/).
 
 ## License
 

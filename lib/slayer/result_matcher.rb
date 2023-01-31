@@ -10,16 +10,16 @@ module Slayer
   #
   # == Matching based on success or failure
   #
-  # The ResultMatcher matches calls to {#pass} to a {Result} that returns +true+
-  # for {Result#success?}, calls to {#fail} to a {Result} that returns +true+
-  # for {Result#failure?}, and calls to {#all} to a {Result} in either state.
+  # The ResultMatcher matches calls to {#ok} to a {Result} that returns +true+
+  # for {Result#ok?}, calls to {#err} to a {Result} that returns +true+
+  # for {Result#err?}, and calls to {#all} to a {Result} in either state.
   #
-  # A matching call to {#pass} or {#fail} takes precedence over matching calls to {#all}
+  # A matching call to {#ok} or {#err} takes precedence over matching calls to {#all}
   #
   # == Matching based on status
   #
   # Additionally, the ResultMatcher can also match by the {Result#status}. If a status
-  # or statuses is passed to {#pass}, {#fail}, or {#all}, these will only be invoked if the
+  # or statuses is passed to {#ok}, {#err}, or {#all}, these will only be invoked if the
   # status of the {Result} matches the passed in status.
   #
   # If the default block is the same as the block for one of the statuses the status +:default+
@@ -29,11 +29,11 @@ module Slayer
   # == Both pass and fail must be handled
   #
   # If the block form of a {Command.call} is invoked, both the block must handle the default
-  # status for both a {Result#success?} and a {Result#failure?}. If both are not handled,
-  # the matching block will not be invoked and a {CommandResultNotHandledError} will be
+  # status for both a {Result#ok?} and a {Result#err?}. If both are not handled,
+  # the matching block will not be invoked and a {ResultNotHandledError} will be
   # raised.
   #
-  # @example Matcher invokes the matching pass block, with precedence given to {#pass} and {#fail}
+  # @example Matcher invokes the matching pass block, with precedence given to {#ok} and {#err}
   #   # Call produces a successful Result
   #   SuccessCommand.call do |m|
   #     m.pass { puts "Pass!" }
@@ -74,7 +74,7 @@ module Slayer
   #     m.pass(:ok) { puts "Pass, OK!"}
   #     m.fail      { puts "Fail!" }
   #   end
-  #   # => raises CommandResultNotHandledError (because no default pass was provided)
+  #   # => raises ResultNotHandledError (because no default pass was provided)
   #
   #   # Call produces a successful Result with status :ok
   #   SuccessCommand.call do |m|
@@ -94,7 +94,7 @@ module Slayer
   #   SuccessCommand.call do |m|
   #     m.pass(:ok, :default) { puts "Pass, OK!"}
   #   end
-  #   # => raises CommandResultNotHandledError (because no default fail was provided)
+  #   # => raises ResultNotHandledError (because no default fail was provided)
   class ResultMatcher
     attr_reader :result, :command
 
@@ -105,8 +105,8 @@ module Slayer
 
       @status = result.status || :default
 
-      @handled_default_pass = false
-      @handled_default_fail = false
+      @handled_default_ok = false
+      @handled_default_err = false
 
       # These are set to false if they are never set. If they are set to `nil` that
       # means the block intentionally passed `nil` as the block to be executed.
@@ -125,12 +125,12 @@ module Slayer
     #   not matched by other matchers.
     #
     #   If no value is provided for statuses it defaults to +:default+.
-    def pass(*statuses, &block)
+    def ok(*statuses, &block)
       statuses << :default if statuses.empty?
-      @handled_default_pass ||= statuses.include?(:default)
+      @handled_default_ok ||= statuses.include?(:default)
 
-      block_is_match   = @result.success? && statuses.include?(@status)
-      block_is_default = @result.success? && statuses.include?(:default)
+      block_is_match   = @result.ok? && statuses.include?(@status)
+      block_is_default = @result.ok? && statuses.include?(:default)
 
       @matching_block = block if block_is_match
       @default_block  = block if block_is_default
@@ -144,19 +144,19 @@ module Slayer
     #   not matched by other matchers.
     #
     #   If no value is provided for statuses it defaults to +:default+.
-    def fail(*statuses, &block)
+    def err(*statuses, &block)
       statuses << :default if statuses.empty?
-      @handled_default_fail ||= statuses.include?(:default)
+      @handled_default_err ||= statuses.include?(:default)
 
-      block_is_match   = @result.failure? && statuses.include?(@status)
-      block_is_default = @result.failure? && statuses.include?(:default)
+      block_is_match   = @result.err? && statuses.include?(@status)
+      block_is_default = @result.err? && statuses.include?(:default)
 
       @matching_block = block if block_is_match
       @default_block  = block if block_is_default
     end
 
     # Provide a block that should be invoked for any {Result}. This has a lower precedence that
-    # either {#pass} or {#fail}.
+    # either {#ok} or {#err}.
     #
     # @param statuses [Array<status>] Statuses that should be compared to the {Result}. If
     #   any of provided statuses match the {Result} this block will be considered a match.
@@ -166,8 +166,8 @@ module Slayer
     #   If no value is provided for statuses it defaults to +:default+.
     def all(*statuses, &block)
       statuses << :default if statuses.empty?
-      @handled_default_pass ||= statuses.include?(:default)
-      @handled_default_fail ||= statuses.include?(:default)
+      @handled_default_ok ||= statuses.include?(:default)
+      @handled_default_err ||= statuses.include?(:default)
 
       block_is_match   = statuses.include?(@status)
       block_is_default = statuses.include?(:default)
@@ -186,7 +186,7 @@ module Slayer
     #
     # @api private
     def handled_defaults?
-      return @handled_default_pass && @handled_default_fail
+      return @handled_default_ok && @handled_default_err
     end
 
     # Executes the provided block that best matched the {Result}. If no block matched
@@ -213,8 +213,8 @@ module Slayer
 
     private
 
-      def run_block(block)
-        block.call(@result.value, @result, @command) if block # explicit nil should fail this test
-      end
+    def run_block(block)
+      block&.call(@result.value, @result, @command) # explicit nil should fail this test
+    end
   end
 end

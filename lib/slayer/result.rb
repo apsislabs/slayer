@@ -8,17 +8,17 @@ module Slayer
       @message = message
     end
 
-    def success?
-      !failure?
+    def ok?
+      !err?
     end
 
-    def failure?
-      @failure || false
+    def err?
+      @err ||= false
     end
 
-    def fail!
-      @failure = true
-      raise CommandFailureError, self
+    def fail
+      @err ||= true
+      self
     end
   end
 end
