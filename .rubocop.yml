@@ -1,7 +1,7 @@
-inherit_from: .rubocop_todo.yml
-
 AllCops:
-  TargetRubyVersion: 2.1
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.1
   Include:
     - 'lib/**/*.rb'
     - 'test/**/*.rb'
@@ -12,6 +12,14 @@ AllCops:
     - 'bin/**/*'
     - 'test/fixtures/**/*.rb'
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+Style/Documentation:
+  Enabled: false
+
+Naming/BlockForwarding:
+  Enabled: false
 
 Style/RedundantSelf:
   Enabled: false
@@ -34,13 +42,7 @@ Style/FrozenStringLiteralComment:
 Layout/CommentIndentation:
   Enabled: false
 
-Style/BracesAroundHashParameters:
-  Enabled: false
-
-Layout/IndentationConsistency:
-  EnforcedStyle: rails
-
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/ClassLength:
@@ -49,16 +51,9 @@ Metrics/ClassLength:
 Layout/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames:
     - _
-
-# Temporarily disabled until this can be resolved in the todo file
-# Style/Documentation:
-#   Exclude:
-#     - 'spec/**/*'
-#     - 'test/**/*'
-#     - 'lib/ext/**/*'
 
 Style/ClassVars:
   Exclude:

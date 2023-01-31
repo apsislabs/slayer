@@ -22,8 +22,8 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
     @probe = RSpec::Matchers::BuiltIn::YieldProbe.probe(block) do |r|
       is_matcher = r.is_a? Slayer::ResultMatcher
 
-      r.pass { @passed = true }
-      r.fail { @failed = true }
+      r.ok { @passed = true }
+      r.err { @failed = true }
       r.ensure { @ensured = true }
 
       r.all
@@ -36,15 +36,19 @@ class YieldResult < RSpec::Matchers::BuiltIn::YieldControl
     return false if @fail_expected && (!@failed || @passed)
     return false if @ensure_expected && !@ensured
 
-    @probe.num_yields.__send__(@expectation_type, @expected_yields_count)
+    if @expectation_type
+      @probe.num_yields.__send__(@expectation_type, @expected_yields_count)
+    else
+      @probe.yielded_once?(:yield_control)
+    end
   end
 
   def failure_message
-    'expected given block to handle results' + failure_reason
+    "expected given block to handle results#{failure_reason}"
   end
 
   def failure_message_when_negated
-    'expected given block not to handle results' + failure_reason
+    "expected given block not to handle results#{failure_reason}"
   end
 end
 

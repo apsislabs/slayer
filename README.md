@@ -8,7 +8,7 @@ Slayer is intended to operate as a minimal service layer for your ruby applicati
 
 ## Application Structure
 
-Slayer provides 3 base classes for organizing your business logic: `Forms`, `Commands`, and `Services`. Each of these has a distinct role in your application's structure.
+Slayer provides 2 base classes for organizing your business logic: `Forms` and `Commands`. These each have a distinct role in your application's structure.
 
 ### Forms
 
@@ -16,15 +16,11 @@ Slayer provides 3 base classes for organizing your business logic: `Forms`, `Com
 
 ### Commands
 
-`Slayer::Commands` are the bread and butter of your application's business logic, and a specific implementation of the `Slayer::Service` object. `Commands` are where you compose services, and perform one-off business logic tasks. In our applications, we usually create a single `Command` per `Controller` endpoint.
+`Slayer::Commands` are the bread and butter of your application's business logic. `Commands` wrap logic into easily tested, isolated, composable classes. In our applications, we usually create a single `Command` per `Controller` endpoint.
 
 `Slayer::Commands` must implement a `call` method, which always return a structured `Slayer::Result` object making operating on results straightforward. The `call` method can also take a block, which provides `Slayer::ResultMatcher` object, and enforces handling of both `pass` and `fail` conditions for that result.
 
 This helps provide confidence that your core business logic is behaving in expected ways, and helps coerce you to develop in a clean and testable way.
-
-### Services
-
-`Slayer::Service`s are the base class of `Slayer::Command`s, and encapsulate re-usable chunks of application logic. `Services` also return structured `Slayer::Result` objects.
 
 ## Installation
 
@@ -50,7 +46,7 @@ $ gem install slayer
 
 ### Commands
 
-Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `success?` or `failure?`, a 'value' payload object, a 'status' value, and a user presentable `message`.
+Slayer Commands should implement `call`, which will `pass` or `fail` the service based on input. Commands return a `Slayer::Result` which has a predictable interface for determining `passed?` or `failed?`, a 'value' payload object, a 'status' value, and a user presentable `message`.
 
 ```ruby
 # A Command that passes when given the string "foo"
@@ -58,10 +54,10 @@ Slayer Commands should implement `call`, which will `pass` or `fail` the service
 class FooCommand < Slayer::Command
   def call(foo:)
     unless foo == "foo"
-      flunk! value: foo, message: "Argument must be foo!"
+      return err value: foo, message: "Argument must be foo!"
     end
 
-    pass! value: foo
+    ok value: foo
   end
 end
 ```
@@ -70,11 +66,11 @@ Handling the results of a command can be done in two ways. The primary way is th
 
 ```ruby
 FooCommand.call(foo: "foo") do |m|
-  m.pass do |result|
+  m.ok do |value|
     puts "This code runs on success"
   end
 
-  m.fail do |result|
+  m.err do |_value, result|
     puts "This code runs on failure. Message: #{result.message}"
   end
 
@@ -92,10 +88,10 @@ The second is less comprehensive, but can be useful for very simple commands. Th
 
 ```ruby
 result = FooCommand.call(foo: "foo")
-puts result.success? # => true
+puts result.ok? # => true
 
 result = FooCommand.call(foo: "bar")
-puts result.success? # => false
+puts result.ok? # => false
 ```
 
 Here's a more complex example demonstrating how the command pattern can be used to encapuslate the logic for validating and creating a new user. This example is shown using a `rails` controller, but the same approach can be used regardless of the framework.
@@ -105,7 +101,7 @@ Here's a more complex example demonstrating how the command pattern can be used 
 class CreateUserCommand < Slayer::Command
   def call(create_user_form:)
     unless arguments_valid?(create_user_form)
-      flunk! value: create_user_form, status: :arguments_invalid
+      return err value: create_user_form, status: :arguments_invalid
     end
 
     user = nil
@@ -114,10 +110,10 @@ class CreateUserCommand < Slayer::Command
     end
 
     unless user.persisted?
-      flunk! message: I18n.t('user.create.error'), status: :unprocessible_entity
+      return err message: I18n.t('user.create.error'), status: :unprocessible_entity
     end
 
-    pass! value: user
+    ok value: user
   end
 
   def arguments_valid?(create_user_form)
@@ -133,17 +129,17 @@ class UsersController < ApplicationController
     @create_user_form = CreateUserForm.from_params(create_user_params)
 
     CreateUserCommand.call(create_user_form: @create_user_form) do |m|
-      m.pass do |user|
+      m.ok do |user|
         auto_login(user)
         redirect_to root_path, notice: t('user.create.success')
       end
 
-      m.fail(:arguments_invalid) do |result|
+      m.err(:arguments_invalid) do |_user, result|
         flash[:error] = result.errors.full_messages.to_sentence
         render :new, status: :unprocessible_entity
       end
 
-      m.fail do |result|
+      m.err do |_user, result|
         flash[:error] = t('user.create.error')
         render :new, status: :bad_request
       end
@@ -167,24 +163,24 @@ end
 
 The result matcher is an object that is used to handle `Slayer::Result` objects based on their status.
 
-#### Handlers: `pass`, `fail`, `all`, `ensure`
+#### Handlers: `ok`, `err`, `all`, `ensure`
 
-The result matcher block can take 4 types of handler blocks: `pass`, `fail`, `all`, and `ensure`. They operate as you would expect based on their names.
+The result matcher block can take 4 types of handler blocks: `ok`, `err`, `all`, and `ensure`. They operate as you would expect based on their names.
 
-* The `pass` block runs if the command was successful.
-* The `fail` block runs if the command was `flunked`.
-* The `all` block runs on any type of result --- `pass` or `fail` --- unless the result has already been handled.
+* The `ok` block runs if the command was successful.
+* The `err` block runs if the command was `koed`.
+* The `all` block runs on any type of result --- `ok` or `err` --- unless the result has already been handled.
 * The `ensure` block always runs after the result has been handled.
 
 #### Handler Params
 
-Every handler in the result matcher block is given three arguments: `value`, `result`, and `command`. These encapsulate the `value` provided in the `pass!` or `flunk!` call from the `Command`, the returned `Slayer::Result` object, and the `Slayer::Command` instance that was just run:
+Every handler in the result matcher block is given three arguments: `value`, `result`, and `command`. These encapsulate the `value` provided in the `ok` or `return err` call from the `Command`, the returned `Slayer::Result` object, and the `Slayer::Command` instance that was just run:
 
 ```ruby
 class NoArgCommand < Slayer::Command
   def call
     @instance_var = 'instance'
-    pass value: 'pass'
+    ok value: 'pass'
   end
 end
 
@@ -192,41 +188,38 @@ end
 NoArgCommand.call do |m|
   m.all do |value, result, command|
     puts value # => 'pass'
-    puts result.success? # => true
+    puts result.ok? # => true
     puts command.instance_var # => 'instance'
   end
-endpoint
+end
 ```
 
 #### Statuses
 
-You can pass a `status` flag to both the `pass!` and `flunk!` methods that allows the result matcher to process different kinds of successes and failures differently:
+You can pass a `status` flag to both the `ok` and `return err` methods that allows the result matcher to process different kinds of successes and failures differently:
 
 ```ruby
 class StatusCommand < Slayer::Command
   def call
-    flunk! message: "Generic flunk"
-    flunk! message: "Specific flunk", status: :specific_flunk
-    flunk! message: "Extra specific flunk", status: :extra_specific_flunk
+    return err message: "Extra specific ko", status: :extra_specific_err if extra_specific_err?
+    return err message: "Specific ko", status: :specific_err if specific_err?
+    return err message: "Generic ko" if generic_err?
 
-    pass! message: "Generic pass"
-    pass! message: "Specific pass", status: :specific_pass
+    return ok message: "Specific pass", status: :specific_pass if specific_pass?
+
+    ok message: "Generic pass"
   end
 end
 
 StatusCommand.call do |m|
-  m.fail                        { puts "generic fail" }
-  m.fail(:specific_flunk)       { puts "specific flunk" }
-  m.fail(:extra_specific_flunk) { puts "extra specific flunk" }
+  m.err                         { puts "generic err" }
+  m.err(:specific_err)          { puts "specific err" }
+  m.err(:extra_specific_err)    { puts "extra specific err" }
 
-  m.pass                        { puts "generic pass" }
-  m.pass(:specific_pass)        { puts "specific pass" }
+  m.ok                          { puts "generic pass" }
+  m.ok(:specific_pass)          { puts "specific pass" }
 end
 ```
-
-### Forms
-
-### Services
 
 ## RSpec & Minitest Integrations
 
@@ -283,12 +276,12 @@ class MinitestCommandTest < Minitest::Test
     @failed_result = MinitestCommand.call(should_pass: false)
   end
 
-  def test_is_success
+  def test_is_ok
     assert_success @success_result, status: :no_status, message: 'message', value: 'value'
     refute_failed @success_result, status: :no_status, message: 'message', value: 'value'
   end
 
-  def test_is_failed
+  def test_is_err
     assert_failed @failed_result, status: :no_status, message: 'message', value: 'value'
     refute_success @failed_result, status: :no_status, message: 'message', value: 'value'
   end
@@ -366,12 +359,11 @@ end
 
 ### Generators
 
-Use generators to make sure your `Slayer` objects are always in the right place. `slayer_rails` includes generators for `Slayer::Form`, `Slayer::Command`, and `Slayer::Service` objects.
+Use generators to make sure your `Slayer` objects are always in the right place. `slayer_rails` includes generators for `Slayer::Form` and `Slayer::Command`.
 
 ```sh
 $ bin/rails g slayer:form foo_form
 $ bin/rails g slayer:command foo_command
-$ bin/rails g slayer:service foo_service
 ```
 
 ## Development

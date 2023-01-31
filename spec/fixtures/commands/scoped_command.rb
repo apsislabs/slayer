@@ -1,6 +1,6 @@
 class ScopedCommand < Slayer::Command
   def call
-    pass value: true
+    ok value: true
   end
 
   def not_call
@@ -9,7 +9,7 @@ class ScopedCommand < Slayer::Command
 
   private
 
-    def private_call
-      puts 'private_call'
-    end
+  def private_call
+    puts 'private_call'
+  end
 end

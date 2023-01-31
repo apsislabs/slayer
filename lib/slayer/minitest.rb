@@ -1,10 +1,9 @@
 # :nocov:
 require 'minitest/assertions'
-# rubocop:disable Style/Documentation
 # rubocop:disable Metrics/MethodLength
 module Minitest::Assertions
-  def assert_success(result, status: nil, message: nil, value: nil)
-    assert result.success?, 'Expected command to succeed.'
+  def assert_ok(result, status: nil, message: nil, value: nil)
+    assert result.ok?, 'Expected command to succeed.'
 
     unless status.nil?
       assert_equal(
@@ -30,10 +29,10 @@ module Minitest::Assertions
       )
     end
   end
-  alias refute_failed assert_success
+  alias refute_err assert_ok
 
-  def refute_success(result, status: nil, message: nil, value: nil)
-    refute result.success?, 'Expected command to fail.'
+  def refute_ok(result, status: nil, message: nil, value: nil)
+    refute result.ok?, 'Expected command to fail.'
 
     unless status.nil?
       refute_equal(
@@ -59,7 +58,7 @@ module Minitest::Assertions
       )
     end
   end
-  alias assert_failed refute_success
+  alias assert_err refute_ok
 end
 # rubocop:enable Style/Documentation
 # rubocop:enable Metrics/MethodLength

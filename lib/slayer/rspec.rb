@@ -1,12 +1,13 @@
 require 'rspec/expectations'
+
 # rubocop:disable Metrics/BlockLength
-RSpec::Matchers.define :be_success_result do
+RSpec::Matchers.define :be_ok_result do
   match do |result|
     status_matches = @status.nil? || @status == result.status
     message_matches = @message.nil? || @message == result.message
     value_matches = @value.nil? || @value == result.value
 
-    result.success? && status_matches && message_matches && value_matches
+    result.ok? && status_matches && message_matches && value_matches
   end
 
   chain :with_status do |status|
@@ -19,6 +20,12 @@ RSpec::Matchers.define :be_success_result do
 
   chain :with_value do |value|
     @value = value
+  end
+
+  chain :with do |args|
+    @status = args[:status] if args.key? :status
+    @message = args[:message] if args.key? :message
+    @value = args[:value] if args.key? :value
   end
 
   # :nocov:
@@ -33,18 +40,19 @@ RSpec::Matchers.define :be_success_result do
     return "expected command not to have message: #{@message}" if !@message.nil? && result.message == @message
     return "expected command not to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command not to have status :#{@status}" if !@status.nil? && result.status == @status
+
     return 'expected command to fail'
   end
   # :nocov:
 end
 
-RSpec::Matchers.define :be_failed_result do
+RSpec::Matchers.define :be_err_result do
   match do |result|
     status_matches = @status.nil? || @status == result.status
     message_matches = @message.nil? || @message == result.message
     value_matches = @value.nil? || @value == result.value
 
-    result.failure? && status_matches && message_matches && value_matches
+    result.err? && status_matches && message_matches && value_matches
   end
 
   chain :with_status do |status|
@@ -59,6 +67,12 @@ RSpec::Matchers.define :be_failed_result do
     @value = value
   end
 
+  chain :with do |args|
+    @status = args[:status] if args.key? :status
+    @message = args[:message] if args.key? :message
+    @value = args[:value] if args.key? :value
+  end
+
   # :nocov:
   failure_message do |result|
     return 'expected command to fail' if @status.nil? && @value.nil? && @message.nil?
@@ -71,8 +85,10 @@ RSpec::Matchers.define :be_failed_result do
     return "expected command to have message: #{@message}" if !@message.nil? && result.message == @message
     return "expected command to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command to have status :#{@status}" if !@status.nil? && result.status == @status
+
     return 'expected command to succeed'
   end
   # :nocov:
 end
+
 # rubocop:enable Metrics/BlockLength

@@ -1,7 +1,7 @@
 class WhateverCommand < Slayer::Command
-  def call(value: nil, message: nil, status: nil, succeed:)
-    flunk! value: value, message: message, status: status unless succeed
+  def call(succeed:, value: nil, message: nil, status: nil)
+    return err value: value, message: message, status: status unless succeed
 
-    pass value: value, message: message, status: status
+    ok value: value, message: message, status: status
   end
 end
