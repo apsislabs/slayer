@@ -1,6 +1,4 @@
 # :nocov:
-require 'minitest/assertions'
-require 'rspec/expectations'
 
 module Slayer
   class Command
@@ -50,15 +48,5 @@ module Slayer
     end
   end
 end
-
-module Minitest::Assertions
-  alias assert_success assert_ok
-  alias refute_failed assert_ok
-  alias assert_failed refute_ok
-  alias refute_success refute_ok
-end
-
-RSpec::Matchers.alias_matcher :be_failed_result, :be_err_result
-RSpec::Matchers.alias_matcher :be_success_result, :be_ok_result
 
 # :nocov:

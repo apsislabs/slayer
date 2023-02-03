@@ -368,6 +368,24 @@ $ bin/rails g slayer:form foo_form
 $ bin/rails g slayer:command foo_command
 ```
 
+## Compatability
+
+Backwards compatability with previous versions requires additional includes.
+
+```ruby
+require 'slayer/compat/compat_040'
+```
+
+If you use test matchers, you will have to separately require the compatability layer for your test runner:
+
+```ruby
+require 'slayer/compat/minitest_compat_040'
+
+# OR
+
+require 'slayer/compat/rspec_compat_040'
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
