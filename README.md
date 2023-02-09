@@ -261,6 +261,39 @@ RSpec.describe RSpecCommand do
 end
 ```
 
+#### Stubbing Command Results
+
+The RSpec helpers provide two utility functions for use in your tests which should simplify testing commands with stubbed results. This can be useful when you want
+test a Rails controller, and your command is already tested separately. In this case, you only really care about the logic in your matching blocks --- not in the command itself.
+
+Put another way: this is useful when you want to test the success or failure conditions of your commands.
+
+```ruby
+RSpec.describe FooController, type: :controller do do
+  context 'successful command' do
+    let(:foo) { create(:foo) }
+    let(:fake_res) { fake_result(ok: true, message: 'foo updated') }
+
+    describe '#update' do
+      # Foo will not be called, instead we will get back the stubbed response
+      # from the let block above, allowing us to bypass the command logic and
+      # test only the controller logic
+      stub_command_response(UpdateFooCommand, fake_res)
+      post :update, params: { id: foo.id }
+      expect(response).to have_http_status :ok
+    end
+  end
+end
+
+```
+
+This method --- `stub_command_response` --- can take the return value as either a second argument, or as a block:
+
+```ruby
+stub_command_response(UpdateFooCommand, fake_res)     # => fake result as an argument
+stub_command_response(UpdateFooCommand) { fake_res }  # => fake result as a block
+```
+
 ### Minitest
 
 To use with Minitest, update your 'test_helper' file to include:
