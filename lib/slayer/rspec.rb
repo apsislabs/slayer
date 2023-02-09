@@ -1,3 +1,4 @@
+require 'rspec/mocks'
 require 'rspec/expectations'
 
 # rubocop:disable Metrics/BlockLength
@@ -92,3 +93,22 @@ RSpec::Matchers.define :be_err_result do
 end
 
 # rubocop:enable Metrics/BlockLength
+
+module Slayer
+  module RspecHelpers
+    def stub_command_response(klass, res = nil, &block)
+      res = block.call if block_given? && res.nil?
+
+      expect(klass).to receive(:__get_result).and_return(res)
+    end
+
+    def fake_result(ok: true, value: nil, message: nil, status: nil)
+      res = Slayer::Result.new(value, status, message)
+      res.fail unless ok == true
+
+      res
+    end
+  end
+end
+
+RSpec.configure { |config| config.include Slayer::RspecHelpers }

@@ -4,15 +4,11 @@ module Slayer
       def call(*args, &block)
         instance = self.new
 
-        begin
-          res = instance.call(*args, &block)
-        rescue ResultFailureError => e
-          res = e.result
-        end
+        res = __get_result(instance, *args, &block)
+        handle_match(res, instance, block) if block_given?
 
         raise CommandNotImplementedError unless res.is_a? Result
 
-        handle_match(res, instance, block) if block_given?
         return res
       end
       ruby2_keywords :call if respond_to?(:ruby2_keywords, true)
@@ -28,6 +24,18 @@ module Slayer
       def err!(value: nil, status: :default, message: nil)
         warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
         raise ResultFailureError, err(value: value, status: status, message: message)
+      end
+
+      def __get_result(instance, *args, &block)
+        res = nil
+
+        begin
+          res = instance.call(*args, &block)
+        rescue ResultFailureError => e
+          res = e.result
+        end
+
+        res
       end
 
       private
