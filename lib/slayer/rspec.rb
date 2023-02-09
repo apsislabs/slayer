@@ -102,12 +102,15 @@ module Slayer
       expect(klass).to receive(:__get_result).and_return(res)
     end
 
+    # rubocop:disable Naming/MethodParameterName
     def fake_result(ok: true, value: nil, message: nil, status: nil)
       res = Slayer::Result.new(value, status, message)
       res.fail unless ok == true
 
       res
     end
+
+    # rubocop:enable Naming/MethodParameterName
   end
 end
 
