@@ -22,7 +22,9 @@ module Slayer
       end
 
       def err!(value: nil, status: :default, message: nil)
-        warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.' unless ENV[:SUPPRESS_SLAYER_WARNINGS]
+        unless ENV[:SUPPRESS_SLAYER_WARNINGS]
+          warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
+        end
         raise ResultFailureError, err(value: value, status: status, message: message)
       end
 

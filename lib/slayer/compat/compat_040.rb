@@ -14,7 +14,9 @@ module Slayer
       end
 
       def flunk!(value: nil, status: :default, message: nil)
-        warn '[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead.' unless ENV[:SUPPRESS_SLAYER_WARNINGS]
+        unless ENV[:SUPPRESS_SLAYER_WARNINGS]
+          warn '[DEPRECATION] `flunk!` is deprecated.  Please use `return err` instead.'
+        end
         err!(value: value, status: status, message: message)
       end
     end
