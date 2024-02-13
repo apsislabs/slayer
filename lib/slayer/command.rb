@@ -1,10 +1,10 @@
 module Slayer
   class Command
     class << self
-      def call(*args, &block)
+      def call(*args, **kwargs, &block)
         instance = self.new
 
-        res = __get_result(instance, *args, &block)
+        res = __get_result(instance, *args, **kwargs, &block)
         handle_match(res, instance, block) if block_given?
 
         raise CommandNotImplementedError unless res.is_a? Result
@@ -28,11 +28,11 @@ module Slayer
         raise ResultFailureError, err(value: value, status: status, message: message)
       end
 
-      def __get_result(instance, *args, &block)
+      def __get_result(instance, *args, **kwargs, &block)
         res = nil
 
         begin
-          res = instance.call(*args, &block)
+          res = instance.call(*args, **kwargs, &block)
         rescue ResultFailureError => e
           res = e.result
         end
