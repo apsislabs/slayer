@@ -1,11 +1,11 @@
-require 'rubocop'
+require "rubocop"
 
 module Slayer
   class CommandReturn < RuboCop::Cop::Base
-    def_node_search :explicit_returns, 'return'
-    def_node_matcher :slayer_command?, '(class (const (const nil :Slayer) :Command) _)'
-    def_node_matcher :is_call_to_pass?, '(send nil :pass ?)'
-    def_node_matcher :is_call_to_flunk?, '(send nil :flunk! ?)'
+    def_node_search :explicit_returns, "return"
+    def_node_matcher :slayer_command?, "(class (const (const nil :Slayer) :Command) _)"
+    def_node_matcher :is_call_to_pass?, "(send nil :pass ?)"
+    def_node_matcher :is_call_to_flunk?, "(send nil :flunk! ?)"
 
     def on_def(node)
       return unless node.method?(:call)
@@ -27,7 +27,7 @@ module Slayer
     # Continue traversing `node` until you get to the last expression.
     # If that expression is a call to `.can_see?`, then add an offense.
     def implicit_returns(_node)
-      raise 'Not Implemented Yet'
+      raise "Not Implemented Yet"
     end
 
     def in_slayer_command?(node)
@@ -39,7 +39,7 @@ module Slayer
       return if is_call_to_flunk? node
 
       add_offense(return_node || node,
-                  message: 'call in Slayer::Command must return the result of `pass` or call `flunk!`')
+        message: "call in Slayer::Command must return the result of `pass` or call `flunk!`")
     end
   end
 end

@@ -1,5 +1,5 @@
-require 'rspec/mocks'
-require 'rspec/expectations'
+require "rspec/mocks"
+require "rspec/expectations"
 
 # rubocop:disable Metrics/BlockLength
 RSpec::Matchers.define :be_ok_result do
@@ -31,7 +31,7 @@ RSpec::Matchers.define :be_ok_result do
 
   # :nocov:
   failure_message do |result|
-    return 'expected command to succeed' if @status.nil? && @value.nil? && @message.nil?
+    return "expected command to succeed" if @status.nil? && @value.nil? && @message.nil?
     return "expected command to succeed with status: :#{@status}, but got: :#{result.status}" unless @status.nil?
     return "expected command to succeed with value: #{@value}, but got: #{result.value}" unless @value.nil?
     return "expected command to succeed with message: #{@message}, but got: :#{result.message}" unless @message.nil?
@@ -42,7 +42,7 @@ RSpec::Matchers.define :be_ok_result do
     return "expected command not to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command not to have status :#{@status}" if !@status.nil? && result.status == @status
 
-    return 'expected command to fail'
+    return "expected command to fail"
   end
   # :nocov:
 end
@@ -76,7 +76,7 @@ RSpec::Matchers.define :be_err_result do
 
   # :nocov:
   failure_message do |result|
-    return 'expected command to fail' if @status.nil? && @value.nil? && @message.nil?
+    return "expected command to fail" if @status.nil? && @value.nil? && @message.nil?
     return "expected command to fail with status: :#{@status}, but got: :#{result.status}" unless @status.nil?
     return "expected command to fail with value: #{@value}, but got: #{result.value}" unless @value.nil?
     return "expected command to fail with message: #{@message}, but got: :#{result.message}" unless @message.nil?
@@ -87,7 +87,7 @@ RSpec::Matchers.define :be_err_result do
     return "expected command to have value: #{@value}" if !@value.nil? && result.value == @value
     return "expected command to have status :#{@status}" if !@status.nil? && result.status == @status
 
-    return 'expected command to succeed'
+    return "expected command to succeed"
   end
   # :nocov:
 end

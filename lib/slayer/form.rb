@@ -1,4 +1,4 @@
-require 'virtus'
+require "virtus"
 
 module Slayer
   class Form

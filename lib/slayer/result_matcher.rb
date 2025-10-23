@@ -110,11 +110,11 @@ module Slayer
 
       # These are set to false if they are never set. If they are set to `nil` that
       # means the block intentionally passed `nil` as the block to be executed.
-      @matching_block       = false
-      @matching_all         = false
-      @default_block        = false
-      @default_all          = false
-      @ensure_block         = false
+      @matching_block = false
+      @matching_all = false
+      @default_block = false
+      @default_all = false
+      @ensure_block = false
     end
 
     # Provide a block that should be invoked if the {Result} is a success.
@@ -129,11 +129,11 @@ module Slayer
       statuses << :default if statuses.empty?
       @handled_default_ok ||= statuses.include?(:default)
 
-      block_is_match   = @result.ok? && statuses.include?(@status)
+      block_is_match = @result.ok? && statuses.include?(@status)
       block_is_default = @result.ok? && statuses.include?(:default)
 
       @matching_block = block if block_is_match
-      @default_block  = block if block_is_default
+      @default_block = block if block_is_default
     end
 
     # Provide a block that should be invoked if the {Result} is a failure.
@@ -148,11 +148,11 @@ module Slayer
       statuses << :default if statuses.empty?
       @handled_default_err ||= statuses.include?(:default)
 
-      block_is_match   = @result.err? && statuses.include?(@status)
+      block_is_match = @result.err? && statuses.include?(@status)
       block_is_default = @result.err? && statuses.include?(:default)
 
       @matching_block = block if block_is_match
-      @default_block  = block if block_is_default
+      @default_block = block if block_is_default
     end
 
     # Provide a block that should be invoked for any {Result}. This has a lower precedence that
@@ -169,11 +169,11 @@ module Slayer
       @handled_default_ok ||= statuses.include?(:default)
       @handled_default_err ||= statuses.include?(:default)
 
-      block_is_match   = statuses.include?(@status)
+      block_is_match = statuses.include?(@status)
       block_is_default = statuses.include?(:default)
 
       @matching_all = block if block_is_match
-      @default_all  = block if block_is_default
+      @default_all = block if block_is_default
     end
 
     # Provide a block that should be always be invoked after other blocks have executed. This block
@@ -186,7 +186,7 @@ module Slayer
     #
     # @api private
     def handled_defaults?
-      return @handled_default_ok && @handled_default_err
+      @handled_default_ok && @handled_default_err
     end
 
     # Executes the provided block that best matched the {Result}. If no block matched

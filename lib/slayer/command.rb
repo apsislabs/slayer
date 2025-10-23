@@ -21,8 +21,8 @@ module Slayer
       end
 
       def err!(value: nil, status: :default, message: nil)
-        unless ENV['SUPPRESS_SLAYER_WARNINGS']
-          warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
+        unless ENV["SUPPRESS_SLAYER_WARNINGS"]
+          warn "[DEPRECATION] `err!` is deprecated.  Please use `return err` instead."
         end
         raise ResultFailureError, err(value: value, status: status, message: message)
       end
@@ -48,7 +48,7 @@ module Slayer
 
         # raise error if not all defaults were handled
         unless matcher.handled_defaults?
-          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
+          raise(ResultNotHandledError, "The pass or fail condition of a result was not handled")
         end
 
         begin
@@ -59,16 +59,16 @@ module Slayer
       end
     end
 
-    def ok(*args)
-      self.class.ok(*args)
+    def ok(...)
+      self.class.ok(...)
     end
 
-    def err(*args)
-      self.class.err(*args)
+    def err(...)
+      self.class.err(...)
     end
 
-    def err!(*args)
-      self.class.err!(*args)
+    def err!(...)
+      self.class.err!(...)
     end
 
     def try!(value: nil, status: nil, message: nil)
@@ -80,7 +80,7 @@ module Slayer
     end
 
     def call
-      raise NotImplementedError, 'Commands must define method `#call`.'
+      raise NotImplementedError, "Commands must define method `#call`."
     end
   end
 end

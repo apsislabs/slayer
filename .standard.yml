@@ -1,0 +1,11 @@
+# Standard Ruby configuration
+# https://github.com/testdouble/standard
+
+ruby_version: 3.2
+
+ignore:
+  - 'bin/**/*'
+  - 'vendor/**/*'
+  - 'tmp/**/*'
+
+fix: true

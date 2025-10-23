@@ -1,17 +1,17 @@
 RSpec.describe Slayer::Command do
   let(:fake_result) { Slayer::Result.new(nil, :default, nil) }
 
-  context 'instantiation' do
-    describe '::call' do
-      it 'calls #call only once' do
+  context "instantiation" do
+    describe "::call" do
+      it "calls #call only once" do
         expect(NoArgCommand).to receive(:call).once.and_return(fake_result)
         NoArgCommand.call
       end
     end
   end
 
-  context 'method wrappers' do
-    describe 'instance' do
+  context "method wrappers" do
+    describe "instance" do
       subject { ScopedCommand.new }
 
       it { is_expected.to respond_to(:call) }
@@ -19,7 +19,7 @@ RSpec.describe Slayer::Command do
       it { is_expected.not_to respond_to(:private_call) }
     end
 
-    describe 'class' do
+    describe "class" do
       subject { ScopedCommand }
 
       it { is_expected.to respond_to(:call) }
@@ -36,32 +36,32 @@ RSpec.describe Slayer::Command do
   # on the Command objects defined in the fixtures
   # directory for correctness.
 
-  context 'result blocks' do
-    it 'can run with no block' do
+  context "result blocks" do
+    it "can run with no block" do
       result = PassCommand.call(should_pass: true)
       expect(result.ok?).to be(true)
     end
 
-    it 'yields a result block' do
+    it "yields a result block" do
       expect { |m| NoArgCommand.call(&m) }.to yield_result
     end
 
-    it 'executes pass block on pass' do
+    it "executes pass block on pass" do
       expect { |m| PassCommand.call(should_pass: true, &m) }.to yield_result.with_pass
       expect { |m| PassCommand.call(should_pass: false, &m) }.not_to yield_result.with_pass
     end
 
-    it 'exectues fail block on fail' do
+    it "exectues fail block on fail" do
       expect { |m| PassCommand.call(should_pass: false, &m) }.to yield_result.with_fail
       expect { |m| PassCommand.call(should_pass: true, &m) }.not_to yield_result.with_fail
     end
 
-    it 'executes ensure block on fail and pass' do
+    it "executes ensure block on fail and pass" do
       expect { |m| PassCommand.call(should_pass: false, &m) }.to yield_result.with_ensure
       expect { |m| PassCommand.call(should_pass: true, &m) }.to yield_result.with_ensure
     end
 
-    it 'executes ensure block on error' do
+    it "executes ensure block on error" do
       rescued = false
       begin
         expect { |m| ErrorCommand.call(&m) }.to yield_result.with_ensure
@@ -71,16 +71,16 @@ RSpec.describe Slayer::Command do
       expect(rescued).to be(true)
     end
 
-    it 'raises error if not all defaults are handled' do
+    it "raises error if not all defaults are handled" do
       expect { NoArgCommand.call { |m| m.ok { true } } }
         .to raise_error(Slayer::ResultNotHandledError)
     end
 
-    it 'provides result and command to result handler' do
+    it "provides result and command to result handler" do
       NoArgCommand.call do |r|
         r.all do |value, result, command|
           expect(value).to be_a(String)
-          expect(value).to eq('pass')
+          expect(value).to eq("pass")
 
           expect(result).to be_a(Slayer::Result)
           expect(result.ok?).to eq(true)
@@ -91,50 +91,50 @@ RSpec.describe Slayer::Command do
     end
   end
 
-  context 'result' do
-    context 'pass' do
-      it 'returns result' do
+  context "result" do
+    context "pass" do
+      it "returns result" do
         expect(PassCommand.call(should_pass: true)).to be_a(Slayer::Result)
       end
 
-      it 'has the correct value' do
-        result = ArgCommand.call(arg: 'arg')
-        expect(result.value).to eq('arg')
+      it "has the correct value" do
+        result = ArgCommand.call(arg: "arg")
+        expect(result.value).to eq("arg")
         expect(result.ok?).to be(true)
       end
 
-      it 'passes with no result' do
+      it "passes with no result" do
         result = NoResultCommand.call(should_pass: true)
         expect(result.value).to be(nil)
         expect(result.ok?).to be(true)
       end
     end
 
-    context 'fail' do
-      it 'returns result' do
+    context "fail" do
+      it "returns result" do
         expect(PassCommand.call(should_pass: false)).to be_a(Slayer::Result)
       end
 
-      it 'has the correct value' do
+      it "has the correct value" do
         result = ArgCommand.call(arg: nil)
         expect(result.value).to eq(nil)
         expect(result.ok?).to be(false)
       end
 
-      it 'fails with no result' do
+      it "fails with no result" do
         result = NoResultCommand.call(should_pass: false)
         expect(result.value).to be(nil)
         expect(result.err?).to be(true)
       end
     end
 
-    context 'try' do
-      it 'bubbles up errors' do
+    context "try" do
+      it "bubbles up errors" do
         result = TryCommand.call(value: :my_value, succeed: false)
         expect(result.err?).to be(true)
       end
 
-      it 'has the correct value' do
+      it "has the correct value" do
         result = TryCommand.call(value: :my_value, succeed: true)
         expect(result.value).to eq(:my_value)
         expect(result.ok?).to be(true)
@@ -142,28 +142,28 @@ RSpec.describe Slayer::Command do
     end
   end
 
-  context 'matchers' do
-    it 'calls pass matcher' do
+  context "matchers" do
+    it "calls pass matcher" do
       success = false
       PassCommand.call(should_pass: true) do |m|
         m.ok { success = true }
-        m.err { raise 'Should Pass, not fail' }
-        m.all { raise 'Should Pass, and not call `all`' }
+        m.err { raise "Should Pass, not fail" }
+        m.all { raise "Should Pass, and not call `all`" }
       end
       expect(success).to be true
     end
 
-    it 'calls fail matcher' do
+    it "calls fail matcher" do
       success = false
       PassCommand.call(should_pass: false) do |m|
-        m.ok { raise 'Should fail, not pass' }
+        m.ok { raise "Should fail, not pass" }
         m.err { success = true }
-        m.all { raise 'Should Fail, and not call `all`' }
+        m.all { raise "Should Fail, and not call `all`" }
       end
       expect(success).to be true
     end
 
-    it 'calls all matcher' do
+    it "calls all matcher" do
       success = false
       PassCommand.call(should_pass: true) do |m|
         m.all { success = true }
@@ -171,7 +171,7 @@ RSpec.describe Slayer::Command do
       expect(success).to be true
     end
 
-    it 'calls default pass matcher' do
+    it "calls default pass matcher" do
       success = false
       PassCommand.call(should_pass: true) do |m|
         m.err(:default) { raise "Shouldn't hit this code" }
@@ -180,7 +180,7 @@ RSpec.describe Slayer::Command do
       expect(success).to be true
     end
 
-    it 'calls default fail matcher' do
+    it "calls default fail matcher" do
       success = false
       PassCommand.call(should_pass: false) do |m|
         m.err(:default) { success = true }
@@ -189,7 +189,7 @@ RSpec.describe Slayer::Command do
       expect(success).to be true
     end
 
-    it 'calls default all matcher' do
+    it "calls default all matcher" do
       success = false
       PassCommand.call(should_pass: false) do |m|
         m.all(:default) { success = true }
@@ -197,17 +197,17 @@ RSpec.describe Slayer::Command do
       expect(success).to be true
     end
 
-    it 'calls default matcher' do
+    it "calls default matcher" do
       success = false
       NoDefaultCommand.call do |m|
-        m.ok(:bar) { raise 'This should never be called' }
+        m.ok(:bar) { raise "This should never be called" }
         m.ok(:default) { success = true }
-        m.err { raise 'This should never be called' }
+        m.err { raise "This should never be called" }
       end
       expect(success).to be true
     end
 
-    it 'calls default matcher' do
+    it "calls default matcher" do
       success = false
       NoDefaultCommand.call do |m|
         m.all { success = true }
@@ -216,8 +216,8 @@ RSpec.describe Slayer::Command do
     end
   end
 
-  context 'invalid calls' do
-    it { expect { ArgCommand.call(bar: 'arg') }.to raise_error(ArgumentError) }
+  context "invalid calls" do
+    it { expect { ArgCommand.call(bar: "arg") }.to raise_error(ArgumentError) }
     it { expect { NotImplementedCommand.call }.to raise_error(Slayer::CommandNotImplementedError) }
     it { expect { InvalidCommand.call }.to raise_error(NotImplementedError) }
   end
