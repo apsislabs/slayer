@@ -3,8 +3,8 @@ module Slayer
     attr_reader :value, :status, :message
 
     def initialize(value, status, message)
-      @value   = value
-      @status  = status
+      @value = value
+      @status = status
       @message = message
     end
 

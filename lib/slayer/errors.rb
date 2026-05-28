@@ -10,8 +10,8 @@ module Slayer
 
   class CommandNotImplementedError < StandardError
     def initialize(message = nil)
-      message ||= 'Command implementation must return a <Slayer::Result> object'
-      super message
+      message ||= "Command implementation must return a <Slayer::Result> object"
+      super
     end
   end
 

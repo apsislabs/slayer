@@ -2,16 +2,15 @@ module Slayer
   class Command
     class << self
       def call(*args, **kwargs, &block)
-        instance = self.new
+        instance = new
 
         res = __get_result(instance, *args, **kwargs, &block)
         handle_match(res, instance, block) if block_given?
 
         raise CommandNotImplementedError unless res.is_a? Result
 
-        return res
+        res
       end
-      ruby2_keywords :call if respond_to?(:ruby2_keywords, true)
 
       def ok(value: nil, status: :default, message: nil)
         Result.new(value, status, message)
@@ -22,17 +21,17 @@ module Slayer
       end
 
       def err!(value: nil, status: :default, message: nil)
-        unless ENV['SUPPRESS_SLAYER_WARNINGS']
-          warn '[DEPRECATION] `err!` is deprecated.  Please use `return err` instead.'
+        unless ENV["SUPPRESS_SLAYER_WARNINGS"]
+          warn "[DEPRECATION] `err!` is deprecated.  Please use `return err` instead."
         end
         raise ResultFailureError, err(value: value, status: status, message: message)
       end
 
-      def __get_result(instance, *args, **kwargs, &block)
+      def __get_result(instance, ...)
         res = nil
 
         begin
-          res = instance.call(*args, **kwargs, &block)
+          res = instance.call(...)
         rescue ResultFailureError => e
           res = e.result
         end
@@ -49,7 +48,7 @@ module Slayer
 
         # raise error if not all defaults were handled
         unless matcher.handled_defaults?
-          raise(ResultNotHandledError, 'The pass or fail condition of a result was not handled')
+          raise(ResultNotHandledError, "The pass or fail condition of a result was not handled")
         end
 
         begin
@@ -60,20 +59,17 @@ module Slayer
       end
     end
 
-    def ok(*args)
-      self.class.ok(*args)
+    def ok(...)
+      self.class.ok(...)
     end
-    ruby2_keywords :ok if respond_to?(:ruby2_keywords, true)
 
-    def err(*args)
-      self.class.err(*args)
+    def err(...)
+      self.class.err(...)
     end
-    ruby2_keywords :err if respond_to?(:ruby2_keywords, true)
 
-    def err!(*args)
-      self.class.err!(*args)
+    def err!(...)
+      self.class.err!(...)
     end
-    ruby2_keywords :err! if respond_to?(:ruby2_keywords, true)
 
     def try!(value: nil, status: nil, message: nil)
       r = yield
@@ -84,7 +80,7 @@ module Slayer
     end
 
     def call
-      raise NotImplementedError, 'Commands must define method `#call`.'
+      raise NotImplementedError, "Commands must define method `#call`."
     end
   end
 end
