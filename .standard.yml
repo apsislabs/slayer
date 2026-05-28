@@ -1,7 +1,7 @@
 # Standard Ruby configuration
 # https://github.com/testdouble/standard
 
-ruby_version: 3.2
+ruby_version: 3.3
 
 ignore:
   - 'bin/**/*'
