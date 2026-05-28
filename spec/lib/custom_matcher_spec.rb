@@ -25,27 +25,28 @@ RSpec.describe "Custom Matchers" do
     end
 
     context "failure" do
-      before :each do
-        # These pending tests are actually real tests. If they start passing that's bad
-        # But if they start passing, the test suite will fail.
-        # https://relishapp.com/rspec/rspec-core/v/3-8/docs/pending-and-skipped-examples/pending-examples
-        pending("A failed test here means you're passing. So these are permanently 'pending'")
-      end
-
       it "works" do
-        expect(WhateverCommand.call(succeed: false)).to be_ok_result
+        expect {
+          expect(WhateverCommand.call(succeed: false)).to be_ok_result
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to succeed")
       end
 
       it "with value" do
-        expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_value("Hoozah")
+        expect {
+          expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_value("Hoozah")
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to succeed with value: Hoozah, but got: ")
       end
 
       it "with message" do
-        expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_message("Hire Apsis Labs!")
+        expect {
+          expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_message("Hire Apsis Labs!")
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to succeed with message: Hire Apsis Labs!, but got: :")
       end
 
       it "with status" do
-        expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_status(:apsis_rocks)
+        expect {
+          expect(WhateverCommand.call(succeed: true)).to be_ok_result.with_status(:apsis_rocks)
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to succeed with status: :apsis_rocks, but got: :")
       end
     end
   end
@@ -74,27 +75,28 @@ RSpec.describe "Custom Matchers" do
     end
 
     context "success" do
-      before :each do
-        # These pending tests are actually real tests. If they start passing that's bad
-        # But if they start passing, the test suite will fail.
-        # https://relishapp.com/rspec/rspec-core/v/3-8/docs/pending-and-skipped-examples/pending-examples
-        pending("A failed test here means you're passing. So these are permanently 'pending'")
-      end
-
       it "works" do
-        expect(WhateverCommand.call(succeed: true)).to be_err_result
+        expect {
+          expect(WhateverCommand.call(succeed: true)).to be_err_result
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to fail")
       end
 
       it "be_err_result with value" do
-        expect(WhateverCommand.call(succeed: false)).to be_err_result.with_value("Hire Apsis Labs!")
+        expect {
+          expect(WhateverCommand.call(succeed: false)).to be_err_result.with_value("Hire Apsis Labs!")
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to fail with value: Hire Apsis Labs!, but got: ")
       end
 
       it "be_err_result with message" do
-        expect(WhateverCommand.call(succeed: false)).to be_err_result.with_message("Hire Apsis Labs!")
+        expect {
+          expect(WhateverCommand.call(succeed: false)).to be_err_result.with_message("Hire Apsis Labs!")
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to fail with message: Hire Apsis Labs!, but got: :")
       end
 
       it "be_err_result with status" do
-        expect(WhateverCommand.call(succeed: false)).to be_err_result.with_status(:apsis_rocks)
+        expect {
+          expect(WhateverCommand.call(succeed: false)).to be_err_result.with_status(:apsis_rocks)
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, "expected command to fail with status: :apsis_rocks, but got: :")
       end
     end
   end
