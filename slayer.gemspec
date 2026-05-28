@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "ostruct"
   spec.add_dependency "virtus", "~> 2.0"
 
+  spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler", ">= 2.2.0"
   spec.add_development_dependency "debug"
   spec.add_development_dependency "minitest"
